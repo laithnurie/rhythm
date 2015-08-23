@@ -10,7 +10,6 @@
     <color name="color_primary">#2196F3</color>
     <color name="accent">#03A9F4</color>
     <color name="grid_background">#F9F9F9</color>
-    <color name="manga_title">#0D0D0D</color>
     <color name="player_background">#0D0D0D</color>
     <color name="player_topbar_background">#64000000</color>
 </resources>

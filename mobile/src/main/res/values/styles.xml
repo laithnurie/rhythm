@@ -1,8 +1,19 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Rhythm" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
+        <!--<item name="searchViewStyle">@style/Rhythm.SearchView</item>-->
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">@color/color_primary</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/dark_gray</item>
+        <!-- Inactive track color(30% transparency) -->
+        <item name="android:colorForeground">@color/light_gray</item>
     </style>
-
 </resources>

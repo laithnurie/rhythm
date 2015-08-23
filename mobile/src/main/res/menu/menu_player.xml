@@ -1,6 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".PlayerActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/replay_mode"
+        android:title="replay mode"
+        android:visible="true"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_playback_repeat">
+    </item>
+
+    <item android:id="@+id/shuffle_mode"
+        android:title="shuffle mode"
+        android:visible="true"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_playback_shuffle">
+    </item>
+
+    <item android:id="@+id/mute_mode"
+        android:title="mute mode"
+        android:visible="true"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_volume_mute">
+    </item>
+
 </menu>
