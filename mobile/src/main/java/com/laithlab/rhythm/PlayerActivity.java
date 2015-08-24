@@ -1,14 +1,16 @@
 package com.laithlab.rhythm;
 
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.squareup.picasso.Picasso;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -36,6 +38,10 @@ public class PlayerActivity extends AppCompatActivity {
 		tiltedView.setPivotX(0f);
 		tiltedView.setPivotY(0f);
 		tiltedView.setRotation(-5f);
+
+		CircleImageView albumCover = (CircleImageView) findViewById(R.id.album_cover);
+		Picasso.with(this).load("http://is4.mzstatic.com/image/pf/us/r30/Music/59/9d/1b/mzi.sjrqsmrq.100x100-75.jpg")
+				.into(albumCover);
 	}
 
 	@Override
