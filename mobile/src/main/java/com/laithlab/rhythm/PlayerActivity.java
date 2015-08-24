@@ -35,7 +35,7 @@ public class PlayerActivity extends AppCompatActivity {
 		View tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
 		tiltedView.setPivotY(0f);
-		tiltedView.setRotation(-10f);
+		tiltedView.setRotation(-5f);
 	}
 
 	@Override
