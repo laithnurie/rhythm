@@ -6,11 +6,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.laithlab.core.RestAdapterFactory;
+import com.laithlab.core.echonest.EchoNestApi;
+import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -39,9 +46,20 @@ public class PlayerActivity extends AppCompatActivity {
 		tiltedView.setPivotY(0f);
 		tiltedView.setRotation(-5f);
 
-		CircleImageView albumCover = (CircleImageView) findViewById(R.id.album_cover);
-		Picasso.with(this).load("http://is4.mzstatic.com/image/pf/us/r30/Music/59/9d/1b/mzi.sjrqsmrq.100x100-75.jpg")
-				.into(albumCover);
+		final CircleImageView albumCover = (CircleImageView) findViewById(R.id.album_cover);
+		final EchoNestApi echoNestApi = RestAdapterFactory.getEchoNestApi();
+		echoNestApi.getSong("usher", "U Remind Me", new Callback<EchoNestSearch>() {
+			@Override
+			public void success(EchoNestSearch echoNestSearch, Response response) {
+				Picasso.with(PlayerActivity.this).load(echoNestSearch.getResponse().trackImage())
+						.into(albumCover);
+			}
+
+			@Override
+			public void failure(RetrofitError error) {
+				Log.e("lnln", error.getMessage());
+			}
+		});
 	}
 
 	@Override
