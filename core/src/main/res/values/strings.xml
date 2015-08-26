@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Core</string>
+    <string name="duration_format">%1$s &#47; %2$s</string>
 </resources>

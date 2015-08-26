@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import com.laithlab.core.RestAdapterFactory;
+import com.laithlab.core.customviews.CircularSeekBar;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
@@ -24,14 +26,20 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
+		MediaPlayer.OnPreparedListener {
 
 	private EchoNestApi echoNestApi;
+	private Context context;
+	private AssetFileDescriptor afd;
+	private MediaPlayer mediaPlayer;
 
 	private DrawerLayout drawerLayout;
+	private TextView txtDuration;
+	private CircularSeekBar trackProgress;
 	private CircleImageView albumCover;
-	private Context context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +57,68 @@ public class PlayerActivity extends AppCompatActivity {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
+		mediaPlayer = new MediaPlayer();
+		mediaPlayer.setOnErrorListener(this);
+		mediaPlayer.setOnInfoListener(this);
+		mediaPlayer.setOnPreparedListener(this);
+		mediaPlayer.setScreenOnWhilePlaying(false);
+
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
+
+		TextView artist = (TextView) findViewById(R.id.txt_artist);
+		TextView album = (TextView) findViewById(R.id.txt_album);
+		TextView track = (TextView) findViewById(R.id.txt_track);
+		txtDuration = (TextView) findViewById(R.id.txt_duration);
 
 		View tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
 		tiltedView.setPivotY(0f);
 		tiltedView.setRotation(-5f);
 
-		albumCover = (CircleImageView) findViewById(R.id.album_cover);
-		albumCover.setOnClickListener(new View.OnClickListener() {
+		trackProgress = (CircularSeekBar) findViewById(R.id.track_progress);
+		trackProgress.setMax(100);
+
+		trackProgress.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
 			@Override
-			public void onClick(View v) {
-				playMusic();
+			public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
+				float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
+				updateDuration(milliSecondsToTimer((long) currentDuration), milliSecondsToTimer(mediaPlayer.getDuration()));
+			}
+
+			@Override
+			public void onStopTrackingTouch(CircularSeekBar seekBar) {
+				mediaPlayer.pause();
+				int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
+				mediaPlayer.seekTo(currentMill);
+				mediaPlayer.start();
+			}
+
+			@Override
+			public void onStartTrackingTouch(CircularSeekBar seekBar) {
+
 			}
 		});
+
+		albumCover = (CircleImageView) findViewById(R.id.album_cover);
 		echoNestApi = RestAdapterFactory.getEchoNestApi();
+
+		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		try {
+			afd = getAssets().openFd("Ours Samplus - Blue Bird.mp3");
+			mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			mediaPlayer.prepare();
+
+			mmr.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			fetchAlbumCover(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+					, mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+
+			artist.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+			album.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+			track.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -88,42 +142,130 @@ public class PlayerActivity extends AppCompatActivity {
 				.into(albumCover);
 	}
 
-	private void playMusic() {
-		AssetFileDescriptor afd;
-		String title;
-		String artist;
-		try {
-			afd = getAssets().openFd("Ours Samplus - Blue Bird.mp3");
-			MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-			mmr.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-			artist =
-					mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-			title =
-					mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+	@Override
+	public void onPrepared(MediaPlayer mp) {
+		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
+		runMedia();
 
-			if (artist != null && title != null) {
-				echoNestApi.getSong(artist, title, new Callback<EchoNestSearch>() {
-					@Override
-					public void success(EchoNestSearch echoNestSearch, Response response) {
-						if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
-							updateTrackImage(echoNestSearch.getResponse().trackImage());
+		albumCover.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mediaPlayer.isPlaying()) {
+					mediaPlayer.pause();
+				} else {
+					mediaPlayer.start();
+				}
+			}
+		});
+	}
+
+	@Override
+	public boolean onInfo(MediaPlayer mp, int what, int extra) {
+		return false;
+	}
+
+	@Override
+	public boolean onError(MediaPlayer mp, int what, int extra) {
+		return false;
+	}
+
+	private class MediaObserver implements Runnable {
+		private AtomicBoolean stop = new AtomicBoolean(false);
+
+		public void stop() {
+			stop.set(true);
+		}
+
+		@Override
+		public void run() {
+			while (!stop.get()) {
+
+				if (mediaPlayer != null) {
+					if (!trackProgress.isPressed() || !mediaPlayer.isPlaying()) {
+						final int currentProgress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
+
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								trackProgress.setProgress(currentProgress);
+								updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()), milliSecondsToTimer(mediaPlayer.getDuration()));
+							}
+						});
+
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
+				} else {
+					stop();
+				}
 
-					@Override
-					public void failure(RetrofitError error) {
-						Log.e("lnln", error.getMessage());
-					}
-				});
 			}
-
-			MediaPlayer player = new MediaPlayer();
-			player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-			player.prepare();
-			player.start();
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+	}
+
+	private MediaObserver observer = null;
+
+	public void runMedia() {
+		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				observer.stop();
+				trackProgress.setProgress(mp.getCurrentPosition());
+			}
+		});
+		observer = new MediaObserver();
+		new Thread(observer).start();
+	}
+
+	private void updateDuration(String currentDuration, String totalDuration) {
+		txtDuration.setText(context.getResources().getString(R.string.duration_format, currentDuration, totalDuration));
+	}
+
+	private void fetchAlbumCover(String artist, String songTitle) {
+
+		if (artist != null && songTitle != null) {
+			echoNestApi.getSong(artist, songTitle, new Callback<EchoNestSearch>() {
+				@Override
+				public void success(EchoNestSearch echoNestSearch, Response response) {
+					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
+						updateTrackImage(echoNestSearch.getResponse().trackImage());
+					}
+				}
+
+				@Override
+				public void failure(RetrofitError error) {
+					Log.e("lnln", error.getMessage());
+				}
+			});
+		}
+	}
+
+	private String milliSecondsToTimer(long milliseconds) {
+		String finalTimerString = "";
+		String secondsString;
+
+		// Convert total duration into time
+		int hours = (int) (milliseconds / (1000 * 60 * 60));
+		int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
+		int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+		// Add hours if there
+		if (hours > 0) {
+			finalTimerString = hours + ":";
+		}
+
+		// Prepending 0 to seconds if it is one digit
+		if (seconds < 10) {
+			secondsString = "0" + seconds;
+		} else {
+			secondsString = "" + seconds;
+		}
+
+		finalTimerString = finalTimerString + minutes + ":" + secondsString;
+
+		// return timer string
+		return finalTimerString;
 	}
 }
