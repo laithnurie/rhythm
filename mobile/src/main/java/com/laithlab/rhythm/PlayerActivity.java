@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.RestAdapterFactory;
 import com.laithlab.core.customviews.CircularSeekBar;
@@ -40,6 +41,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	private TextView txtDuration;
 	private CircularSeekBar trackProgress;
 	private CircleImageView albumCover;
+	private ImageView playButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		TextView album = (TextView) findViewById(R.id.txt_album);
 		TextView track = (TextView) findViewById(R.id.txt_track);
 		txtDuration = (TextView) findViewById(R.id.txt_duration);
+		playButton = (ImageView) findViewById(R.id.play_button);
 
 		View tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
@@ -91,6 +94,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 				mediaPlayer.pause();
 				int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
 				mediaPlayer.seekTo(currentMill);
+				playButton.setImageResource(R.drawable.ic_pause_white);
 				mediaPlayer.start();
 			}
 
@@ -147,12 +151,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		runMedia();
 
-		albumCover.setOnClickListener(new View.OnClickListener() {
+		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mediaPlayer.isPlaying()) {
+					playButton.setImageResource(R.drawable.ic_play_arrow_white);
 					mediaPlayer.pause();
 				} else {
+					playButton.setImageResource(R.drawable.ic_pause_white);
 					mediaPlayer.start();
 				}
 			}

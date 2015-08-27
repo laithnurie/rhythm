@@ -83,6 +83,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
@@ -108,15 +109,15 @@
                     </LinearLayout>
 
                     <FrameLayout
-                        android:layout_width="200dp"
-                        android:layout_height="200dp">
+                        android:layout_width="250dp"
+                        android:layout_height="250dp">
 
                         <com.laithlab.core.customviews.CircularSeekBar
                             android:id="@+id/track_progress"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            app:circle_x_radius="100dp"
-                            app:circle_y_radius="100dp"
+                            app:circle_x_radius="125dp"
+                            app:circle_y_radius="125dp"
                             app:end_angle="405"
                             app:max="100"
                             app:pointer_alpha_ontouch="100"
@@ -134,6 +135,23 @@
                             app:border_color="#FF000000"
                             app:border_width="2dp"
                             tools:background="#FFFFFF"/>
+
+                        <FrameLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:background="@drawable/play_button"
+                            android:layout_gravity="center"
+                            >
+
+                            <ImageView
+                                android:id="@+id/play_button"
+                                android:layout_margin="10dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_play_arrow_white"/>
+                        </FrameLayout>
+
+
                     </FrameLayout>
 
                 </LinearLayout>
