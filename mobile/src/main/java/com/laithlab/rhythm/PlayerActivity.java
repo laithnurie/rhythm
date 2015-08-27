@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.RestAdapterFactory;
 import com.laithlab.core.customviews.CircularSeekBar;
+import com.laithlab.core.customviews.CustomAnimUtil;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
@@ -159,6 +160,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 					mediaPlayer.pause();
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
+					CustomAnimUtil.overShootAnimation(albumCover);
+
+//					MusicFinder.updateMusicDB(getApplicationContext());
+//					List<Artist> allArtists = MusicFinder.allArtists(getApplicationContext());
+//
+//					for(Artist artistRecord : allArtists){
+//						Log.v("lnln", artistRecord.toString());
+//					}
 					mediaPlayer.start();
 				}
 			}
@@ -233,7 +242,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	private void fetchAlbumCover(String artist, String songTitle) {
 
 		if (artist != null && songTitle != null) {
-			echoNestApi.getSong(artist, songTitle, new Callback<EchoNestSearch>() {
+			echoNestApi.getSongImage(artist, songTitle, new Callback<EchoNestSearch>() {
 				@Override
 				public void success(EchoNestSearch echoNestSearch, Response response) {
 					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {

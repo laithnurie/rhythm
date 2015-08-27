@@ -145,9 +145,9 @@
 
                             <ImageView
                                 android:id="@+id/play_button"
-                                android:layout_margin="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_margin="10dp"
                                 android:src="@drawable/ic_play_arrow_white"/>
                         </FrameLayout>
 
