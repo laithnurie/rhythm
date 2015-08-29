@@ -2,6 +2,7 @@ package com.laithlab.core.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -13,22 +14,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import com.laithlab.core.R;
-import com.laithlab.core.adapter.ArtistGridAdapter;
-import com.laithlab.core.converter.DTOConverter;
-import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.musicutil.MusicFinder;
+import com.laithlab.core.adapter.SongGridAdapter;
+import com.laithlab.core.dto.AlbumDTO;
+import com.laithlab.core.dto.SongDTO;
 
-public class BrowseActivity extends AppCompatActivity {
+public class AlbumActivity extends AppCompatActivity {
 
 	private DrawerLayout drawerLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_browse);
+		setContentView(R.layout.activity_album);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
+
+		Bundle extras = getIntent().getExtras();
+		AlbumDTO currentAlbum = extras.getParcelable("album");
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -40,14 +43,14 @@ public class BrowseActivity extends AppCompatActivity {
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
-		final GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
-		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicFinder.allArtists(this))));
-		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		final GridView songsGrid = (GridView) findViewById(R.id.songs_grid);
+		songsGrid.setAdapter(new SongGridAdapter(this, currentAlbum.getSongs()));
+		songsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent artistActivity = new Intent(BrowseActivity.this, ArtistActivity.class);
-				artistActivity.putExtra("artist", (ArtistDTO) browseGrid.getItemAtPosition(position));
-				startActivity(artistActivity);
+				Intent playerActivity = new Intent(AlbumActivity.this, PlayerActivity.class);
+				playerActivity.putExtra("song", (SongDTO) songsGrid.getItemAtPosition(position));
+				startActivity(playerActivity);
 			}
 		});
 	}

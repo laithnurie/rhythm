@@ -1,7 +1,6 @@
 package com.laithlab.core.activity;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -20,6 +19,8 @@ import com.laithlab.core.R;
 import com.laithlab.core.RestAdapterFactory;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
+import com.laithlab.core.db.Song;
+import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
@@ -36,7 +37,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 
 	private EchoNestApi echoNestApi;
 	private Context context;
-	private AssetFileDescriptor afd;
+	//	private AssetFileDescriptor afd;
 	private MediaPlayer mediaPlayer;
 
 	private DrawerLayout drawerLayout;
@@ -50,6 +51,9 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_player);
 		context = this;
+
+		Bundle extras = getIntent().getExtras();
+		SongDTO currentSong = extras.getParcelable("song");
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -111,11 +115,12 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 		try {
-			afd = getAssets().openFd("Ours Samplus - Blue Bird.mp3");
-			mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			//			afd = getAssets().openFd("Ours Samplus - Blue Bird.mp3");
+			mediaPlayer.setDataSource(currentSong.getSongLocation());
 			mediaPlayer.prepare();
 
-			mmr.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			//			mmr.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			mmr.setDataSource(currentSong.getSongLocation());
 			fetchAlbumCover(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
 					, mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
 
@@ -144,8 +149,10 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	}
 
 	private void updateTrackImage(String trackUrl) {
-		Picasso.with(context).load(trackUrl)
-				.into(albumCover);
+		if (trackUrl != null && !trackUrl.isEmpty()){
+			Picasso.with(context).load(trackUrl).placeholder(R.drawable.ic_media_play)
+					.into(albumCover);
+		}
 	}
 
 	@Override
@@ -237,6 +244,20 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 
 		if (artist != null && songTitle != null) {
 			echoNestApi.getSongImage(artist, songTitle, new Callback<EchoNestSearch>() {
+				@Override
+				public void success(EchoNestSearch echoNestSearch, Response response) {
+					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
+						updateTrackImage(echoNestSearch.getResponse().trackImage());
+					}
+				}
+
+				@Override
+				public void failure(RetrofitError error) {
+					Log.e("lnln", error.getMessage());
+				}
+			});
+		} else {
+			echoNestApi.getArtistImage(artist, new Callback<EchoNestSearch>() {
 				@Override
 				public void success(EchoNestSearch echoNestSearch, Response response) {
 					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {

@@ -8,21 +8,21 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
-import com.laithlab.core.db.Artist;
-import com.laithlab.core.dto.ArtistDTO;
+import com.laithlab.core.db.Song;
+import com.laithlab.core.dto.SongDTO;
 import com.squareup.picasso.Picasso;
+import io.realm.RealmList;
 
 import java.util.List;
 
-public class ArtistGridAdapter extends BaseAdapter {
-
+public class SongGridAdapter extends BaseAdapter {
+	private final Context context;
+	private final List<SongDTO> songs;
 	private final LayoutInflater inflater;
-	private Context context;
-	private List<ArtistDTO> artists;
 
-	public ArtistGridAdapter(Context context, List<ArtistDTO> artists) {
+	public SongGridAdapter(Context context, List<SongDTO> songs) {
 		this.context = context;
-		this.artists = artists;
+		this.songs = songs;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -44,18 +44,18 @@ public class ArtistGridAdapter extends BaseAdapter {
 		Picasso.with(context).load("http://artwork-cdn.7static.com/static/img/sleeveart/00/009/559/0000955983_200.jpg")
 				.into(holder.gridItemImage);
 
-		holder.gridItemTitle.setText(artists.get(position).getArtistName());
+		holder.gridItemTitle.setText(songs.get(position).getSongTitle());
 		return convertView;
 	}
 
 	@Override
 	public int getCount() {
-		return artists.size();
+		return songs.size();
 	}
 
 	@Override
-	public ArtistDTO getItem(int position) {
-		return artists.get(position);
+	public SongDTO getItem(int position) {
+		return songs.get(position);
 	}
 
 	@Override
@@ -67,5 +67,4 @@ public class ArtistGridAdapter extends BaseAdapter {
 		ImageView gridItemImage;
 		TextView gridItemTitle;
 	}
-
 }

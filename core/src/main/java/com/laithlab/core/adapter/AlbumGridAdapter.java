@@ -8,21 +8,22 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
-import com.laithlab.core.db.Artist;
-import com.laithlab.core.dto.ArtistDTO;
+import com.laithlab.core.db.Album;
+import com.laithlab.core.dto.AlbumDTO;
 import com.squareup.picasso.Picasso;
+import io.realm.RealmList;
 
 import java.util.List;
 
-public class ArtistGridAdapter extends BaseAdapter {
+public class AlbumGridAdapter extends BaseAdapter {
 
 	private final LayoutInflater inflater;
 	private Context context;
-	private List<ArtistDTO> artists;
+	private List<AlbumDTO> albums;
 
-	public ArtistGridAdapter(Context context, List<ArtistDTO> artists) {
+	public AlbumGridAdapter(Context context, List<AlbumDTO> albums) {
 		this.context = context;
-		this.artists = artists;
+		this.albums = albums;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -41,21 +42,23 @@ public class ArtistGridAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
+		//		Logic to upload image to grid
+		//		Picasso.with(context).load(artists.get(position).getArtistImageUrl()).into(holder.gridItemImage);
 		Picasso.with(context).load("http://artwork-cdn.7static.com/static/img/sleeveart/00/009/559/0000955983_200.jpg")
 				.into(holder.gridItemImage);
 
-		holder.gridItemTitle.setText(artists.get(position).getArtistName());
+		holder.gridItemTitle.setText(albums.get(position).getAlbumTitle());
 		return convertView;
 	}
 
 	@Override
 	public int getCount() {
-		return artists.size();
+		return albums.size();
 	}
 
 	@Override
-	public ArtistDTO getItem(int position) {
-		return artists.get(position);
+	public AlbumDTO getItem(int position) {
+		return albums.get(position);
 	}
 
 	@Override

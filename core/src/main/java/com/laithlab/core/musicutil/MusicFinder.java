@@ -7,11 +7,11 @@ import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MusicFinder {
 
@@ -184,7 +184,7 @@ public class MusicFinder {
 	}
 
 
-	public static RealmResults<Artist> allArtists(Context context) {
+	public static List<Artist> allArtists(Context context) {
 		Realm realm = Realm.getInstance(context);
 		return realm.allObjects(Artist.class);
 	}

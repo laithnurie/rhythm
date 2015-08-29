@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".PlayerActivity">
+        tools:context=".AlbumActivity">
 
         <include layout="@layout/toolbar"/>
 
@@ -20,7 +20,7 @@
             android:layout_weight="1">
 
             <GridView
-                android:id="@+id/browse_grid"
+                android:id="@+id/songs_grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:horizontalSpacing="0dp"

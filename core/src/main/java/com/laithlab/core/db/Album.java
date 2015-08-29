@@ -2,11 +2,13 @@ package com.laithlab.core.db;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
 
-
+@RealmClass
 public class Album extends RealmObject {
 	private String albumTitle;
 	private String albumImageUrl;
+
 	private RealmList<Song> songs;
 
 

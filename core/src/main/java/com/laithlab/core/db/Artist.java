@@ -2,13 +2,16 @@ package com.laithlab.core.db;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
 
+@RealmClass
 public class Artist extends RealmObject {
 	private String artistName;
 	private String artistImageUrl;
+
 	private RealmList<Album> albums;
 
-	public void setArtistName(String artistName){
+	public void setArtistName(String artistName) {
 		this.artistName = artistName;
 	}
 
@@ -16,7 +19,7 @@ public class Artist extends RealmObject {
 		return artistName;
 	}
 
-	public void setArtistImageUrl(String artistImageUrl){
+	public void setArtistImageUrl(String artistImageUrl) {
 		this.artistImageUrl = artistImageUrl;
 	}
 
@@ -24,7 +27,7 @@ public class Artist extends RealmObject {
 		return artistImageUrl;
 	}
 
-	public void setAlbums(RealmList<Album> albums){
+	public void setAlbums(RealmList<Album> albums) {
 		this.albums = albums;
 	}
 

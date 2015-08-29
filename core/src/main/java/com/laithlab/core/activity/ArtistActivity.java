@@ -13,22 +13,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import com.laithlab.core.R;
-import com.laithlab.core.adapter.ArtistGridAdapter;
-import com.laithlab.core.converter.DTOConverter;
+import com.laithlab.core.adapter.AlbumGridAdapter;
+import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.musicutil.MusicFinder;
 
-public class BrowseActivity extends AppCompatActivity {
+public class ArtistActivity extends AppCompatActivity {
 
 	private DrawerLayout drawerLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_browse);
+		setContentView(R.layout.activity_artist);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
+
+		Bundle extras = getIntent().getExtras();
+		ArtistDTO currentArtist = extras.getParcelable("artist");
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -40,14 +42,14 @@ public class BrowseActivity extends AppCompatActivity {
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
-		final GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
-		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicFinder.allArtists(this))));
-		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		final GridView albumGrid = (GridView) findViewById(R.id.album_grid);
+		albumGrid.setAdapter(new AlbumGridAdapter(this, currentArtist.getAlbums()));
+		albumGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent artistActivity = new Intent(BrowseActivity.this, ArtistActivity.class);
-				artistActivity.putExtra("artist", (ArtistDTO) browseGrid.getItemAtPosition(position));
-				startActivity(artistActivity);
+				Intent albumActivity = new Intent(ArtistActivity.this, AlbumActivity.class);
+				albumActivity.putExtra("album", (AlbumDTO) albumGrid.getItemAtPosition(position));
+				startActivity(albumActivity);
 			}
 		});
 	}
