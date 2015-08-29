@@ -93,11 +93,8 @@ public class MusicFinder {
 
 		realm.beginTransaction();
 		Artist artistRecord = getOrCreateArtist(realm, artist);
-		Album albumRecord = getOrCreateAlbum(realm, album);
-		Song songRecord = getOrCreateSong(realm, trackTitle, duration, songPath);
-
-		albumRecord.getSongs().add(songRecord);
-		artistRecord.getAlbums().add(albumRecord);
+		Album albumRecord = getOrCreateAlbum(realm, artistRecord, album);
+		getOrCreateSong(realm, albumRecord, trackTitle, duration, songPath);
 		realm.commitTransaction();
 
 	}
@@ -110,9 +107,9 @@ public class MusicFinder {
 			if (query != null) {
 				return query;
 			} else {
-				Artist newAlbum = realm.createObject(Artist.class);
-				newAlbum.setArtistName("Untitled Artist");
-				return newAlbum;
+				Artist newArtist = realm.createObject(Artist.class);
+				newArtist.setArtistName("Untitled Artist");
+				return newArtist;
 			}
 		} else {
 			Artist query = realm.where(Artist.class)
@@ -121,64 +118,61 @@ public class MusicFinder {
 			if (query != null) {
 				return query;
 			} else {
-				Artist newAlbum = realm.createObject(Artist.class);
-				newAlbum.setArtistName(artist);
-				return newAlbum;
+				Artist newArtist = realm.createObject(Artist.class);
+				newArtist.setArtistName(artist);
+				return newArtist;
 			}
 		}
 	}
 
-	private static Album getOrCreateAlbum(Realm realm, String album) {
-		if (album == null) {
-			Album query = realm.where(Album.class)
-					.contains("albumTitle", "Untitled Album")
-					.findFirst();
-			if (query != null) {
-				return query;
-			} else {
-				Album newAlbum = realm.createObject(Album.class);
-				newAlbum.setAlbumTitle("Untitled Album");
-				return newAlbum;
-			}
-		} else {
-			Album query = realm.where(Album.class)
-					.contains("albumTitle", album)
-					.findFirst();
-			if (query != null) {
-				return query;
-			} else {
-				Album newAlbum = realm.createObject(Album.class);
-				newAlbum.setAlbumTitle(album);
-				return newAlbum;
-			}
-		}
-	}
-
-	private static Song getOrCreateSong(Realm realm, String song, String duration, String songPath) {
-		if (song == null) {
-			Song newSong = realm.createObject(Song.class);
-			newSong.setSongLocation(songPath);
-			newSong.setSongTitle("Untitled");
-			if (duration != null) {
-				newSong.setSongDuration(Integer.parseInt(duration));
-			}
-			return newSong;
-		} else {
-			Song query = realm.where(Song.class)
-					.equalTo("songTitle", song)
-					.equalTo("songLocation", songPath)
-					.findFirst();
-			if (query != null) {
-				return query;
-			} else {
-				Song newSong = realm.createObject(Song.class);
-				if (duration != null) {
-					newSong.setSongDuration(Integer.parseInt(duration));
+	private static Album getOrCreateAlbum(Realm realm, Artist artistRecord, String albumTitle) {
+		Album albumRecord = null;
+		if (albumTitle == null) {
+			for (Album albumItem : artistRecord.getAlbums()) {
+				if (albumItem.getAlbumTitle().equals("Untitled Album")) {
+					albumRecord = albumItem;
 				}
-				newSong.setSongLocation(songPath);
-				newSong.setSongTitle(song);
-				return newSong;
 			}
+			if (albumRecord != null) {
+				return albumRecord;
+			} else {
+				albumRecord = realm.createObject(Album.class);
+				albumRecord.setAlbumTitle("Untitled Album");
+				artistRecord.getAlbums().add(albumRecord);
+				return albumRecord;
+			}
+		} else {
+			for (Album albumItem : artistRecord.getAlbums()) {
+				if (albumItem.getAlbumTitle().equals(albumTitle)) {
+					albumRecord = albumItem;
+				}
+			}
+			if (albumRecord != null) {
+				return albumRecord;
+			} else {
+				albumRecord = realm.createObject(Album.class);
+				albumRecord.setAlbumTitle(albumTitle);
+				artistRecord.getAlbums().add(albumRecord);
+				return albumRecord;
+			}
+		}
+	}
+
+	private static void getOrCreateSong(Realm realm, Album albumRecord, String songTitle, String duration, String songPath) {
+		Song songRecord = null;
+		for (Song songItem : albumRecord.getSongs()) {
+			if (songItem.getSongLocation().equals(songPath)) {
+				songRecord = songItem;
+			}
+		}
+		if (songRecord == null) {
+			songRecord = realm.createObject(Song.class);
+			songRecord.setSongTitle(songTitle != null ? songTitle : "Untitle Song");
+			songRecord.setSongLocation(songPath);
+			if (duration != null) {
+				songRecord.setSongDuration(Integer.parseInt(duration));
+			}
+			albumRecord.getSongs().add(songRecord);
 		}
 
 	}
