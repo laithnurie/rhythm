@@ -3,18 +3,11 @@ package com.laithlab.core.musicutil;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
-import android.util.Log;
-import com.laithlab.core.RestAdapterFactory;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
-import com.laithlab.core.echonest.EchoNestApi;
-import com.laithlab.core.echonest.EchoNestSearch;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -83,79 +76,113 @@ public class MusicFinder {
 	}
 
 	public static void updateMusicDB(Context context) {
-		final Realm realm = Realm.getInstance(context);
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-
-		final EchoNestApi echoNestApi = RestAdapterFactory.getEchoNestApi();
-
 		for (final HashMap<String, String> song : getSongList()) {
 			mmr.setDataSource(song.get("songPath"));
-			final String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-			final String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-			final String trackTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-			final String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
-			Log.v("lnln", "Artist - " + artist + " Album - " + album + " Title - " + trackTitle);
-
-			if (artist != null && !artist.isEmpty()) {
-				echoNestApi.getArtistImage(artist, new Callback<EchoNestSearch>() {
-					@Override
-					public void success(EchoNestSearch echoNestSearch, Response response) {
-						if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
-							RealmResults<Artist> allRex = realm.where(Artist.class)
-									.contains("artistName", artist)
-									.findAll();
-							if (allRex.size() > 0) {
-
-							} else {
-								realm.beginTransaction();
-								final Artist artistRecord = realm.createObject(Artist.class);
-								artistRecord.setArtistName(artist);
-								artistRecord.setArtistImageUrl(echoNestSearch.getResponse().trackImage());
-
-								final Album newAlbum = realm.createObject(Album.class);
-								newAlbum.setAlbumTitle(album != null ? album : "Untitled");
-								if (trackTitle != null) {
-									echoNestApi.getSongImage(artist, trackTitle, new Callback<EchoNestSearch>() {
-										@Override
-										public void success(EchoNestSearch echoNestSearch, Response response) {
-											if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
-												Song songRow = realm.createObject(Song.class);
-												songRow.setSongDirectory(song.get("songPath"));
-												songRow.setSongImageUrl(echoNestSearch.getResponse().trackImage());
-												songRow.setSongTitle(trackTitle);
-												songRow.setSongDuration(Integer.parseInt(duration));
-												newAlbum.getSongs().add(songRow);
-												artistRecord.getAlbums().add(newAlbum);
-											}
-										}
-
-										@Override
-										public void failure(RetrofitError error) {
-
-										}
-									});
-								} else {
-									Song songRow = realm.createObject(Song.class);
-									songRow.setSongDirectory(song.get("songPath"));
-									songRow.setSongTitle("Untitled");
-									newAlbum.getSongs().add(songRow);
-									artistRecord.getAlbums().add(newAlbum);
-								}
-								realm.commitTransaction();
-							}
-						}
-					}
-
-					@Override
-					public void failure(RetrofitError error) {
-						error.getBody();
-					}
-				});
-			}
-
+			createSongRecord(mmr, context, song.get("songPath"));
 		}
 	}
+
+	private static void createSongRecord(MediaMetadataRetriever mmr, Context context, String songPath) {
+		final Realm realm = Realm.getInstance(context);
+
+		final String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+		final String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+		final String trackTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+		final String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+
+		realm.beginTransaction();
+		Artist artistRecord = getOrCreateArtist(realm, artist);
+		Album albumRecord = getOrCreateAlbum(realm, album);
+		Song songRecord = getOrCreateSong(realm, trackTitle, duration, songPath);
+
+		albumRecord.getSongs().add(songRecord);
+		artistRecord.getAlbums().add(albumRecord);
+		realm.commitTransaction();
+
+	}
+
+	private static Artist getOrCreateArtist(Realm realm, String artist) {
+		if (artist == null) {
+			Artist query = realm.where(Artist.class)
+					.contains("artistName", "Untitled Artist")
+					.findFirst();
+			if (query != null) {
+				return query;
+			} else {
+				Artist newAlbum = realm.createObject(Artist.class);
+				newAlbum.setArtistName("Untitled Artist");
+				return newAlbum;
+			}
+		} else {
+			Artist query = realm.where(Artist.class)
+					.contains("artistName", artist)
+					.findFirst();
+			if (query != null) {
+				return query;
+			} else {
+				Artist newAlbum = realm.createObject(Artist.class);
+				newAlbum.setArtistName(artist);
+				return newAlbum;
+			}
+		}
+	}
+
+	private static Album getOrCreateAlbum(Realm realm, String album) {
+		if (album == null) {
+			Album query = realm.where(Album.class)
+					.contains("albumTitle", "Untitled Album")
+					.findFirst();
+			if (query != null) {
+				return query;
+			} else {
+				Album newAlbum = realm.createObject(Album.class);
+				newAlbum.setAlbumTitle("Untitled Album");
+				return newAlbum;
+			}
+		} else {
+			Album query = realm.where(Album.class)
+					.contains("albumTitle", album)
+					.findFirst();
+			if (query != null) {
+				return query;
+			} else {
+				Album newAlbum = realm.createObject(Album.class);
+				newAlbum.setAlbumTitle(album);
+				return newAlbum;
+			}
+		}
+	}
+
+	private static Song getOrCreateSong(Realm realm, String song, String duration, String songPath) {
+		if (song == null) {
+			Song newSong = realm.createObject(Song.class);
+			newSong.setSongLocation(songPath);
+			newSong.setSongTitle("Untitled");
+			if (duration != null) {
+				newSong.setSongDuration(Integer.parseInt(duration));
+			}
+			return newSong;
+		} else {
+			Song query = realm.where(Song.class)
+					.equalTo("songTitle", song)
+					.equalTo("songLocation", songPath)
+					.findFirst();
+			if (query != null) {
+				return query;
+			} else {
+				Song newSong = realm.createObject(Song.class);
+				if (duration != null) {
+					newSong.setSongDuration(Integer.parseInt(duration));
+				}
+				newSong.setSongLocation(songPath);
+				newSong.setSongTitle(song);
+				return newSong;
+			}
+		}
+
+	}
+
 
 	public static RealmResults<Artist> allArtists(Context context) {
 		Realm realm = Realm.getInstance(context);

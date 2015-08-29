@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:theme="@style/Rhythm">
         <activity
-            android:name=".PlayerActivity"
+            android:name="com.laithlab.core.activity.BrowseActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

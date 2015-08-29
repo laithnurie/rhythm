@@ -1,0 +1,36 @@
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".PlayerActivity">
+
+        <include layout="@layout/browse_toolbar"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/dark_gray"
+            android:layout_weight="1">
+
+            <GridView
+                android:id="@+id/browse_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:horizontalSpacing="0dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="0dp"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/navigation_menu"/>
+
+</android.support.v4.widget.DrawerLayout>

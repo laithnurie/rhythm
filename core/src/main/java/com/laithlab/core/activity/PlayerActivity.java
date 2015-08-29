@@ -1,4 +1,4 @@
-package com.laithlab.rhythm;
+package com.laithlab.core.activity;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -16,9 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.laithlab.core.R;
 import com.laithlab.core.RestAdapterFactory;
-import com.laithlab.core.customviews.CircularSeekBar;
-import com.laithlab.core.customviews.CustomAnimUtil;
+import com.laithlab.core.customview.CircularSeekBar;
+import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
@@ -161,13 +162,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
-
-//					MusicFinder.updateMusicDB(getApplicationContext());
-//					List<Artist> allArtists = MusicFinder.allArtists(getApplicationContext());
-//
-//					for(Artist artistRecord : allArtists){
-//						Log.v("lnln", artistRecord.toString());
-//					}
 					mediaPlayer.start();
 				}
 			}

@@ -1,5 +1,6 @@
-package com.laithlab.rhythm;
+package com.laithlab.core.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -8,6 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import com.laithlab.core.R;
+import com.laithlab.core.adapter.ArtistGridAdapter;
+import com.laithlab.core.musicutil.MusicFinder;
 
 public class BrowseActivity extends AppCompatActivity {
 
@@ -30,6 +37,16 @@ public class BrowseActivity extends AppCompatActivity {
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
+
+		GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
+		browseGrid.setAdapter(new ArtistGridAdapter(this, MusicFinder.allArtists(this)));
+		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Intent playerActivity = new Intent(BrowseActivity.this, PlayerActivity.class);
+				startActivity(playerActivity);
+			}
+		});
 	}
 
 	@Override

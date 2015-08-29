@@ -12,13 +12,7 @@
         android:orientation="vertical"
         tools:context=".PlayerActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/player_topbar_background">
-
-        </android.support.v7.widget.Toolbar>
+        <include layout="@layout/player_toolbar"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,7 +106,7 @@
                         android:layout_width="250dp"
                         android:layout_height="250dp">
 
-                        <com.laithlab.core.customviews.CircularSeekBar
+                        <com.laithlab.core.customview.CircularSeekBar
                             android:id="@+id/track_progress"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.laithlab.core.customviews;
+package com.laithlab.core.customview;
 
 /*
  *
