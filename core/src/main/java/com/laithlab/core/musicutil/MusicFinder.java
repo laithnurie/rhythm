@@ -2,21 +2,20 @@ package com.laithlab.core.musicutil;
 
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import android.os.Environment;
+import android.text.TextUtils;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
 import io.realm.Realm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class MusicFinder {
 
-	final static String MEDIA_PATH = Environment.getExternalStorageDirectory()
-			.getPath() + "/";
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private static String mp3Pattern = ".mp3";
 
@@ -24,17 +23,20 @@ public class MusicFinder {
 	public MusicFinder() {
 	}
 
-	/**
-	 * Function to read all mp3 files and store the details in
-	 * ArrayList
-	 */
-	public static ArrayList<HashMap<String, String>> getSongList() {
-		if (MEDIA_PATH != null) {
-			File home = new File(MEDIA_PATH);
+	public static ArrayList<HashMap<String, String>> getMusicFromStorages() {
+		for(String storage : getStorageDirectories()){
+			getSongList(storage);
+		}
+		return songsList;
+	}
+
+	public static void getSongList(String path) {
+
+		if (path != null) {
+			File home = new File(path);
 			File[] listFiles = home.listFiles();
 			if (listFiles != null && listFiles.length > 0) {
 				for (File file : listFiles) {
-					System.out.println(file.getAbsolutePath());
 					if (file.isDirectory()) {
 						scanDirectory(file);
 					} else {
@@ -44,7 +46,6 @@ public class MusicFinder {
 			}
 		}
 		// return songs list array
-		return songsList;
 	}
 
 	private static void scanDirectory(File directory) {
@@ -77,7 +78,7 @@ public class MusicFinder {
 
 	public static void updateMusicDB(Context context) {
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-		for (final HashMap<String, String> song : getSongList()) {
+		for (final HashMap<String, String> song : getMusicFromStorages()) {
 			mmr.setDataSource(song.get("songPath"));
 			createSongRecord(mmr, context, song.get("songPath"));
 		}
@@ -181,5 +182,76 @@ public class MusicFinder {
 	public static List<Artist> allArtists(Context context) {
 		Realm realm = Realm.getInstance(context);
 		return realm.allObjects(Artist.class);
+	}
+
+	private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
+
+
+	public static String[] getStorageDirectories()
+	{
+		// Final set of paths
+		final Set<String> rv = new HashSet<String>();
+		// Primary physical SD-CARD (not emulated)
+		final String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+		// All Secondary SD-CARDs (all exclude primary) separated by ":"
+		final String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+		// Primary emulated SD-CARD
+		final String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+		if(TextUtils.isEmpty(rawEmulatedStorageTarget))
+		{
+			// Device has physical external storage; use plain paths.
+			if(TextUtils.isEmpty(rawExternalStorage))
+			{
+				// EXTERNAL_STORAGE undefined; falling back to default.
+				rv.add("/storage/sdcard0");
+			}
+			else
+			{
+				rv.add(rawExternalStorage);
+			}
+		}
+		else
+		{
+			// Device has emulated storage; external storage paths should have
+			// userId burned into them.
+			final String rawUserId;
+			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
+			{
+				rawUserId = "";
+			}
+			else
+			{
+				final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+				final String[] folders = DIR_SEPORATOR.split(path);
+				final String lastFolder = folders[folders.length - 1];
+				boolean isDigit = false;
+				try
+				{
+					Integer.valueOf(lastFolder);
+					isDigit = true;
+				}
+				catch(NumberFormatException ignored)
+				{
+				}
+				rawUserId = isDigit ? lastFolder : "";
+			}
+			// /storage/emulated/0[1,2,...]
+			if(TextUtils.isEmpty(rawUserId))
+			{
+				rv.add(rawEmulatedStorageTarget);
+			}
+			else
+			{
+				rv.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+			}
+		}
+		// Add all secondary storages
+		if(!TextUtils.isEmpty(rawSecondaryStoragesStr))
+		{
+			// All Secondary SD-CARDs splited into array
+			final String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+			Collections.addAll(rv, rawSecondaryStorages);
+		}
+		return rv.toArray(new String[rv.size()]);
 	}
 }
