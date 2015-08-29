@@ -19,12 +19,14 @@ import com.laithlab.core.R;
 import com.laithlab.core.RestAdapterFactory;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
-import com.laithlab.core.db.Song;
+import com.laithlab.core.db.Artist;
+import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -45,7 +47,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	private CircularSeekBar trackProgress;
 	private CircleImageView albumCover;
 	private ImageView playButton;
-
+	private ArtistDTO currentArtist;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,6 +56,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 
 		Bundle extras = getIntent().getExtras();
 		SongDTO currentSong = extras.getParcelable("song");
+		currentArtist = extras.getParcelable("artist");
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -152,6 +155,13 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		if (trackUrl != null && !trackUrl.isEmpty()){
 			Picasso.with(context).load(trackUrl).placeholder(R.drawable.ic_media_play)
 					.into(albumCover);
+			Realm realm = Realm.getInstance(context);
+			realm.beginTransaction();
+			Artist query = realm.where(Artist.class)
+					.equalTo("artistName", currentArtist.getArtistName())
+					.findFirst();
+			query.setArtistImageUrl(trackUrl);
+			realm.commitTransaction();
 		}
 	}
 
@@ -240,7 +250,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		txtDuration.setText(context.getResources().getString(R.string.duration_format, currentDuration, totalDuration));
 	}
 
-	private void fetchAlbumCover(String artist, String songTitle) {
+	private void fetchAlbumCover(final String artist, String songTitle) {
 
 		if (artist != null && songTitle != null) {
 			echoNestApi.getSongImage(artist, songTitle, new Callback<EchoNestSearch>() {
@@ -248,6 +258,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 				public void success(EchoNestSearch echoNestSearch, Response response) {
 					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
 						updateTrackImage(echoNestSearch.getResponse().trackImage());
+					} else {
+						getArtistImage(artist);
 					}
 				}
 
@@ -256,23 +268,26 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 					Log.e("lnln", error.getMessage());
 				}
 			});
-		} else {
-			echoNestApi.getArtistImage(artist, new Callback<EchoNestSearch>() {
-				@Override
-				public void success(EchoNestSearch echoNestSearch, Response response) {
-					if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
-						updateTrackImage(echoNestSearch.getResponse().trackImage());
-					}
-				}
-
-				@Override
-				public void failure(RetrofitError error) {
-					Log.e("lnln", error.getMessage());
-				}
-			});
+		} else if(artist != null) {
+			getArtistImage(artist);
 		}
 	}
 
+	private void getArtistImage(String artist){
+		echoNestApi.getArtistImage(artist, new Callback<EchoNestSearch>() {
+			@Override
+			public void success(EchoNestSearch echoNestSearch, Response response) {
+				if (echoNestSearch.getResponse() != null && echoNestSearch.getResponse().trackImage() != null) {
+					updateTrackImage(echoNestSearch.getResponse().trackImage());
+				}
+			}
+
+			@Override
+			public void failure(RetrofitError error) {
+				Log.e("lnln", error.getMessage());
+			}
+		});
+	}
 	private String milliSecondsToTimer(long milliseconds) {
 		String finalTimerString = "";
 		String secondsString;

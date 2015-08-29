@@ -15,7 +15,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.SongGridAdapter;
+import com.laithlab.core.db.Artist;
 import com.laithlab.core.dto.AlbumDTO;
+import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.SongDTO;
 
 public class AlbumActivity extends AppCompatActivity {
@@ -32,6 +34,7 @@ public class AlbumActivity extends AppCompatActivity {
 
 		Bundle extras = getIntent().getExtras();
 		AlbumDTO currentAlbum = extras.getParcelable("album");
+		final ArtistDTO currentArtist = extras.getParcelable("artist");
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -50,6 +53,7 @@ public class AlbumActivity extends AppCompatActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent playerActivity = new Intent(AlbumActivity.this, PlayerActivity.class);
 				playerActivity.putExtra("song", (SongDTO) songsGrid.getItemAtPosition(position));
+				playerActivity.putExtra("artist", currentArtist);
 				startActivity(playerActivity);
 			}
 		});

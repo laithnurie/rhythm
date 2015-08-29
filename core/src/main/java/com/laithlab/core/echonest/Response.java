@@ -32,6 +32,6 @@ public class Response {
 				return songs.getTrackImage();
 			}
 		}
-		return "";
+		return null;
 	}
 }

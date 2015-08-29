@@ -41,8 +41,11 @@ public class ArtistGridAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		Picasso.with(context).load("http://artwork-cdn.7static.com/static/img/sleeveart/00/009/559/0000955983_200.jpg")
-				.into(holder.gridItemImage);
+		ArtistDTO artist = artists.get(position);
+		if(artist.getArtistImageUrl() != null && !artist.getArtistImageUrl().isEmpty()){
+			Picasso.with(context).load(artist.getArtistImageUrl())
+					.into(holder.gridItemImage);
+		}
 
 		holder.gridItemTitle.setText(artists.get(position).getArtistName());
 		return convertView;

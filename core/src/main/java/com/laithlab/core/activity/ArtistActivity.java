@@ -30,7 +30,7 @@ public class ArtistActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 
 		Bundle extras = getIntent().getExtras();
-		ArtistDTO currentArtist = extras.getParcelable("artist");
+		final ArtistDTO currentArtist = extras.getParcelable("artist");
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -49,6 +49,7 @@ public class ArtistActivity extends AppCompatActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent albumActivity = new Intent(ArtistActivity.this, AlbumActivity.class);
 				albumActivity.putExtra("album", (AlbumDTO) albumGrid.getItemAtPosition(position));
+				albumActivity.putExtra("artist", currentArtist);
 				startActivity(albumActivity);
 			}
 		});
