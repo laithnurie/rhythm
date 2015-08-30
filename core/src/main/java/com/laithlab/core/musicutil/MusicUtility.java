@@ -1,12 +1,9 @@
 package com.laithlab.core.musicutil;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
@@ -22,13 +19,14 @@ import java.util.regex.Pattern;
 public class MusicUtility {
 
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+	private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
 	private static String mp3Pattern = ".mp3";
 
 	// Constructor
 	public MusicUtility() {
 	}
 
-	public static ArrayList<HashMap<String, String>> getMusicFromStorages() {
+	public static ArrayList<HashMap<String, String>> getMusicFromStorage() {
 		for (String storage : getStorageDirectories()) {
 			getSongList(storage);
 		}
@@ -113,20 +111,19 @@ public class MusicUtility {
 					song.getName().substring(0, (song.getName().length() - 4)));
 			songMap.put("songPath", song.getPath());
 
-			// Adding each song to SongList
 			songsList.add(songMap);
 		}
 	}
 
 	public static void updateMusicDB(Context context) {
 		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-		for (final HashMap<String, String> song : getMusicFromStorages()) {
+		for (final HashMap<String, String> song : getMusicFromStorage()) {
 			mmr.setDataSource(song.get("songPath"));
-			createSongRecord(mmr, context, song.get("songPath"));
+			createSongEntry(mmr, context, song.get("songPath"));
 		}
 	}
 
-	private static void createSongRecord(MediaMetadataRetriever mmr, Context context, String songPath) {
+	private static void createSongEntry(MediaMetadataRetriever mmr, Context context, String songPath) {
 		final Realm realm = Realm.getInstance(context);
 
 		final String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
@@ -220,14 +217,10 @@ public class MusicUtility {
 
 	}
 
-
 	public static List<Artist> allArtists(Context context) {
 		Realm realm = Realm.getInstance(context);
 		return realm.allObjects(Artist.class);
 	}
-
-	private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
-
 
 	public static String[] getStorageDirectories() {
 		// Final set of paths
