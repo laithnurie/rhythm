@@ -40,8 +40,8 @@ import retrofit.client.Response;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
-		MediaPlayer.OnPreparedListener {
+public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener,
+		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
 
 	private Context context;
 	private MediaPlayer mediaPlayer;
@@ -140,23 +140,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 				albumCover.setImageBitmap(bmp);
 				Palette.Swatch vibrantColor = Palette.generate(bmp).getLightVibrantSwatch();
 				if (vibrantColor != null) {
-					toolbar.setBackgroundColor(vibrantColor.getRgb());
-					tiltedView.setBackgroundColor(vibrantColor.getRgb());
-					track.setTextColor(vibrantColor.getRgb());
-					txtDuration.setTextColor(vibrantColor.getRgb());
-					trackProgress.setCircleProgressColor(vibrantColor.getRgb());
-					trackProgress.setPointerColor(vibrantColor.getRgb());
-					String alphaColor = Integer.toHexString(vibrantColor.getRgb());
-					if (alphaColor.length() > 6) {
-						alphaColor = "#88" + alphaColor.substring(2);
-					} else {
-						alphaColor = "#88" + alphaColor;
-
-					}
-					trackProgress.setPointerAlphaOnTouch(Color.parseColor(alphaColor));
-					trackProgress.setPointerHaloColor(Color.parseColor(alphaColor));
+					changePlayerStyle(vibrantColor);
 				}
-
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -342,6 +327,24 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 			query.setArtistImageUrl(trackUrl);
 			realm.commitTransaction();
 		}
+	}
+
+	private void changePlayerStyle(Palette.Swatch vibrantColor) {
+		toolbar.setBackgroundColor(vibrantColor.getRgb());
+		tiltedView.setBackgroundColor(vibrantColor.getRgb());
+		track.setTextColor(vibrantColor.getRgb());
+		txtDuration.setTextColor(vibrantColor.getRgb());
+		trackProgress.setCircleProgressColor(vibrantColor.getRgb());
+		trackProgress.setPointerColor(vibrantColor.getRgb());
+		String alphaColor = Integer.toHexString(vibrantColor.getRgb());
+		if (alphaColor.length() > 6) {
+			alphaColor = "#88" + alphaColor.substring(2);
+		} else {
+			alphaColor = "#88" + alphaColor;
+
+		}
+		trackProgress.setPointerAlphaOnTouch(Color.parseColor(alphaColor));
+		trackProgress.setPointerHaloColor(Color.parseColor(alphaColor));
 	}
 
 	private String milliSecondsToTimer(long milliseconds) {

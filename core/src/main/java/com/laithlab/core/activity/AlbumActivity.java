@@ -2,7 +2,6 @@ package com.laithlab.core.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.SongGridAdapter;
-import com.laithlab.core.db.Artist;
 import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.SongDTO;

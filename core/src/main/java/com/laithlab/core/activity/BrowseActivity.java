@@ -40,6 +40,11 @@ public class BrowseActivity extends AppCompatActivity {
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
+		View tiltedView = findViewById(R.id.tilted_view);
+		tiltedView.setPivotX(0f);
+		tiltedView.setPivotY(0f);
+		tiltedView.setRotation(-5f);
+
 		final GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
 		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicUtility.allArtists(this))));
 		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
