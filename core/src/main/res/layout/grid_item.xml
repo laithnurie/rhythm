@@ -12,7 +12,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_play_arrow_white"/>
 
-    <TextView
+    <com.laithlab.core.customview.RhythmTextView
         android:id="@+id/grid_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -49,20 +49,22 @@
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.laithlab.core.customview.RhythmTextView
                         android:id="@+id/txt_artist"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="40sp"
+                        app:textType="regular"
                         tools:text="Monty and I"/>
 
-                    <TextView
+                    <com.laithlab.core.customview.RhythmTextView
                         android:id="@+id/txt_album"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="30sp"
+                        app:textType="light"
                         tools:text="Break Through The Silence"/>
 
                 </LinearLayout>
@@ -84,11 +86,12 @@
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.laithlab.core.customview.RhythmTextView
                         android:id="@+id/txt_track"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
+                        android:textColor="@color/color_primary"
                         android:textSize="30sp"
                         tools:text="One In A Million"/>
 
@@ -97,10 +100,11 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <TextView
+                        <com.laithlab.core.customview.RhythmTextView
                             android:id="@+id/txt_duration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/color_primary"
                             android:textSize="40sp"
                             tools:text="1:52 &#47; 2:12"/>
                     </LinearLayout>

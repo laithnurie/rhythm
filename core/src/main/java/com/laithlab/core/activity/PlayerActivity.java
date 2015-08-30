@@ -3,6 +3,7 @@ package com.laithlab.core.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -29,7 +30,6 @@ import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
 import com.laithlab.core.musicutil.MusicUtility;
 import com.laithlab.core.musicutil.RhythmSong;
-import com.mpatric.mp3agic.*;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
@@ -53,6 +53,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	private View tiltedView;
 	private TextView artist;
 	private TextView album;
+	private TextView track;
 	private CircularSeekBar trackProgress;
 	private CircleImageView albumCover;
 	private TextView txtDuration;
@@ -89,7 +90,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 
 		artist = (TextView) findViewById(R.id.txt_artist);
 		album = (TextView) findViewById(R.id.txt_album);
-		TextView track = (TextView) findViewById(R.id.txt_track);
+		track = (TextView) findViewById(R.id.txt_track);
 		txtDuration = (TextView) findViewById(R.id.txt_duration);
 		playButton = (ImageView) findViewById(R.id.play_button);
 
@@ -141,8 +142,19 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 				if (vibrantColor != null) {
 					toolbar.setBackgroundColor(vibrantColor.getRgb());
 					tiltedView.setBackgroundColor(vibrantColor.getRgb());
-					artist.setTextColor(vibrantColor.getBodyTextColor());
-					album.setTextColor(vibrantColor.getBodyTextColor());
+					track.setTextColor(vibrantColor.getRgb());
+					txtDuration.setTextColor(vibrantColor.getRgb());
+					trackProgress.setCircleProgressColor(vibrantColor.getRgb());
+					trackProgress.setPointerColor(vibrantColor.getRgb());
+					String alphaColor = Integer.toHexString(vibrantColor.getRgb());
+					if (alphaColor.length() > 6) {
+						alphaColor = "#88" + alphaColor.substring(2);
+					} else {
+						alphaColor = "#88" + alphaColor;
+
+					}
+					trackProgress.setPointerAlphaOnTouch(Color.parseColor(alphaColor));
+					trackProgress.setPointerHaloColor(Color.parseColor(alphaColor));
 				}
 
 			}

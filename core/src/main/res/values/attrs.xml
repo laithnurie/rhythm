@@ -25,4 +25,7 @@
         <attr name="circle_fill" format="color"></attr>
     </declare-styleable>
 
+    <declare-styleable name="RhythmTextView">
+        <attr name="textType" format="string"/>
+    </declare-styleable>
 </resources>
