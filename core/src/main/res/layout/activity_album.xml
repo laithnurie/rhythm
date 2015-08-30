@@ -1,6 +1,7 @@
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,24 +10,76 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".AlbumActivity">
+        tools:context=".BrowseActivity">
 
         <include layout="@layout/toolbar"/>
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/dark_gray"
-            android:layout_weight="1">
+            android:layout_height="match_parent">
 
-            <GridView
-                android:id="@+id/songs_grid"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:horizontalSpacing="0dp"
-                android:numColumns="2"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="0dp"/>
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:weightSum="10">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="9"
+                    android:orientation="vertical">
+
+                    <GridView
+                        android:id="@+id/songs_grid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:horizontalSpacing="0dp"
+                        android:numColumns="2"
+                        android:stretchMode="columnWidth"
+                        android:verticalSpacing="0dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2">
+
+                    <View
+                        android:id="@+id/tilted_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        android:layout_marginLeft="-50dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <com.laithlab.core.customview.RhythmTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Songs"
+                            android:textColor="@color/color_primary"
+                            android:textSize="40sp"
+                            app:textType="regular"
+                            />
+
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+
         </FrameLayout>
 
     </LinearLayout>
