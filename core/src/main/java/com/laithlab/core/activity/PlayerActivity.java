@@ -1,13 +1,16 @@
 package com.laithlab.core.activity;
 
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +27,9 @@ import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.echonest.EchoNestApi;
 import com.laithlab.core.echonest.EchoNestSearch;
+import com.laithlab.core.musicutil.MusicUtility;
+import com.laithlab.core.musicutil.RhythmSong;
+import com.mpatric.mp3agic.*;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
@@ -37,17 +43,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
 		MediaPlayer.OnPreparedListener {
 
-	private EchoNestApi echoNestApi;
 	private Context context;
-	//	private AssetFileDescriptor afd;
 	private MediaPlayer mediaPlayer;
+	private ArtistDTO currentArtist;
+	private EchoNestApi echoNestApi;
 
 	private DrawerLayout drawerLayout;
-	private TextView txtDuration;
+	private Toolbar toolbar;
+	private View tiltedView;
+	private TextView artist;
+	private TextView album;
 	private CircularSeekBar trackProgress;
 	private CircleImageView albumCover;
+	private TextView txtDuration;
 	private ImageView playButton;
-	private ArtistDTO currentArtist;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +68,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		SongDTO currentSong = extras.getParcelable("song");
 		currentArtist = extras.getParcelable("artist");
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
 		final ActionBar actionBar = getSupportActionBar();
@@ -77,13 +87,13 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
-		TextView artist = (TextView) findViewById(R.id.txt_artist);
-		TextView album = (TextView) findViewById(R.id.txt_album);
+		artist = (TextView) findViewById(R.id.txt_artist);
+		album = (TextView) findViewById(R.id.txt_album);
 		TextView track = (TextView) findViewById(R.id.txt_track);
 		txtDuration = (TextView) findViewById(R.id.txt_duration);
 		playButton = (ImageView) findViewById(R.id.play_button);
 
-		View tiltedView = findViewById(R.id.tilted_view);
+		tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
 		tiltedView.setPivotY(0f);
 		tiltedView.setRotation(-5f);
@@ -116,22 +126,36 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		albumCover = (CircleImageView) findViewById(R.id.album_cover);
 		echoNestApi = RestAdapterFactory.getEchoNestApi();
 
-		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 		try {
-			//			afd = getAssets().openFd("Ours Samplus - Blue Bird.mp3");
 			mediaPlayer.setDataSource(currentSong.getSongLocation());
 			mediaPlayer.prepare();
 
-			//			mmr.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-			mmr.setDataSource(currentSong.getSongLocation());
-			fetchAlbumCover(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-					, mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+			RhythmSong rhythmSong = MusicUtility.getSongMeta(currentSong.getSongLocation());
+			artist.setText(rhythmSong.getArtistTitle());
+			album.setText(rhythmSong.getAlbumTitle());
+			track.setText(rhythmSong.getTrackTitle());
+			if (rhythmSong.getImageData() != null) {
+				Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);
+				albumCover.setImageBitmap(bmp);
+				Palette.Swatch vibrantColor = Palette.generate(bmp).getLightVibrantSwatch();
+				if (vibrantColor != null) {
+					toolbar.setBackgroundColor(vibrantColor.getRgb());
+					tiltedView.setBackgroundColor(vibrantColor.getRgb());
+					artist.setTextColor(vibrantColor.getBodyTextColor());
+					album.setTextColor(vibrantColor.getBodyTextColor());
+				}
 
-			artist.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-			album.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-			track.setText(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mediaPlayer.isPlaying()) {
+			mediaPlayer.pause();
 		}
 	}
 
@@ -151,19 +175,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void updateTrackImage(String trackUrl) {
-		if (trackUrl != null && !trackUrl.isEmpty()){
-			Picasso.with(context).load(trackUrl).placeholder(R.drawable.ic_media_play)
-					.into(albumCover);
-			Realm realm = Realm.getInstance(context);
-			realm.beginTransaction();
-			Artist query = realm.where(Artist.class)
-					.equalTo("artistName", currentArtist.getArtistName())
-					.findFirst();
-			query.setArtistImageUrl(trackUrl);
-			realm.commitTransaction();
-		}
-	}
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
@@ -251,7 +262,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 	}
 
 	private void fetchAlbumCover(final String artist, String songTitle) {
-
 		if (artist != null && songTitle != null) {
 			echoNestApi.getSongImage(artist, songTitle, new Callback<EchoNestSearch>() {
 				@Override
@@ -268,12 +278,12 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 					Log.e("lnln", error.getMessage());
 				}
 			});
-		} else if(artist != null) {
+		} else if (artist != null) {
 			getArtistImage(artist);
 		}
 	}
 
-	private void getArtistImage(String artist){
+	private void getArtistImage(String artist) {
 		echoNestApi.getArtistImage(artist, new Callback<EchoNestSearch>() {
 			@Override
 			public void success(EchoNestSearch echoNestSearch, Response response) {
@@ -288,6 +298,40 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnE
 			}
 		});
 	}
+
+	private void updateTrackImage(String trackUrl) {
+		if (trackUrl != null && !trackUrl.isEmpty()) {
+			Picasso.with(context).load(trackUrl).placeholder(R.drawable.ic_media_play)
+					.into(albumCover, new com.squareup.picasso.Callback() {
+						@Override
+						public void onSuccess() {
+							Bitmap bitmap = ((BitmapDrawable) albumCover.getDrawable()).getBitmap();
+							Palette palette = Palette.generate(bitmap);
+							Palette.Swatch vibrantColor = palette.getVibrantSwatch();
+							if (vibrantColor != null) {
+								toolbar.setBackgroundColor(vibrantColor.getRgb());
+								tiltedView.setBackgroundColor(vibrantColor.getRgb());
+								artist.setTextColor(vibrantColor.getBodyTextColor());
+								album.setTextColor(vibrantColor.getBodyTextColor());
+							}
+						}
+
+						@Override
+						public void onError() {
+
+						}
+					});
+
+			Realm realm = Realm.getInstance(context);
+			realm.beginTransaction();
+			Artist query = realm.where(Artist.class)
+					.equalTo("artistName", currentArtist.getArtistName())
+					.findFirst();
+			query.setArtistImageUrl(trackUrl);
+			realm.commitTransaction();
+		}
+	}
+
 	private String milliSecondsToTimer(long milliseconds) {
 		String finalTimerString = "";
 		String secondsString;

@@ -1,7 +1,7 @@
 package com.laithlab.core;
 
 import android.app.Application;
-import com.laithlab.core.musicutil.MusicFinder;
+import com.laithlab.core.musicutil.MusicUtility;
 
 public class RhythmCoreApp extends Application {
 
@@ -11,6 +11,6 @@ public class RhythmCoreApp extends Application {
 
 	public void onCreate() {
 		super.onCreate();
-		MusicFinder.updateMusicDB(this);
+		MusicUtility.updateMusicDB(this);
 	}
 }

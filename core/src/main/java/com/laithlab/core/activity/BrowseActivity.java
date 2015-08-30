@@ -16,7 +16,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.adapter.ArtistGridAdapter;
 import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.musicutil.MusicFinder;
+import com.laithlab.core.musicutil.MusicUtility;
 
 public class BrowseActivity extends AppCompatActivity {
 
@@ -41,7 +41,7 @@ public class BrowseActivity extends AppCompatActivity {
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
 		final GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
-		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicFinder.allArtists(this))));
+		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicUtility.allArtists(this))));
 		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

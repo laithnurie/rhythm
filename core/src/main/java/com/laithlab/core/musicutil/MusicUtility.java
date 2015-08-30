@@ -1,36 +1,78 @@
 package com.laithlab.core.musicutil;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
+import com.mpatric.mp3agic.*;
 import io.realm.Realm;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class MusicFinder {
+public class MusicUtility {
 
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private static String mp3Pattern = ".mp3";
 
 	// Constructor
-	public MusicFinder() {
+	public MusicUtility() {
 	}
 
 	public static ArrayList<HashMap<String, String>> getMusicFromStorages() {
-		for(String storage : getStorageDirectories()){
+		for (String storage : getStorageDirectories()) {
 			getSongList(storage);
 		}
 		return songsList;
 	}
 
-	public static void getSongList(String path) {
+	public static RhythmSong getSongMeta(String songLocation) {
+		String artist = null;
+		String album = null;
+		String track = null;
+		byte[] imageData = null;
+		try {
+			Mp3File mp3file = new Mp3File(songLocation);
+			if (mp3file.hasId3v2Tag()) {
+				ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+				imageData = id3v2Tag.getAlbumImage();
+				artist = (id3v2Tag.getArtist() != null && !id3v2Tag.getArtist().isEmpty() ? id3v2Tag.getArtist() : null);
+				album = (id3v2Tag.getAlbum() != null && !id3v2Tag.getAlbum().isEmpty() ? id3v2Tag.getAlbum() : null);
+				track = (id3v2Tag.getTitle() != null && !id3v2Tag.getTitle().isEmpty() ? id3v2Tag.getTitle() : null);
+			}
+			if (mp3file.hasId3v1Tag()) {
+				ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+				if (artist == null) {
+					artist = (id3v1Tag.getArtist() != null && !id3v1Tag.getArtist().isEmpty() ? id3v1Tag.getArtist() : null);
+				}
+				if (album == null) {
+					album = (id3v1Tag.getAlbum() != null && !id3v1Tag.getAlbum().isEmpty() ? id3v1Tag.getAlbum() : null);
+				}
+				if (track == null) {
+					track = (id3v1Tag.getTitle() != null && !id3v1Tag.getTitle().isEmpty() ? id3v1Tag.getTitle() : null);
+				}
+			}
+		} catch (IOException | UnsupportedTagException | InvalidDataException e) {
+			e.printStackTrace();
+		}
+		artist = artist != null ? artist : "Unknown Artist";
+		album = album != null ? album : "Unknown Album";
+		track = track != null ? track : "Unknown Track";
+
+		return new RhythmSong.RhythmSongBuilder().artistTitle(artist).albumTitle(album)
+				.trackTitle(track).imageData(imageData).build();
+	}
+
+	private static void getSongList(String path) {
 
 		if (path != null) {
 			File home = new File(path);
@@ -187,8 +229,7 @@ public class MusicFinder {
 	private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
 
 
-	public static String[] getStorageDirectories()
-	{
+	public static String[] getStorageDirectories() {
 		// Final set of paths
 		final Set<String> rv = new HashSet<String>();
 		// Primary physical SD-CARD (not emulated)
@@ -197,57 +238,41 @@ public class MusicFinder {
 		final String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
 		// Primary emulated SD-CARD
 		final String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
-		if(TextUtils.isEmpty(rawEmulatedStorageTarget))
-		{
+		if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
 			// Device has physical external storage; use plain paths.
-			if(TextUtils.isEmpty(rawExternalStorage))
-			{
+			if (TextUtils.isEmpty(rawExternalStorage)) {
 				// EXTERNAL_STORAGE undefined; falling back to default.
 				rv.add("/storage/sdcard0");
-			}
-			else
-			{
+			} else {
 				rv.add(rawExternalStorage);
 			}
-		}
-		else
-		{
+		} else {
 			// Device has emulated storage; external storage paths should have
 			// userId burned into them.
 			final String rawUserId;
-			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
-			{
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				rawUserId = "";
-			}
-			else
-			{
+			} else {
 				final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
 				final String[] folders = DIR_SEPORATOR.split(path);
 				final String lastFolder = folders[folders.length - 1];
 				boolean isDigit = false;
-				try
-				{
+				try {
 					Integer.valueOf(lastFolder);
 					isDigit = true;
-				}
-				catch(NumberFormatException ignored)
-				{
+				} catch (NumberFormatException ignored) {
 				}
 				rawUserId = isDigit ? lastFolder : "";
 			}
 			// /storage/emulated/0[1,2,...]
-			if(TextUtils.isEmpty(rawUserId))
-			{
+			if (TextUtils.isEmpty(rawUserId)) {
 				rv.add(rawEmulatedStorageTarget);
-			}
-			else
-			{
+			} else {
 				rv.add(rawEmulatedStorageTarget + File.separator + rawUserId);
 			}
 		}
 		// Add all secondary storages
-		if(!TextUtils.isEmpty(rawSecondaryStoragesStr))
-		{
+		if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
 			// All Secondary SD-CARDs splited into array
 			final String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
 			Collections.addAll(rv, rawSecondaryStorages);
