@@ -6,11 +6,28 @@ import io.realm.annotations.RealmClass;
 
 @RealmClass
 public class Album extends RealmObject {
+
+	private String id;
+	private String artistId;
 	private String albumTitle;
 	private String albumImageUrl;
-
 	private RealmList<Song> songs;
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getArtistId() {
+		return artistId;
+	}
+
+	public void setArtistId(String artistId) {
+		this.artistId = artistId;
+	}
 
 	public void setAlbumTitle(String albumTitle) {
 		this.albumTitle = albumTitle;

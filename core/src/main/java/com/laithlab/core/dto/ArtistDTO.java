@@ -8,10 +8,18 @@ import java.util.List;
 
 public class ArtistDTO implements Parcelable {
 
+	private String id;
 	private String artistName;
 	private String artistImageUrl;
 	private List<AlbumDTO> albumDTOList;
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
 
 	public void setArtistName(String artistName) {
 		this.artistName = artistName;
@@ -44,6 +52,7 @@ public class ArtistDTO implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(this.id);
 		dest.writeString(this.artistName);
 		dest.writeString(this.artistImageUrl);
 		dest.writeTypedList(this.albumDTOList);
@@ -53,6 +62,7 @@ public class ArtistDTO implements Parcelable {
 	}
 
 	protected ArtistDTO(Parcel in) {
+		this.id = in.readString();
 		this.artistName = in.readString();
 		this.artistImageUrl = in.readString();
 		this.albumDTOList = new ArrayList<AlbumDTO>();

@@ -8,11 +8,27 @@ import java.util.List;
 
 public class AlbumDTO implements Parcelable {
 
+	private String id;
+	private String artistId;
 	private String albumTitle;
 	private String albumImageUrl;
 	private List<SongDTO> songs;
 
+	public String getId() {
+		return id;
+	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getArtistId() {
+		return artistId;
+	}
+
+	public void setArtistId(String artistId) {
+		this.artistId = artistId;
+	}
 	public void setAlbumTitle(String albumTitle) {
 		this.albumTitle = albumTitle;
 	}
@@ -47,6 +63,8 @@ public class AlbumDTO implements Parcelable {
 		dest.writeString(this.albumTitle);
 		dest.writeString(this.albumImageUrl);
 		dest.writeTypedList(this.songs);
+		dest.writeString(this.id);
+		dest.writeString(this.artistId);
 	}
 
 	public AlbumDTO() {
@@ -57,6 +75,8 @@ public class AlbumDTO implements Parcelable {
 		this.albumImageUrl = in.readString();
 		this.songs = new ArrayList<SongDTO>();
 		in.readTypedList(this.songs, SongDTO.CREATOR);
+		this.id = in.readString();
+		this.artistId = in.readString();
 	}
 
 	public static final Parcelable.Creator<AlbumDTO> CREATOR = new Parcelable.Creator<AlbumDTO>() {

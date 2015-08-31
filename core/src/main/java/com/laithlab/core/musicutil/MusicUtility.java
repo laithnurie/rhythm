@@ -149,6 +149,7 @@ public class MusicUtility {
 			} else {
 				Artist newArtist = realm.createObject(Artist.class);
 				newArtist.setArtistName("Untitled Artist");
+				newArtist.setId(UUID.randomUUID().toString());
 				return newArtist;
 			}
 		} else {
@@ -160,6 +161,7 @@ public class MusicUtility {
 			} else {
 				Artist newArtist = realm.createObject(Artist.class);
 				newArtist.setArtistName(artist);
+				newArtist.setId(UUID.randomUUID().toString());
 				return newArtist;
 			}
 		}
@@ -178,6 +180,8 @@ public class MusicUtility {
 			} else {
 				albumRecord = realm.createObject(Album.class);
 				albumRecord.setAlbumTitle("Untitled Album");
+				albumRecord.setId(UUID.randomUUID().toString());
+				albumRecord.setArtistId(artistRecord.getId());
 				artistRecord.getAlbums().add(albumRecord);
 				return albumRecord;
 			}
@@ -192,6 +196,8 @@ public class MusicUtility {
 			} else {
 				albumRecord = realm.createObject(Album.class);
 				albumRecord.setAlbumTitle(albumTitle);
+				albumRecord.setId(UUID.randomUUID().toString());
+				albumRecord.setArtistId(artistRecord.getId());
 				artistRecord.getAlbums().add(albumRecord);
 				return albumRecord;
 			}
@@ -207,7 +213,8 @@ public class MusicUtility {
 		}
 		if (songRecord == null) {
 			songRecord = realm.createObject(Song.class);
-			songRecord.setSongTitle(songTitle != null ? songTitle : "Untitle Song");
+			songRecord.setSongTitle(songTitle != null ? songTitle : "Untitled Song");
+			songRecord.setAlbumId(albumRecord.getId());
 			songRecord.setSongLocation(songPath);
 			if (duration != null) {
 				songRecord.setSongDuration(Integer.parseInt(duration));

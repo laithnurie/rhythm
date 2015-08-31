@@ -9,6 +9,7 @@ public class Song extends RealmObject {
 	private String songImageUrl;
 	private int songDuration;
 	private String songLocation;
+	private String albumId;
 
 	public void setSongTitle(String songTitle) {
 		this.songTitle = songTitle;
@@ -40,5 +41,13 @@ public class Song extends RealmObject {
 
 	public String getSongLocation() {
 		return songLocation;
+	}
+
+	public void setAlbumId(String albumId) {
+		this.albumId = albumId;
+	}
+
+	public String getAlbumId() {
+		return albumId;
 	}
 }

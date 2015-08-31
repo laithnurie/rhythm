@@ -27,6 +27,7 @@ public class DTOConverter {
 		artistDTO.setArtistName(artist.getArtistName());
 		artistDTO.setArtistImageUrl(artist.getArtistImageUrl());
 		artistDTO.setAlbums(getAlbumList(artist.getAlbums()));
+		artistDTO.setId(artist.getId());
 		return artistDTO;
 	}
 
@@ -44,6 +45,8 @@ public class DTOConverter {
 		albumDTO.setAlbumTitle(album.getAlbumTitle());
 		albumDTO.setAlbumImageUrl(album.getAlbumImageUrl());
 		albumDTO.setSongs(getSongList(album.getSongs()));
+		albumDTO.setId(album.getId());
+		albumDTO.setArtistId(album.getId());
 		return albumDTO;
 	}
 
@@ -61,6 +64,7 @@ public class DTOConverter {
 		songDTO.setSongDuration(song.getSongDuration());
 		songDTO.setSongImageUrl(song.getSongImageUrl());
 		songDTO.setSongLocation(song.getSongLocation());
+		songDTO.setAlbumId(song.getAlbumId());
 		return songDTO;
 	}
 }
