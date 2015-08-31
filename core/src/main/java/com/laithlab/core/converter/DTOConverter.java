@@ -6,7 +6,6 @@ import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.SongDTO;
-import io.realm.RealmList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class DTOConverter {
 	}
 
 
-	public static List<AlbumDTO> getAlbumList(RealmList<Album> albums) {
+	public static List<AlbumDTO> getAlbumList(List<Album> albums) {
 		List<AlbumDTO> albumDTOs = new ArrayList<>();
 		for (Album album : albums) {
 			albumDTOs.add(getAlbumDTO(album));
@@ -50,7 +49,7 @@ public class DTOConverter {
 		return albumDTO;
 	}
 
-	public static List<SongDTO> getSongList(RealmList<Song> songs) {
+	public static List<SongDTO> getSongList(List<Song> songs) {
 		List<SongDTO> songDTOs = new ArrayList<>();
 		for (Song song : songs) {
 			songDTOs.add(getSongDTO(song));

@@ -10,7 +10,7 @@
         android:label="@string/app_name">
         <activity android:name=".activity.ArtistActivity"/>
         <activity android:name=".activity.AlbumActivity"/>
-        <activity android:name=".activity.PlayerActivity"/>
+        <activity android:name=".activity.SwipePlayerActivity"/>
 
     </application>
 

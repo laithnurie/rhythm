@@ -16,7 +16,6 @@ import com.laithlab.core.R;
 import com.laithlab.core.adapter.SongGridAdapter;
 import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.dto.SongDTO;
 
 public class AlbumActivity extends AppCompatActivity {
 
@@ -53,9 +52,8 @@ public class AlbumActivity extends AppCompatActivity {
 		songsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent playerActivity = new Intent(AlbumActivity.this, PlayerActivity.class);
-				playerActivity.putExtra("song", (SongDTO) songsGrid.getItemAtPosition(position));
-				playerActivity.putExtra("artist", currentArtist);
+				Intent playerActivity = new Intent(AlbumActivity.this, SwipePlayerActivity.class);
+				playerActivity.putExtra("album", currentArtist.getAlbums().get(0));
 				startActivity(playerActivity);
 			}
 		});
