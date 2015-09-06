@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +24,7 @@ import com.laithlab.core.fragment.SongFragmentListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener {
@@ -37,6 +37,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 	private ViewPager viewPager;
 	private TextView artist;
 	private TextView album;
+	private List<Fragment> songFragments;
 
 
 	@Override
@@ -71,11 +72,35 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 		viewPager = (ViewPager) findViewById(R.id.pager);
-		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
-				DTOConverter.getSongList(songs.subList(0, songs.size()))));
+		songFragments = createSongFragments(DTOConverter.getSongList(songs.subList(0, songs.size())));
+		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songFragments));
 
+		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				SongFragment selectedFragment = (SongFragment) songFragments.get(position);
+				selectedFragment.changePlayer();
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 		artist = (TextView) findViewById(R.id.txt_artist);
 		album = (TextView) findViewById(R.id.txt_album);
+	}
+
+	private List<Fragment> createSongFragments(List<SongDTO> songList) {
+		List<Fragment> songFragments = new ArrayList<>();
+		for(SongDTO song: songList){
+			songFragments.add(SongFragment.newInstance(song));
+		}
+		return songFragments;
 	}
 
 	@Override
@@ -95,9 +120,9 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 	}
 
 	@Override
-	public void changePlayerStyle(Palette.Swatch vibrantColor) {
-		toolbar.setBackgroundColor(vibrantColor.getRgb());
-		tiltedView.setBackgroundColor(vibrantColor.getRgb());
+	public void changePlayerStyle(int vibrantColor) {
+		toolbar.setBackgroundColor(vibrantColor);
+		tiltedView.setBackgroundColor(vibrantColor);
 	}
 
 	@Override
@@ -108,22 +133,22 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
 	public class SongFragmentPager extends FragmentStatePagerAdapter {
 
-		private List<SongDTO> songDTOs;
+		private List<Fragment> songFragments;
 
-		public SongFragmentPager(FragmentManager fm, List<SongDTO> songDTOs) {
+		public SongFragmentPager(FragmentManager fm, List<Fragment> songFragments) {
 			super(fm);
-			this.songDTOs = songDTOs;
+			this.songFragments = songFragments;
 		}
 
 
 		@Override
 		public Fragment getItem(int position) {
-			return SongFragment.newInstance(songDTOs.get(position));
+			return songFragments.get(position);
 		}
 
 		@Override
 		public int getCount() {
-			return songDTOs.size();
+			return songFragments.size();
 		}
 
 		@Override
