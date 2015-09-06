@@ -54,6 +54,7 @@ public class AlbumActivity extends AppCompatActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent playerActivity = new Intent(AlbumActivity.this, SwipePlayerActivity.class);
 				playerActivity.putExtra("album", currentArtist.getAlbums().get(0));
+				playerActivity.putExtra("songPosition", position);
 				startActivity(playerActivity);
 			}
 		});

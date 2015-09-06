@@ -47,6 +47,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
 		Bundle extras = getIntent().getExtras();
 		currentAlbum = extras.getParcelable("album");
+		int songPosition = extras.getInt("songPosition");
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -74,6 +75,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		songFragments = createSongFragments(DTOConverter.getSongList(songs.subList(0, songs.size())));
 		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songFragments));
+		viewPager.setCurrentItem(songPosition, true);
 
 		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
