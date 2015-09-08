@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
+import com.laithlab.core.activity.SwipePlayerActivity;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
@@ -27,10 +28,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SongFragment extends Fragment implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
 	private static final String SONG_PARAM = "song";
-	private static final String PLAYER_THEME_PARAM = "themeColor";
+	private static final String SONG_POSITION = "song";
 
 	private SongFragmentListener mListener;
 	private SongDTO song;
+	private int songPosition;
 	private MediaPlayer mediaPlayer;
 
 	private TextView track;
@@ -38,13 +40,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private CircleImageView albumCover;
 	private TextView txtDuration;
 	private ImageView playButton;
+	private int vibrantColor;
 
-	private int vibrantColor = 0;
 
-
-	public static SongFragment newInstance(SongDTO song) {
+	public static SongFragment newInstance(SongDTO song, int position) {
 		SongFragment fragment = new SongFragment();
 		Bundle args = new Bundle();
+		args.putInt(SONG_POSITION, position);
 		args.putParcelable(SONG_PARAM, song);
 		fragment.setArguments(args);
 		return fragment;
@@ -59,7 +61,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			song = getArguments().getParcelable(SONG_PARAM);
-			vibrantColor = getArguments().getInt(PLAYER_THEME_PARAM);
+			songPosition = getArguments().getInt(SONG_POSITION);
 		}
 	}
 
@@ -90,11 +92,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
 			@Override
 			public void onStopTrackingTouch(CircularSeekBar seekBar) {
-				mediaPlayer.pause();
+				if (mediaPlayer.isPlaying()) {
+					mediaPlayer.pause();
+				}
+				mediaPlayer.start();
 				int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
 				mediaPlayer.seekTo(currentMill);
 				playButton.setImageResource(R.drawable.ic_pause_white);
-				mediaPlayer.start();
 			}
 
 			@Override
@@ -115,8 +119,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 				albumCover.setImageBitmap(bmp);
 				Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
 				if (vibrantSwatch != null) {
-					changePlayerStyle(vibrantSwatch.getRgb());
 					vibrantColor = vibrantSwatch.getRgb();
+					changePlayerStyle(vibrantSwatch.getRgb());
 				}
 			}
 		} catch (IOException e) {
@@ -144,6 +148,16 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		if (isVisibleToUser) {
+			RhythmSong rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
+			mListener.changePlayerStyle(vibrantColor);
+			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
+		}
 	}
 
 	@Override
@@ -176,18 +190,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		return false;
 	}
 
-	public void changePlayer() {
-		if (vibrantColor != 0) {
-			mListener.changePlayerStyle(vibrantColor);
-			changePlayerStyle(vibrantColor);
-		} else {
-			mListener.changePlayerStyle(getResources().getColor(R.color.color_primary));
-			changePlayerStyle(getResources().getColor(R.color.color_primary));
-		}
-
-		RhythmSong rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
-		mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
-	}
 
 	private class MediaObserver implements Runnable {
 		private AtomicBoolean stop = new AtomicBoolean(false);

@@ -24,7 +24,6 @@ import com.laithlab.core.fragment.SongFragmentListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener {
@@ -37,8 +36,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 	private ViewPager viewPager;
 	private TextView artist;
 	private TextView album;
-	private List<Fragment> songFragments;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +57,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		}
 
 		Realm realm = Realm.getInstance(this);
-		RealmResults<Song> songs = realm.where(Song.class)
+		final RealmResults<Song> songs = realm.where(Song.class)
 				.contains("albumId", currentAlbum.getId())
 				.findAll();
 
@@ -73,36 +70,16 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 		viewPager = (ViewPager) findViewById(R.id.pager);
-		songFragments = createSongFragments(DTOConverter.getSongList(songs.subList(0, songs.size())));
-		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songFragments));
-		viewPager.setCurrentItem(songPosition, true);
+		viewPager.setOffscreenPageLimit(3);
+		final List<SongDTO> songsList = DTOConverter.getSongList(songs.subList(0, songs.size()));
+		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
+				songsList));
+		if (songPosition > 0) {
+			viewPager.setCurrentItem(songPosition, true);
+		}
 
-		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-			}
-
-			@Override
-			public void onPageSelected(int position) {
-				SongFragment selectedFragment = (SongFragment) songFragments.get(position);
-				selectedFragment.changePlayer();
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-
-			}
-		});
 		artist = (TextView) findViewById(R.id.txt_artist);
 		album = (TextView) findViewById(R.id.txt_album);
-	}
-
-	private List<Fragment> createSongFragments(List<SongDTO> songList) {
-		List<Fragment> songFragments = new ArrayList<>();
-		for(SongDTO song: songList){
-			songFragments.add(SongFragment.newInstance(song));
-		}
-		return songFragments;
 	}
 
 	@Override
@@ -123,6 +100,9 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
 	@Override
 	public void changePlayerStyle(int vibrantColor) {
+		if(vibrantColor == 0){
+			vibrantColor = getResources().getColor(R.color.color_primary);
+		}
 		toolbar.setBackgroundColor(vibrantColor);
 		tiltedView.setBackgroundColor(vibrantColor);
 	}
@@ -135,22 +115,22 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
 	public class SongFragmentPager extends FragmentStatePagerAdapter {
 
-		private List<Fragment> songFragments;
+		private List<SongDTO> songDTOs;
 
-		public SongFragmentPager(FragmentManager fm, List<Fragment> songFragments) {
+		public SongFragmentPager(FragmentManager fm, List<SongDTO> songDTOs) {
 			super(fm);
-			this.songFragments = songFragments;
+			this.songDTOs = songDTOs;
 		}
 
 
 		@Override
 		public Fragment getItem(int position) {
-			return songFragments.get(position);
+			return SongFragment.newInstance(songDTOs.get(position), position);
 		}
 
 		@Override
 		public int getCount() {
-			return songFragments.size();
+			return songDTOs.size();
 		}
 
 		@Override

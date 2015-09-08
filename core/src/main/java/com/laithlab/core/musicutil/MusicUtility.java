@@ -38,6 +38,7 @@ public class MusicUtility {
 		String album = null;
 		String track = null;
 		byte[] imageData = null;
+		float duration = 0;
 		try {
 			Mp3File mp3file = new Mp3File(songLocation);
 			if (mp3file.hasId3v2Tag()) {
@@ -59,15 +60,16 @@ public class MusicUtility {
 					track = (id3v1Tag.getTitle() != null && !id3v1Tag.getTitle().isEmpty() ? id3v1Tag.getTitle() : null);
 				}
 			}
+			artist = artist != null ? artist : "Unknown Artist";
+			album = album != null ? album : "Unknown Album";
+			track = track != null ? track : "Unknown Track";
+			duration = mp3file.getLengthInSeconds();
 		} catch (IOException | UnsupportedTagException | InvalidDataException e) {
 			e.printStackTrace();
 		}
-		artist = artist != null ? artist : "Unknown Artist";
-		album = album != null ? album : "Unknown Album";
-		track = track != null ? track : "Unknown Track";
 
 		return new RhythmSong.RhythmSongBuilder().artistTitle(artist).albumTitle(album)
-				.trackTitle(track).imageData(imageData).build();
+				.trackTitle(track).imageData(imageData).duration(duration).build();
 	}
 
 	private static void getSongList(String path) {
@@ -116,25 +118,19 @@ public class MusicUtility {
 	}
 
 	public static void updateMusicDB(Context context) {
-		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 		for (final HashMap<String, String> song : getMusicFromStorage()) {
-			mmr.setDataSource(song.get("songPath"));
-			createSongEntry(mmr, context, song.get("songPath"));
+			createSongEntry(context, song.get("songPath"));
 		}
 	}
 
-	private static void createSongEntry(MediaMetadataRetriever mmr, Context context, String songPath) {
-		final Realm realm = Realm.getInstance(context);
+	private static void createSongEntry(Context context, String songPath) {
+		RhythmSong songEntry = getSongMeta(songPath);
 
-		final String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-		final String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-		final String trackTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-		final String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
+		Realm realm = Realm.getInstance(context);
 		realm.beginTransaction();
-		Artist artistRecord = getOrCreateArtist(realm, artist);
-		Album albumRecord = getOrCreateAlbum(realm, artistRecord, album);
-		getOrCreateSong(realm, albumRecord, trackTitle, duration, songPath);
+		Artist artistRecord = getOrCreateArtist(realm, songEntry.getArtistTitle());
+		Album albumRecord = getOrCreateAlbum(realm, artistRecord, songEntry.getAlbumTitle());
+		getOrCreateSong(realm, albumRecord, songEntry.getTrackTitle(), songEntry.getDuration(), songPath);
 		realm.commitTransaction();
 
 	}
@@ -204,7 +200,7 @@ public class MusicUtility {
 		}
 	}
 
-	private static void getOrCreateSong(Realm realm, Album albumRecord, String songTitle, String duration, String songPath) {
+	private static void getOrCreateSong(Realm realm, Album albumRecord, String songTitle, float duration, String songPath) {
 		Song songRecord = null;
 		for (Song songItem : albumRecord.getSongs()) {
 			if (songItem.getSongLocation().equals(songPath)) {
@@ -216,8 +212,8 @@ public class MusicUtility {
 			songRecord.setSongTitle(songTitle != null ? songTitle : "Untitled Song");
 			songRecord.setAlbumId(albumRecord.getId());
 			songRecord.setSongLocation(songPath);
-			if (duration != null) {
-				songRecord.setSongDuration(Integer.parseInt(duration));
+			if (duration > 0) {
+				songRecord.setSongDuration(duration);
 			}
 			albumRecord.getSongs().add(songRecord);
 		}
