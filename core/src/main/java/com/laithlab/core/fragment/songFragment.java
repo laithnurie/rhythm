@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
 import com.laithlab.core.customview.CircularSeekBar;
@@ -28,10 +29,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SongFragment extends Fragment implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
 	private static final String SONG_PARAM = "song";
-	private static final String SONG_POSITION = "song";
+	private static final String SONG_POSITION = "songPosition";
 
 	private SongFragmentListener mListener;
 	private SongDTO song;
+	private RhythmSong rhythmSong;
 	private int songPosition;
 	private MediaPlayer mediaPlayer;
 
@@ -46,8 +48,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public static SongFragment newInstance(SongDTO song, int position) {
 		SongFragment fragment = new SongFragment();
 		Bundle args = new Bundle();
-		args.putInt(SONG_POSITION, position);
 		args.putParcelable(SONG_PARAM, song);
+		args.putInt(SONG_POSITION, position);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -59,9 +61,10 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
+		if (getArguments().size() > 0) {
 			song = getArguments().getParcelable(SONG_PARAM);
 			songPosition = getArguments().getInt(SONG_POSITION);
+			rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
 		}
 	}
 
@@ -111,18 +114,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		try {
 			mediaPlayer.setDataSource(song.getSongLocation());
 			mediaPlayer.prepare();
-
-			RhythmSong rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
-			track.setText(rhythmSong.getTrackTitle());
-			if (rhythmSong.getImageData() != null) {
-				Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);
-				albumCover.setImageBitmap(bmp);
-				Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
-				if (vibrantSwatch != null) {
-					vibrantColor = vibrantSwatch.getRgb();
-					changePlayerStyle(vibrantSwatch.getRgb());
-				}
-			}
+			updatePlayerUI();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -154,9 +146,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
-			RhythmSong rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
-			mListener.changePlayerStyle(vibrantColor);
 			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
+			mListener.changePlayerStyle(vibrantColor, songPosition);
 		}
 	}
 
@@ -247,6 +238,25 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private void updateDuration(String currentDuration, String totalDuration) {
 		if (getActivity() != null) {
 			txtDuration.setText(getActivity().getResources().getString(R.string.duration_format, currentDuration, totalDuration));
+		}
+	}
+
+	private void updatePlayerUI() {
+		mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
+		track.setText(rhythmSong.getTrackTitle());
+		if (rhythmSong.getImageData() != null) {
+			Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);
+			albumCover.setImageBitmap(bmp);
+			Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
+			if (vibrantSwatch != null) {
+				vibrantColor = vibrantSwatch.getRgb();
+				changePlayerStyle(vibrantSwatch.getRgb());
+				mListener.changePlayerStyle(vibrantColor, songPosition);
+			} else {
+				vibrantColor = getResources().getColor(R.color.color_primary);
+				changePlayerStyle(vibrantSwatch.getRgb());
+				mListener.changePlayerStyle(vibrantColor, songPosition);
+			}
 		}
 	}
 

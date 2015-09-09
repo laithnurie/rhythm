@@ -28,13 +28,12 @@ import java.util.List;
 
 public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener {
 
-	private AlbumDTO currentAlbum;
-
 	private DrawerLayout drawerLayout;
 	private Toolbar toolbar;
 	private View tiltedView;
-	private ViewPager viewPager;
 	private TextView artist;
+	private ViewPager viewPager;
+
 	private TextView album;
 
 	@Override
@@ -43,7 +42,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		setContentView(R.layout.activity_swipe_player);
 
 		Bundle extras = getIntent().getExtras();
-		currentAlbum = extras.getParcelable("album");
+		AlbumDTO currentAlbum = extras.getParcelable("album");
 		int songPosition = extras.getInt("songPosition");
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,7 +59,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		final RealmResults<Song> songs = realm.where(Song.class)
 				.contains("albumId", currentAlbum.getId())
 				.findAll();
-
 
 		tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
@@ -99,12 +97,14 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 	}
 
 	@Override
-	public void changePlayerStyle(int vibrantColor) {
-		if(vibrantColor == 0){
-			vibrantColor = getResources().getColor(R.color.color_primary);
+	public void changePlayerStyle(int vibrantColor, int songPosition) {
+		if (songPosition == viewPager.getCurrentItem()) {
+			if (vibrantColor == 0) {
+				vibrantColor = getResources().getColor(R.color.color_primary);
+			}
+			toolbar.setBackgroundColor(vibrantColor);
+			tiltedView.setBackgroundColor(vibrantColor);
 		}
-		toolbar.setBackgroundColor(vibrantColor);
-		tiltedView.setBackgroundColor(vibrantColor);
 	}
 
 	@Override
