@@ -10,21 +10,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
-import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.musicutil.MusicUtility;
-import com.squareup.picasso.Picasso;
-import io.realm.RealmList;
 
 import java.util.List;
 
 public class SongGridAdapter extends BaseAdapter {
-	private final Context context;
 	private final List<SongDTO> songs;
 	private final LayoutInflater inflater;
 
 	public SongGridAdapter(Context context, List<SongDTO> songs) {
-		this.context = context;
 		this.songs = songs;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -44,6 +39,7 @@ public class SongGridAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
+		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		byte[] imageData = MusicUtility.getImageData(songs.get(position).getSongLocation());
 		if (imageData != null) {
 			Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);

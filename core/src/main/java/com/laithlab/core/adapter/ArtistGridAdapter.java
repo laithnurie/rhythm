@@ -3,7 +3,6 @@ package com.laithlab.core.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +41,7 @@ public class ArtistGridAdapter extends BaseAdapter {
 		}
 
 		ArtistDTO artist = artists.get(position);
+		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		if (!artist.getCoverPath().isEmpty()) {
 			byte[] imageData = MusicUtility.getImageData(artist.getCoverPath());
 			if (imageData != null) {
@@ -66,7 +66,7 @@ public class ArtistGridAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		return 0;
+		return position;
 	}
 
 	private static class ViewHolder {

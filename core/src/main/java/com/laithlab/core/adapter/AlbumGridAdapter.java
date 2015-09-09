@@ -10,22 +10,17 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
-import com.laithlab.core.db.Album;
 import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.musicutil.MusicUtility;
-import com.squareup.picasso.Picasso;
-import io.realm.RealmList;
 
 import java.util.List;
 
 public class AlbumGridAdapter extends BaseAdapter {
 
 	private final LayoutInflater inflater;
-	private Context context;
 	private List<AlbumDTO> albums;
 
 	public AlbumGridAdapter(Context context, List<AlbumDTO> albums) {
-		this.context = context;
 		this.albums = albums;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -45,6 +40,7 @@ public class AlbumGridAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
+		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		if (!albums.get(position).getCoverPath().isEmpty()) {
 			byte[] imageData = MusicUtility.getImageData(albums.get(position).getCoverPath());
 			if (imageData != null) {
