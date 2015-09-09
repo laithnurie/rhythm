@@ -1,6 +1,8 @@
 package com.laithlab.core.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import com.laithlab.core.R;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.dto.AlbumDTO;
+import com.laithlab.core.musicutil.MusicUtility;
 import com.squareup.picasso.Picasso;
 import io.realm.RealmList;
 
@@ -35,17 +38,20 @@ public class AlbumGridAdapter extends BaseAdapter {
 
 			holder = new ViewHolder();
 			holder.gridItemImage = (ImageView) convertView.findViewById(R.id.grid_image);
-			holder.gridItemImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+			holder.gridItemImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			holder.gridItemTitle = (TextView) convertView.findViewById(R.id.grid_title);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		//		Logic to upload image to grid
-		//		Picasso.with(context).load(artists.get(position).getArtistImageUrl()).into(holder.gridItemImage);
-		Picasso.with(context).load("http://artwork-cdn.7static.com/static/img/sleeveart/00/009/559/0000955983_200.jpg")
-				.into(holder.gridItemImage);
+		if (!albums.get(position).getCoverPath().isEmpty()) {
+			byte[] imageData = MusicUtility.getImageData(albums.get(position).getCoverPath());
+			if (imageData != null) {
+				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+				holder.gridItemImage.setImageBitmap(bmp);
+			}
+		}
 
 		holder.gridItemTitle.setText(albums.get(position).getAlbumTitle());
 		return convertView;

@@ -10,6 +10,7 @@ public class Artist extends RealmObject {
 	private String artistName;
 	private String artistImageUrl;
 	private RealmList<Album> albums;
+	private String coverPath;
 
 	public void setId(String id) {
 		this.id = id;
@@ -41,5 +42,13 @@ public class Artist extends RealmObject {
 
 	public RealmList<Album> getAlbums() {
 		return albums;
+	}
+
+	public void setCoverPath(String coverPath) {
+		this.coverPath = coverPath;
+	}
+
+	public String getCoverPath() {
+		return coverPath;
 	}
 }

@@ -12,6 +12,7 @@ public class ArtistDTO implements Parcelable {
 	private String artistName;
 	private String artistImageUrl;
 	private List<AlbumDTO> albumDTOList;
+	private String coverPath;
 
 	public void setId(String id) {
 		this.id = id;
@@ -45,6 +46,14 @@ public class ArtistDTO implements Parcelable {
 		return albumDTOList;
 	}
 
+	public void setCoverPath(String coverPath) {
+		this.coverPath = coverPath;
+	}
+
+	public String getCoverPath() {
+		return coverPath;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -56,6 +65,7 @@ public class ArtistDTO implements Parcelable {
 		dest.writeString(this.artistName);
 		dest.writeString(this.artistImageUrl);
 		dest.writeTypedList(this.albumDTOList);
+		dest.writeString(this.coverPath);
 	}
 
 	public ArtistDTO() {
@@ -67,6 +77,7 @@ public class ArtistDTO implements Parcelable {
 		this.artistImageUrl = in.readString();
 		this.albumDTOList = new ArrayList<AlbumDTO>();
 		in.readTypedList(this.albumDTOList, AlbumDTO.CREATOR);
+		this.coverPath = in.readString();
 	}
 
 	public static final Parcelable.Creator<ArtistDTO> CREATOR = new Parcelable.Creator<ArtistDTO>() {

@@ -1,7 +1,6 @@
 package com.laithlab.core.musicutil;
 
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -33,6 +32,20 @@ public class MusicUtility {
 		return songsList;
 	}
 
+	public static byte[] getImageData(String songLocation){
+		Mp3File mp3file = null;
+		try {
+			mp3file = new Mp3File(songLocation);
+			if (mp3file.hasId3v2Tag()) {
+				ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+				return id3v2Tag.getAlbumImage();
+			}
+		} catch (IOException | UnsupportedTagException | InvalidDataException e) {
+			return null;
+		}
+
+		return null;
+	}
 	public static RhythmSong getSongMeta(String songLocation) {
 		String artist = null;
 		String album = null;
@@ -68,7 +81,7 @@ public class MusicUtility {
 			e.printStackTrace();
 		}
 
-		return new RhythmSong.RhythmSongBuilder().artistTitle(artist).albumTitle(album)
+		return new RhythmSong.RhythmSongBuilder().songLocation(songLocation).artistTitle(artist).albumTitle(album)
 				.trackTitle(track).imageData(imageData).duration(duration).build();
 	}
 
@@ -128,15 +141,15 @@ public class MusicUtility {
 
 		Realm realm = Realm.getInstance(context);
 		realm.beginTransaction();
-		Artist artistRecord = getOrCreateArtist(realm, songEntry.getArtistTitle());
-		Album albumRecord = getOrCreateAlbum(realm, artistRecord, songEntry.getAlbumTitle());
+		Artist artistRecord = getOrCreateArtist(realm, songEntry);
+		Album albumRecord = getOrCreateAlbum(realm, artistRecord, songEntry);
 		getOrCreateSong(realm, albumRecord, songEntry.getTrackTitle(), songEntry.getDuration(), songPath);
 		realm.commitTransaction();
 
 	}
 
-	private static Artist getOrCreateArtist(Realm realm, String artist) {
-		if (artist == null) {
+	private static Artist getOrCreateArtist(Realm realm, RhythmSong rhythmSong) {
+		if (rhythmSong.getArtistTitle().equals("Untitled Artist")) {
 			Artist query = realm.where(Artist.class)
 					.contains("artistName", "Untitled Artist")
 					.findFirst();
@@ -145,27 +158,33 @@ public class MusicUtility {
 			} else {
 				Artist newArtist = realm.createObject(Artist.class);
 				newArtist.setArtistName("Untitled Artist");
+				if (rhythmSong.getImageData() != null) {
+					newArtist.setCoverPath(rhythmSong.getSongLocation());
+				}
 				newArtist.setId(UUID.randomUUID().toString());
 				return newArtist;
 			}
 		} else {
 			Artist query = realm.where(Artist.class)
-					.contains("artistName", artist)
+					.contains("artistName", rhythmSong.getArtistTitle())
 					.findFirst();
 			if (query != null) {
 				return query;
 			} else {
 				Artist newArtist = realm.createObject(Artist.class);
-				newArtist.setArtistName(artist);
+				newArtist.setArtistName(rhythmSong.getArtistTitle());
+				if (rhythmSong.getImageData() != null) {
+					newArtist.setCoverPath(rhythmSong.getSongLocation());
+				}
 				newArtist.setId(UUID.randomUUID().toString());
 				return newArtist;
 			}
 		}
 	}
 
-	private static Album getOrCreateAlbum(Realm realm, Artist artistRecord, String albumTitle) {
+	private static Album getOrCreateAlbum(Realm realm, Artist artistRecord, RhythmSong rhythmSong) {
 		Album albumRecord = null;
-		if (albumTitle == null) {
+		if (rhythmSong.getAlbumTitle() == null) {
 			for (Album albumItem : artistRecord.getAlbums()) {
 				if (albumItem.getAlbumTitle().equals("Untitled Album")) {
 					albumRecord = albumItem;
@@ -178,12 +197,15 @@ public class MusicUtility {
 				albumRecord.setAlbumTitle("Untitled Album");
 				albumRecord.setId(UUID.randomUUID().toString());
 				albumRecord.setArtistId(artistRecord.getId());
+				if (rhythmSong.getImageData() != null) {
+					albumRecord.setCoverPath(rhythmSong.getSongLocation());
+				}
 				artistRecord.getAlbums().add(albumRecord);
 				return albumRecord;
 			}
 		} else {
 			for (Album albumItem : artistRecord.getAlbums()) {
-				if (albumItem.getAlbumTitle().equals(albumTitle)) {
+				if (albumItem.getAlbumTitle().equals(rhythmSong.getAlbumTitle())) {
 					albumRecord = albumItem;
 				}
 			}
@@ -191,9 +213,12 @@ public class MusicUtility {
 				return albumRecord;
 			} else {
 				albumRecord = realm.createObject(Album.class);
-				albumRecord.setAlbumTitle(albumTitle);
+				albumRecord.setAlbumTitle(rhythmSong.getAlbumTitle());
 				albumRecord.setId(UUID.randomUUID().toString());
 				albumRecord.setArtistId(artistRecord.getId());
+				if (rhythmSong.getImageData() != null) {
+					albumRecord.setCoverPath(rhythmSong.getSongLocation());
+				}
 				artistRecord.getAlbums().add(albumRecord);
 				return albumRecord;
 			}

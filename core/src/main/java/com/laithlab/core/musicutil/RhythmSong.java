@@ -7,6 +7,7 @@ public class RhythmSong {
 	final private String trackTitle;
 	final private byte[] imageData;
 	final private float duration;
+	final private String songLocation;
 
 	private RhythmSong(RhythmSongBuilder builder){
 		this.artistTitle = builder.artistTitle;
@@ -14,6 +15,7 @@ public class RhythmSong {
 		this.trackTitle = builder.trackTitle;
 		this.imageData = builder.imageData;
 		this.duration = builder.duration;
+		this.songLocation = builder.songLocation;
 	}
 
 	public String getArtistTitle() {
@@ -36,12 +38,17 @@ public class RhythmSong {
 		return duration;
 	}
 
+	public String getSongLocation() {
+		return songLocation;
+	}
+
 	public static class RhythmSongBuilder {
 		private String artistTitle;
 		private String albumTitle;
 		private String trackTitle;
 		private byte[] imageData;
 		private float duration;
+		private String songLocation;
 
 		public RhythmSongBuilder artistTitle(String artistTitle){
 			this.artistTitle = artistTitle;
@@ -65,6 +72,11 @@ public class RhythmSong {
 
 		public RhythmSongBuilder duration(float duration){
 			this.duration = duration;
+			return this;
+		}
+
+		public RhythmSongBuilder songLocation(String songLocation){
+			this.songLocation = songLocation;
 			return this;
 		}
 
