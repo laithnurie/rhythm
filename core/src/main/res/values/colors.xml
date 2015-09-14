@@ -12,4 +12,5 @@
     <color name="grid_background">#F9F9F9</color>
     <color name="player_background">#0D0D0D</color>
     <color name="player_topbar_background">#64000000</color>
+    <color name="noti_background">#414141</color>
 </resources>

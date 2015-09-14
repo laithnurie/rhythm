@@ -37,6 +37,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private RhythmSong rhythmSong;
 	private int songPosition;
 	private MediaPlayer mediaPlayer;
+	private MediaObserver observer = null;
 
 	private TextView track;
 	private CircularSeekBar trackProgress;
@@ -44,6 +45,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private TextView txtDuration;
 	private ImageView playButton;
 	private int vibrantColor;
+
+	private boolean songSet = false;
 
 
 	public static SongFragment newInstance(SongDTO song, int position) {
@@ -78,13 +81,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		txtDuration = (TextView) rootView.findViewById(R.id.txt_duration);
 		playButton = (ImageView) rootView.findViewById(R.id.play_button);
 
-//		mediaPlayer = MusicUtility.getMediaPlayer();
-		mediaPlayer = new MediaPlayer();
-		mediaPlayer.setOnErrorListener(this);
-		mediaPlayer.setOnInfoListener(this);
-		mediaPlayer.setOnPreparedListener(this);
-		mediaPlayer.setScreenOnWhilePlaying(false);
-
 		trackProgress = (CircularSeekBar) rootView.findViewById(R.id.track_progress);
 		trackProgress.setMax(100);
 
@@ -113,23 +109,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		});
 
 		albumCover = (CircleImageView) rootView.findViewById(R.id.album_cover);
-		try {
-			mediaPlayer.setDataSource(song.getSongLocation());
-			mediaPlayer.prepare();
-			updatePlayerUI();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
+		updatePlayerUI();
 		return rootView;
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (mediaPlayer.isPlaying()) {
-//			mediaPlayer.pause();
-		}
 	}
 
 	@Override
@@ -150,25 +132,63 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		if (isVisibleToUser) {
 			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 			mListener.changePlayerStyle(vibrantColor, songPosition);
+			if (mediaPlayer != null && songSet) {
+				mediaPlayer.reset();
+				try {
+					mediaPlayer.setOnErrorListener(this);
+					mediaPlayer.setOnInfoListener(this);
+					mediaPlayer.setOnPreparedListener(this);
+					mediaPlayer.setScreenOnWhilePlaying(false);
+					mediaPlayer.setDataSource(song.getSongLocation());
+					mediaPlayer.prepare();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				mediaPlayer = MusicUtility.getMediaPlayer();
+				mediaPlayer.setOnErrorListener(this);
+				mediaPlayer.setOnInfoListener(this);
+				mediaPlayer.setOnPreparedListener(this);
+				mediaPlayer.setScreenOnWhilePlaying(false);
+
+				try {
+					if (!songSet) {
+						mediaPlayer.reset();
+						mediaPlayer.setDataSource(song.getSongLocation());
+						mediaPlayer.prepare();
+						songSet = true;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			if (observer != null) {
+				observer.stop();
+				observer = null;
+			}
 		}
 	}
 
 	@Override
-	public void onPrepared(MediaPlayer mp) {
+	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		runMedia();
 
 		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (mediaPlayer.isPlaying()) {
+				if (mp.isPlaying()) {
 					playButton.setImageResource(R.drawable.ic_play_arrow_white);
-					mediaPlayer.pause();
+					mp.pause();
+					Intent intent = new Intent(getContext(), MediaPlayerService.class);
+					intent.setAction(Constants.ACTION_PAUSE);
+					getActivity().startService(intent);
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
-					mediaPlayer.start();
-					Intent intent = new Intent(getContext(), MediaPlayerService.class );
+					mp.start();
+					Intent intent = new Intent(getContext(), MediaPlayerService.class);
 					intent.setAction(Constants.ACTION_PLAY);
 					getActivity().startService(intent);
 				}
@@ -226,7 +246,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		}
 	}
 
-	private MediaObserver observer = null;
 
 	private void runMedia() {
 		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -247,6 +266,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	}
 
 	private void updatePlayerUI() {
+		updateDuration("0:00", milliSecondsToTimer(0));
 		mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 		track.setText(rhythmSong.getTrackTitle());
 		if (rhythmSong.getImageData() != null) {
