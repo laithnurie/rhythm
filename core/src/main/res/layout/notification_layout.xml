@@ -86,7 +86,7 @@
                 android:layout_weight="1"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_pause_white"/>
+                android:src="@drawable/ic_previous_arrow_white"/>
 
             <ImageButton
                 android:id="@+id/noti_play_button"
@@ -110,7 +110,7 @@
                 android:layout_weight="1"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_pause_white"/>
+                android:src="@drawable/ic_next_arrow_white"/>
         </LinearLayout>
 
     </RelativeLayout>

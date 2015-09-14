@@ -135,10 +135,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			if (mediaPlayer != null && songSet) {
 				mediaPlayer.reset();
 				try {
-					mediaPlayer.setOnErrorListener(this);
-					mediaPlayer.setOnInfoListener(this);
-					mediaPlayer.setOnPreparedListener(this);
-					mediaPlayer.setScreenOnWhilePlaying(false);
+					setPlayerListeners();
 					mediaPlayer.setDataSource(song.getSongLocation());
 					mediaPlayer.prepare();
 				} catch (IOException e) {
@@ -146,11 +143,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 				}
 			} else {
 				mediaPlayer = MusicUtility.getMediaPlayer();
-				mediaPlayer.setOnErrorListener(this);
-				mediaPlayer.setOnInfoListener(this);
-				mediaPlayer.setOnPreparedListener(this);
-				mediaPlayer.setScreenOnWhilePlaying(false);
-
+				setPlayerListeners();
 				try {
 					if (!songSet) {
 						mediaPlayer.reset();
@@ -168,6 +161,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 				observer = null;
 			}
 		}
+	}
+
+	private void setPlayerListeners() {
+		mediaPlayer.setOnErrorListener(this);
+		mediaPlayer.setOnInfoListener(this);
+		mediaPlayer.setOnPreparedListener(this);
+		mediaPlayer.setScreenOnWhilePlaying(false);
 	}
 
 	@Override
