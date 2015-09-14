@@ -1,6 +1,7 @@
 package com.laithlab.core.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -19,6 +20,8 @@ import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.musicutil.MusicUtility;
 import com.laithlab.core.musicutil.RhythmSong;
+import com.laithlab.core.service.Constants;
+import com.laithlab.core.service.MediaPlayerService;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.io.IOException;
@@ -75,6 +78,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		txtDuration = (TextView) rootView.findViewById(R.id.txt_duration);
 		playButton = (ImageView) rootView.findViewById(R.id.play_button);
 
+//		mediaPlayer = MusicUtility.getMediaPlayer();
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setOnErrorListener(this);
 		mediaPlayer.setOnInfoListener(this);
@@ -124,7 +128,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onPause() {
 		super.onPause();
 		if (mediaPlayer.isPlaying()) {
-			mediaPlayer.pause();
+//			mediaPlayer.pause();
 		}
 	}
 
@@ -164,6 +168,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
 					mediaPlayer.start();
+					Intent intent = new Intent(getContext(), MediaPlayerService.class );
+					intent.setAction(Constants.ACTION_PLAY);
+					getActivity().startService(intent);
 				}
 			}
 		});

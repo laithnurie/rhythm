@@ -1,6 +1,7 @@
 package com.laithlab.core.musicutil;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -25,6 +26,15 @@ public class MusicUtility {
 	public MusicUtility() {
 	}
 
+	private static MediaPlayer mediaPlayer = null;
+
+	public static MediaPlayer getMediaPlayer() {
+		if (mediaPlayer == null) {
+			mediaPlayer = new MediaPlayer();
+		}
+		return mediaPlayer;
+	}
+
 	public static ArrayList<HashMap<String, String>> getMusicFromStorage() {
 		for (String storage : getStorageDirectories()) {
 			getSongList(storage);
@@ -32,7 +42,7 @@ public class MusicUtility {
 		return songsList;
 	}
 
-	public static byte[] getImageData(String songLocation){
+	public static byte[] getImageData(String songLocation) {
 		Mp3File mp3file = null;
 		try {
 			mp3file = new Mp3File(songLocation);
@@ -46,6 +56,7 @@ public class MusicUtility {
 
 		return null;
 	}
+
 	public static RhythmSong getSongMeta(String songLocation) {
 		String artist = null;
 		String album = null;
