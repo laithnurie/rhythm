@@ -51,7 +51,7 @@ public class MediaPlayerService extends Service {
 		String action = intent.getAction();
 
 		if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
-			if(!m_objMediaPlayer.isPlaying()){
+			if (!m_objMediaPlayer.isPlaying()) {
 				setNotificationPlayer(false);
 				m_objMediaPlayer.start();
 			} else {
@@ -66,13 +66,18 @@ public class MediaPlayerService extends Service {
 	}
 
 	private void setNotificationPlayer(boolean pause) {
-		if (pause)
+		Intent intent = new Intent(this, MediaPlayerService.class);
+		if (pause) {
+			intent.setAction(Constants.ACTION_PLAY);
 			notificationCompat = createBuiderNotificationRemovable().build();
-		else
+		} else {
+			intent.setAction(Constants.ACTION_PAUSE);
 			notificationCompat = createBuiderNotification().build();
+		}
 		notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
+
 		notiLayoutBig.setOnClickPendingIntent(R.id.noti_play_button,
-				PendingIntent.getService(this, 0, new Intent(Constants.ACTION_PLAY), 0));
+				PendingIntent.getService(this, 0, intent, 0));
 		if (Build.VERSION.SDK_INT >= 16) {
 			notificationCompat.bigContentView = notiLayoutBig;
 			notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,

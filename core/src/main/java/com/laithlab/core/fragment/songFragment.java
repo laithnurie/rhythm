@@ -180,14 +180,12 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			public void onClick(View v) {
 				if (mp.isPlaying()) {
 					playButton.setImageResource(R.drawable.ic_play_arrow_white);
-					mp.pause();
 					Intent intent = new Intent(getContext(), MediaPlayerService.class);
 					intent.setAction(Constants.ACTION_PAUSE);
 					getActivity().startService(intent);
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
-					mp.start();
 					Intent intent = new Intent(getContext(), MediaPlayerService.class);
 					intent.setAction(Constants.ACTION_PLAY);
 					getActivity().startService(intent);
@@ -227,7 +225,10 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 								@Override
 								public void run() {
 									trackProgress.setProgress(currentProgress);
-									updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()), milliSecondsToTimer(mediaPlayer.getDuration()));
+									playButton.setImageResource(mediaPlayer.isPlaying()
+											? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
+									updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
+											milliSecondsToTimer(mediaPlayer.getDuration()));
 								}
 							});
 
