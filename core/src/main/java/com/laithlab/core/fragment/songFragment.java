@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SongFragment extends Fragment implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
 	private static final String SONG_PARAM = "song";
-	private static final String SONG_POSITION = "songPosition";
+	private static final String SONG_POSITION_PARAM = "songPosition";
 
 	private SongFragmentListener mListener;
 	private SongDTO song;
@@ -53,7 +53,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		SongFragment fragment = new SongFragment();
 		Bundle args = new Bundle();
 		args.putParcelable(SONG_PARAM, song);
-		args.putInt(SONG_POSITION, position);
+		args.putInt(SONG_POSITION_PARAM, position);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -67,7 +67,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		super.onCreate(savedInstanceState);
 		if (getArguments().size() > 0) {
 			song = getArguments().getParcelable(SONG_PARAM);
-			songPosition = getArguments().getInt(SONG_POSITION);
+			songPosition = getArguments().getInt(SONG_POSITION_PARAM);
 			rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
 		}
 	}
@@ -182,12 +182,14 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 					playButton.setImageResource(R.drawable.ic_play_arrow_white);
 					Intent intent = new Intent(getContext(), MediaPlayerService.class);
 					intent.setAction(Constants.ACTION_PAUSE);
+					intent.putExtra(SONG_PARAM, rhythmSong);
 					getActivity().startService(intent);
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
 					Intent intent = new Intent(getContext(), MediaPlayerService.class);
 					intent.setAction(Constants.ACTION_PLAY);
+					intent.putExtra(SONG_PARAM, rhythmSong);
 					getActivity().startService(intent);
 				}
 			}

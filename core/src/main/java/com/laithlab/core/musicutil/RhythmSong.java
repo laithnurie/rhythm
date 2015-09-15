@@ -1,6 +1,9 @@
 package com.laithlab.core.musicutil;
 
-public class RhythmSong {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class RhythmSong implements Parcelable {
 
 	final private String artistTitle;
 	final private String albumTitle;
@@ -85,6 +88,39 @@ public class RhythmSong {
 		}
 	}
 
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(this.artistTitle);
+		dest.writeString(this.albumTitle);
+		dest.writeString(this.trackTitle);
+		dest.writeByteArray(this.imageData);
+		dest.writeFloat(this.duration);
+		dest.writeString(this.songLocation);
+	}
+
+	protected RhythmSong(Parcel in) {
+		this.artistTitle = in.readString();
+		this.albumTitle = in.readString();
+		this.trackTitle = in.readString();
+		this.imageData = in.createByteArray();
+		this.duration = in.readFloat();
+		this.songLocation = in.readString();
+	}
+
+	public static final Parcelable.Creator<RhythmSong> CREATOR = new Parcelable.Creator<RhythmSong>() {
+		public RhythmSong createFromParcel(Parcel source) {
+			return new RhythmSong(source);
+		}
+
+		public RhythmSong[] newArray(int size) {
+			return new RhythmSong[size];
+		}
+	};
 }
 
 

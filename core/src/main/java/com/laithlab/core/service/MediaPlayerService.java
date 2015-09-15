@@ -6,22 +6,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import com.laithlab.core.R;
+import com.laithlab.core.activity.SwipePlayerActivity;
 import com.laithlab.core.musicutil.MusicUtility;
+import com.laithlab.core.musicutil.RhythmSong;
 
 
 public class MediaPlayerService extends Service {
 
+	private static final String SONG_PARAM = "song";
 
-	private static final String ACTION_REQUEST_SONG_DETAILS = "songDetailsRequest";
-	private static final String ACTION_REMOVE_SERVICE = "removeService";
 	private MediaPlayer m_objMediaPlayer;
-
 	private Notification notificationCompat;
 	private NotificationManager notificationManager;
 	private RemoteViews notiLayoutBig;
@@ -52,36 +54,48 @@ public class MediaPlayerService extends Service {
 
 		if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
 			if (!m_objMediaPlayer.isPlaying()) {
-				setNotificationPlayer(false);
+				setNotificationPlayer(false, intent);
 				m_objMediaPlayer.start();
 			} else {
 				m_objMediaPlayer.pause();
 			}
 		} else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
-			setNotificationPlayer(true);
+			setNotificationPlayer(true, intent);
 			m_objMediaPlayer.pause();
-			notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-					R.drawable.ic_play_arrow_white);
 		}
 	}
 
-	private void setNotificationPlayer(boolean pause) {
-		Intent intent = new Intent(this, MediaPlayerService.class);
+	private void setNotificationPlayer(boolean pause, Intent intent) {
+		Intent pendingIntent = new Intent(this, MediaPlayerService.class);
 		if (pause) {
-			intent.setAction(Constants.ACTION_PLAY);
-			notificationCompat = createBuiderNotificationRemovable().build();
+			pendingIntent.setAction(Constants.ACTION_PLAY);
 		} else {
-			intent.setAction(Constants.ACTION_PAUSE);
-			notificationCompat = createBuiderNotification().build();
+			pendingIntent.setAction(Constants.ACTION_PAUSE);
 		}
+
+		notificationCompat = createBuiderNotificationRemovable(pause).build();
 		notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
 
 		notiLayoutBig.setOnClickPendingIntent(R.id.noti_play_button,
-				PendingIntent.getService(this, 0, intent, 0));
+				PendingIntent.getService(this, 0, pendingIntent, 0));
 		if (Build.VERSION.SDK_INT >= 16) {
 			notificationCompat.bigContentView = notiLayoutBig;
 			notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-					pause ? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
+					pause ? R.drawable.ic_play_arrow_white : R.drawable.ic_pause_white);
+
+			RhythmSong rhythmSong = intent.getParcelableExtra(SONG_PARAM);
+			if (rhythmSong != null) {
+				notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, rhythmSong.getTrackTitle());
+				notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, rhythmSong.getArtistTitle());
+				notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, rhythmSong.getAlbumTitle());
+				byte[] imageData = rhythmSong.getImageData();
+				if (imageData != null) {
+					Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+					notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, bmp);
+				} else {
+					notificationCompat.bigContentView.setImageViewResource(R.id.noti_album_art, R.drawable.ic_play_arrow_white);
+				}
+			}
 		}
 		notificationCompat.priority = Notification.PRIORITY_MAX;
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -89,32 +103,14 @@ public class MediaPlayerService extends Service {
 		notificationManager.notify(NOTIFICATION_ID, notificationCompat);
 	}
 
-	private NotificationCompat.Builder createBuiderNotification() {
-		Intent notificationIntent = new Intent();
-		notificationIntent.setAction(MediaPlayerService.ACTION_REQUEST_SONG_DETAILS);
-		PendingIntent contentIntent = PendingIntent.getBroadcast(MediaPlayerService.this, 0, notificationIntent, 0);
-		Intent deleteIntent = new Intent();
-		deleteIntent.setAction(MediaPlayerService.ACTION_REMOVE_SERVICE);
-		PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MediaPlayerService.this, 0, deleteIntent, 0);
-		return new NotificationCompat.Builder(this)
-				.setOngoing(true)
-				.setSmallIcon(R.drawable.ic_play_arrow_white)
-				.setContentIntent(contentIntent)
-				.setDeleteIntent(deletePendingIntent);
-	}
-
-	private NotificationCompat.Builder createBuiderNotificationRemovable() {
-		Intent notificationIntent = new Intent();
-		notificationIntent.setAction(MediaPlayerService.ACTION_REQUEST_SONG_DETAILS);
-		PendingIntent contentIntent = PendingIntent.getActivity(MediaPlayerService.this, 0, notificationIntent, 0);
-		Intent deleteIntent = new Intent();
-		deleteIntent.setAction(MediaPlayerService.ACTION_REMOVE_SERVICE);
-		PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MediaPlayerService.this, 0, deleteIntent, 0);
+	private NotificationCompat.Builder createBuiderNotificationRemovable(boolean pause) {
+		Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
 		return new NotificationCompat.Builder(this)
 				.setOngoing(false)
-				.setSmallIcon(R.drawable.ic_pause_white)
-				.setContentIntent(contentIntent)
-				.setDeleteIntent(deletePendingIntent);
+				.setSmallIcon(pause ? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white)
+				.setContentIntent(contentIntent);
 	}
 
 	@SuppressLint("NewApi")

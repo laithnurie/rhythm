@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.laithlab.core" >
+<manifest package="com.laithlab.core"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".RhythmCoreApp"
         android:allowBackup="true"
-        android:label="@string/app_name" >
-        <activity android:name=".activity.ArtistActivity" />
-        <activity android:name=".activity.AlbumActivity" />
-        <activity android:name=".activity.SwipePlayerActivity" />
+        android:label="@string/app_name">
+        <activity android:name=".activity.ArtistActivity"/>
+        <activity android:name=".activity.AlbumActivity"/>
+        <activity
+            android:name=".activity.SwipePlayerActivity"
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".service.MediaPlayerService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
         </service>
     </application>
 
