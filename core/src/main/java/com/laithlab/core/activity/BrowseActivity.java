@@ -16,7 +16,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.adapter.ArtistGridAdapter;
 import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.musicutil.MusicUtility;
+import com.laithlab.core.utils.MusicUtility;
 
 public class BrowseActivity extends AppCompatActivity {
 

@@ -1,5 +1,6 @@
 package com.laithlab.core.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,7 @@ import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
+import com.laithlab.core.utils.PlayBackUtil;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -41,10 +43,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_swipe_player);
 
-		Bundle extras = getIntent().getExtras();
-		AlbumDTO currentAlbum = extras.getParcelable("album");
-		int songPosition = extras.getInt("songPosition");
-
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
@@ -55,11 +53,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		Realm realm = Realm.getInstance(this);
-		final RealmResults<Song> songs = realm.where(Song.class)
-				.contains("albumId", currentAlbum.getId())
-				.findAll();
-
 		tiltedView = findViewById(R.id.tilted_view);
 		tiltedView.setPivotX(0f);
 		tiltedView.setPivotY(0f);
@@ -69,15 +62,60 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPager.setOffscreenPageLimit(3);
-		final List<SongDTO> songsList = DTOConverter.getSongList(songs.subList(0, songs.size()));
+		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				PlayBackUtil.setCurrentSongPosition(position);
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
+
+		artist = (TextView) findViewById(R.id.txt_artist);
+		album = (TextView) findViewById(R.id.txt_album);
+		Realm realm = Realm.getInstance(this);
+
+		Bundle extras = getIntent().getExtras();
+		final List<SongDTO> songsList;
+		int songPosition;
+		if (extras != null) {
+			AlbumDTO currentAlbum = extras.getParcelable("album");
+			songPosition = extras.getInt("songPosition");
+			final RealmResults<Song> songs = realm.where(Song.class)
+					.contains("albumId", currentAlbum.getId())
+					.findAll();
+			songsList = DTOConverter.getSongList(songs.subList(0, songs.size()));
+			PlayBackUtil.setPlayList(songsList);
+			PlayBackUtil.setCurrentSongPosition(songPosition);
+		} else {
+			songsList = PlayBackUtil.getCurrentPlayList();
+			songPosition = PlayBackUtil.getCurrentSongPosition();
+		}
+
+		populateSongs(songsList, songPosition);
+	}
+
+	private void populateSongs(List<SongDTO> songsList, int songPosition) {
 		viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
 				songsList));
 		if (songPosition > 0) {
 			viewPager.setCurrentItem(songPosition, true);
 		}
+	}
 
-		artist = (TextView) findViewById(R.id.txt_artist);
-		album = (TextView) findViewById(R.id.txt_album);
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
+		populateSongs(PlayBackUtil.getCurrentPlayList(), PlayBackUtil.getCurrentSongPosition());
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.laithlab.core.musicutil;
+package com.laithlab.core.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;

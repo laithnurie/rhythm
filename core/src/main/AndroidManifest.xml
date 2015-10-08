@@ -13,7 +13,7 @@
         <activity android:name=".activity.AlbumActivity"/>
         <activity
             android:name=".activity.SwipePlayerActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTop"/>
 
         <service
             android:name=".service.MediaPlayerService"

@@ -15,8 +15,8 @@ import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
-import com.laithlab.core.musicutil.MusicUtility;
-import com.laithlab.core.musicutil.RhythmSong;
+import com.laithlab.core.utils.PlayBackUtil;
+import com.laithlab.core.utils.RhythmSong;
 
 
 public class MediaPlayerService extends Service {
@@ -38,7 +38,7 @@ public class MediaPlayerService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (m_objMediaPlayer == null) {
-			m_objMediaPlayer = MusicUtility.getMediaPlayer();
+			m_objMediaPlayer = PlayBackUtil.getMediaPlayer();
 		}
 
 		handleIntent(intent);
@@ -105,8 +105,9 @@ public class MediaPlayerService extends Service {
 
 	private NotificationCompat.Builder createBuiderNotificationRemovable(boolean pause) {
 		Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		return new NotificationCompat.Builder(this)
 				.setOngoing(false)
 				.setSmallIcon(pause ? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white)

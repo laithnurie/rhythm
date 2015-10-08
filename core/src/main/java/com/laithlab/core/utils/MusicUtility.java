@@ -1,7 +1,6 @@
-package com.laithlab.core.musicutil;
+package com.laithlab.core.utils;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -24,15 +23,6 @@ public class MusicUtility {
 
 	// Constructor
 	public MusicUtility() {
-	}
-
-	private static MediaPlayer mediaPlayer = null;
-
-	public static MediaPlayer getMediaPlayer() {
-		if (mediaPlayer == null) {
-			mediaPlayer = new MediaPlayer();
-		}
-		return mediaPlayer;
 	}
 
 	public static ArrayList<HashMap<String, String>> getMusicFromStorage() {

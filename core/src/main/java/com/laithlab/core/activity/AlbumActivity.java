@@ -30,7 +30,7 @@ public class AlbumActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 
 		Bundle extras = getIntent().getExtras();
-		AlbumDTO currentAlbum = extras.getParcelable("album");
+		final AlbumDTO currentAlbum = extras.getParcelable("album");
 		final ArtistDTO currentArtist = extras.getParcelable("artist");
 
 		final ActionBar actionBar = getSupportActionBar();
@@ -53,7 +53,7 @@ public class AlbumActivity extends AppCompatActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent playerActivity = new Intent(AlbumActivity.this, SwipePlayerActivity.class);
-				playerActivity.putExtra("album", currentArtist.getAlbums().get(0));
+				playerActivity.putExtra("album", currentAlbum);
 				playerActivity.putExtra("songPosition", position);
 				startActivity(playerActivity);
 			}

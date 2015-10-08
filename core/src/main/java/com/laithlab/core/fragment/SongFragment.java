@@ -18,8 +18,9 @@ import com.laithlab.core.R;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
-import com.laithlab.core.musicutil.MusicUtility;
-import com.laithlab.core.musicutil.RhythmSong;
+import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.PlayBackUtil;
+import com.laithlab.core.utils.RhythmSong;
 import com.laithlab.core.service.Constants;
 import com.laithlab.core.service.MediaPlayerService;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -132,26 +133,26 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		if (isVisibleToUser) {
 			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 			mListener.changePlayerStyle(vibrantColor, songPosition);
-			if (mediaPlayer != null && songSet) {
+			if (mediaPlayer != null && songSet && PlayBackUtil.getCurrentSongPosition() != songPosition) {
 				mediaPlayer.reset();
 				try {
-					setPlayerListeners();
 					mediaPlayer.setDataSource(song.getSongLocation());
 					mediaPlayer.prepare();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				mediaPlayer = MusicUtility.getMediaPlayer();
-				setPlayerListeners();
+				mediaPlayer = PlayBackUtil.getMediaPlayer();
 				try {
 					if (!songSet) {
+						removePlayerListeners();
 						mediaPlayer.reset();
 						mediaPlayer.setDataSource(song.getSongLocation());
-						mediaPlayer.prepare();
+						setPlayerListeners();
+						mediaPlayer.prepareAsync();
 						songSet = true;
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -159,6 +160,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			if (observer != null) {
 				observer.stop();
 				observer = null;
+				removePlayerListeners();
 			}
 		}
 	}
@@ -168,6 +170,15 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		mediaPlayer.setOnInfoListener(this);
 		mediaPlayer.setOnPreparedListener(this);
 		mediaPlayer.setScreenOnWhilePlaying(false);
+	}
+
+	private void removePlayerListeners() {
+		if(mediaPlayer != null){
+			mediaPlayer.setOnErrorListener(null);
+			mediaPlayer.setOnInfoListener(null);
+			mediaPlayer.setOnPreparedListener(null);
+			mediaPlayer.setScreenOnWhilePlaying(false);
+		}
 	}
 
 	@Override
