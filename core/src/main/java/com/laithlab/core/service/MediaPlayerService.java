@@ -37,9 +37,7 @@ public class MediaPlayerService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (m_objMediaPlayer == null) {
-			m_objMediaPlayer = PlayBackUtil.getMediaPlayer();
-		}
+		m_objMediaPlayer = PlayBackUtil.getMediaPlayer();
 
 		handleIntent(intent);
 		return super.onStartCommand(intent, flags, startId);
@@ -54,11 +52,9 @@ public class MediaPlayerService extends Service {
 
 		if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
 			if (!m_objMediaPlayer.isPlaying()) {
-				setNotificationPlayer(false, intent);
 				m_objMediaPlayer.start();
-			} else {
-				m_objMediaPlayer.pause();
 			}
+			setNotificationPlayer(false, intent);
 		} else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
 			setNotificationPlayer(true, intent);
 			m_objMediaPlayer.pause();

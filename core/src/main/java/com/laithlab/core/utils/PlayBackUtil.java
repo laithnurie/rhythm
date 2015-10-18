@@ -10,13 +10,15 @@ public class PlayBackUtil {
 	private static List<SongDTO> currentPlayList = null;
 	private static int currentSongPosition = 0;
 
-	private static MediaPlayer mediaPlayer = null;
+	private static MediaPlayer mediaPlayerService = null;
 
 	public static MediaPlayer getMediaPlayer() {
-		if (mediaPlayer == null) {
-			mediaPlayer = new MediaPlayer();
-		}
-		return mediaPlayer;
+		return mediaPlayerService;
+	}
+
+	public static MediaPlayer setMediaPlayer(MediaPlayer mediaPlayer) {
+		mediaPlayerService = mediaPlayer;
+		return mediaPlayerService;
 	}
 
 	public static List<SongDTO> getCurrentPlayList(){

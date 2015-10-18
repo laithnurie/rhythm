@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
@@ -25,8 +26,8 @@ import com.laithlab.core.service.Constants;
 import com.laithlab.core.service.MediaPlayerService;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SongFragment extends Fragment implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
@@ -38,7 +39,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private RhythmSong rhythmSong;
 	private int songPosition;
 	private MediaPlayer mediaPlayer;
-	private MediaObserver observer = null;
+	private Timer timer;
 
 	private TextView track;
 	private CircularSeekBar trackProgress;
@@ -47,7 +48,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private ImageView playButton;
 	private int vibrantColor;
 
-	private boolean songSet = false;
+	private boolean beenDrawn = false;
 
 
 	public static SongFragment newInstance(SongDTO song, int position) {
@@ -78,6 +79,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View rootView = inflater.inflate(R.layout.fragment_song, container, false);
+		beenDrawn = true;
+		mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
 		track = (TextView) rootView.findViewById(R.id.txt_track);
 		txtDuration = (TextView) rootView.findViewById(R.id.txt_duration);
 		playButton = (ImageView) rootView.findViewById(R.id.play_button);
@@ -98,6 +101,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 					mediaPlayer.pause();
 				}
 				mediaPlayer.start();
+				PlayBackUtil.setMediaPlayer(mediaPlayer);
 				int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
 				mediaPlayer.seekTo(currentMill);
 				playButton.setImageResource(R.drawable.ic_pause_white);
@@ -110,6 +114,25 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		});
 
 		albumCover = (CircleImageView) rootView.findViewById(R.id.album_cover);
+
+		playButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				PlayBackUtil.setMediaPlayer(mediaPlayer);
+				if (mediaPlayer.isPlaying()) {
+					playButton.setImageResource(R.drawable.ic_play_arrow_white);
+					mediaPlayer.pause();
+					playerNotification(Constants.ACTION_PAUSE);
+				} else {
+					playButton.setImageResource(R.drawable.ic_pause_white);
+					CustomAnimUtil.overShootAnimation(albumCover);
+					mediaPlayer.start();
+					playerNotification(Constants.ACTION_PLAY);
+
+				}
+			}
+		});
+		setPlayerListeners();
 
 		updatePlayerUI();
 		return rootView;
@@ -131,49 +154,39 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
+			if (mediaPlayer == null) {
+				mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+				setPlayerListeners();
+				PlayBackUtil.setMediaPlayer(mediaPlayer);
+			}
+
+			if (beenDrawn) {
+				trackProgress.setProgress(0);
+				updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
+			}
 			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 			mListener.changePlayerStyle(vibrantColor, songPosition);
-			if (mediaPlayer != null && songSet && PlayBackUtil.getCurrentSongPosition() != songPosition) {
-				mediaPlayer.reset();
-				try {
-					mediaPlayer.setDataSource(song.getSongLocation());
-					mediaPlayer.prepare();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				mediaPlayer = PlayBackUtil.getMediaPlayer();
-				try {
-					if (!songSet) {
-						removePlayerListeners();
-						mediaPlayer.reset();
-						mediaPlayer.setDataSource(song.getSongLocation());
-						setPlayerListeners();
-						mediaPlayer.prepareAsync();
-						songSet = true;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 		} else {
-			if (observer != null) {
-				observer.stop();
-				observer = null;
-				removePlayerListeners();
+			if (mediaPlayer != null) {
+				timer.cancel();
+				mediaPlayer.stop();
+				mediaPlayer.release();
+				mediaPlayer = null;
 			}
 		}
 	}
 
 	private void setPlayerListeners() {
-		mediaPlayer.setOnErrorListener(this);
-		mediaPlayer.setOnInfoListener(this);
-		mediaPlayer.setOnPreparedListener(this);
-		mediaPlayer.setScreenOnWhilePlaying(false);
+		if (mediaPlayer != null) {
+			mediaPlayer.setOnErrorListener(this);
+			mediaPlayer.setOnInfoListener(this);
+			mediaPlayer.setOnPreparedListener(this);
+			mediaPlayer.setScreenOnWhilePlaying(false);
+		}
 	}
 
 	private void removePlayerListeners() {
-		if(mediaPlayer != null){
+		if (mediaPlayer != null) {
 			mediaPlayer.setOnErrorListener(null);
 			mediaPlayer.setOnInfoListener(null);
 			mediaPlayer.setOnPreparedListener(null);
@@ -185,26 +198,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		runMedia();
+	}
 
-		playButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (mp.isPlaying()) {
-					playButton.setImageResource(R.drawable.ic_play_arrow_white);
-					Intent intent = new Intent(getContext(), MediaPlayerService.class);
-					intent.setAction(Constants.ACTION_PAUSE);
-					intent.putExtra(SONG_PARAM, rhythmSong);
-					getActivity().startService(intent);
-				} else {
-					playButton.setImageResource(R.drawable.ic_pause_white);
-					CustomAnimUtil.overShootAnimation(albumCover);
-					Intent intent = new Intent(getContext(), MediaPlayerService.class);
-					intent.setAction(Constants.ACTION_PLAY);
-					intent.putExtra(SONG_PARAM, rhythmSong);
-					getActivity().startService(intent);
-				}
-			}
-		});
+	private void playerNotification(String action) {
+		Intent intent = new Intent(getContext(), MediaPlayerService.class);
+		intent.setAction(action);
+		intent.putExtra(SONG_PARAM, rhythmSong);
+		getActivity().startService(intent);
 	}
 
 	@Override
@@ -214,25 +214,29 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
+		mediaPlayer.release();
+		mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+		removePlayerListeners();
+		setPlayerListeners();
+		PlayBackUtil.setMediaPlayer(mediaPlayer);
 		return false;
 	}
 
 
-	private class MediaObserver implements Runnable {
-		private AtomicBoolean stop = new AtomicBoolean(false);
-
-		public void stop() {
-			stop.set(true);
-		}
-
-		@Override
-		public void run() {
-			while (!stop.get()) {
-
+	private void runMedia() {
+		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				trackProgress.setProgress(mp.getCurrentPosition());
+			}
+		});
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
 				if (mediaPlayer != null) {
-					if (!trackProgress.isPressed() || !mediaPlayer.isPlaying()) {
+					if (!mediaPlayer.isPlaying() || !trackProgress.isPressed()) {
 						final int currentProgress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
-
 						if (getActivity() != null) {
 							getActivity().runOnUiThread(new Runnable() {
 								@Override
@@ -244,33 +248,11 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 											milliSecondsToTimer(mediaPlayer.getDuration()));
 								}
 							});
-
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
 						}
 					}
-				} else {
-					stop();
 				}
-
 			}
-		}
-	}
-
-
-	private void runMedia() {
-		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				observer.stop();
-				trackProgress.setProgress(mp.getCurrentPosition());
-			}
-		});
-		observer = new MediaObserver();
-		new Thread(observer).start();
+		}, 0, 500);
 	}
 
 	private void updateDuration(String currentDuration, String totalDuration) {
