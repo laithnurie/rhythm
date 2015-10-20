@@ -23,8 +23,6 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.laithlab.core.service.Constants;
-import com.laithlab.core.utils.MusicUtility;
-import com.laithlab.core.utils.RhythmSong;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

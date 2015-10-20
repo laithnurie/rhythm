@@ -1,4 +1,4 @@
-package com.laithlab.rhythm;
+package com.laithlab.core.service;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -47,7 +47,7 @@ public class WearMessageService extends WearableListenerService {
 
 	private void wearBroadcast(DataMap dataMap) {
 		Intent intent = new Intent();
-		intent.setAction( Intent.ACTION_SEND );
+		intent.setAction(Intent.ACTION_SEND);
 		intent.putExtra("wear_data", dataMap.toBundle());
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}

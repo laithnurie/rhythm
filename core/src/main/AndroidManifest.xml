@@ -21,6 +21,13 @@
             android:enabled="true"
             android:exported="true">
         </service>
+
+        <service android:name="com.laithlab.core.service.WearMessageService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
