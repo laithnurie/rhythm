@@ -15,6 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.Wearable;
 import com.laithlab.core.R;
 import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.db.Song;
@@ -22,26 +27,40 @@ import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
+import com.laithlab.core.service.SendToDataLayerThread;
+import com.laithlab.core.utils.MusicUtility;
 import com.laithlab.core.utils.PlayBackUtil;
+import com.laithlab.core.utils.RhythmSong;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 import java.util.List;
 
-public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener {
+public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener, GoogleApiClient.ConnectionCallbacks,
+		GoogleApiClient.OnConnectionFailedListener {
 
 	private DrawerLayout drawerLayout;
 	private Toolbar toolbar;
 	private View tiltedView;
 	private TextView artist;
+	private TextView album;
 	private ViewPager viewPager;
 
-	private TextView album;
+	private boolean isWearConnected = false;
+	private GoogleApiClient googleClient;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_swipe_player);
+
+		googleClient = new GoogleApiClient.Builder(this)
+				.addApi(Wearable.API)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this)
+				.build();
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -62,22 +81,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPager.setOffscreenPageLimit(3);
-		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-			}
-
-			@Override
-			public void onPageSelected(int position) {
-				PlayBackUtil.setCurrentSongPosition(position);
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-
-			}
-		});
 
 		artist = (TextView) findViewById(R.id.txt_artist);
 		album = (TextView) findViewById(R.id.txt_album);
@@ -101,6 +104,32 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		}
 
 		populateSongs(songsList, songPosition);
+		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				PlayBackUtil.setCurrentSongPosition(position);
+				if(isWearConnected){
+					String WEARABLE_DATA_PATH = "/wearable_data";
+                    SongDTO currentSong = songsList.get(position);
+					RhythmSong rhythmSong = MusicUtility.getSongMeta(currentSong.getSongLocation());
+                    DataMap dataMap = new DataMap();
+                    dataMap.putString("song_title", rhythmSong.getTrackTitle());
+                    dataMap.putByteArray("song_cover", rhythmSong.getImageData());
+					//Requires a new thread to avoid blocking the UI
+					new SendToDataLayerThread(WEARABLE_DATA_PATH, dataMap, googleClient).start();
+				}
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 	}
 
 	private void populateSongs(List<SongDTO> songsList, int songPosition) {
@@ -109,6 +138,19 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 		if (songPosition > 0) {
 			viewPager.setCurrentItem(songPosition, true);
 		}
+	}
+	@Override
+	protected void onStart() {
+		super.onStart();
+		googleClient.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		if (null != googleClient && googleClient.isConnected()) {
+			googleClient.disconnect();
+		}
+		super.onStop();
 	}
 
 	@Override
@@ -149,6 +191,21 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 	public void setToolBarText(String artistTitle, String albumTitle) {
 		artist.setText(artistTitle);
 		album.setText(albumTitle);
+	}
+
+	@Override
+	public void onConnected(Bundle bundle) {
+		isWearConnected = true;
+	}
+
+	@Override
+	public void onConnectionSuspended(int i) {
+		isWearConnected = false;
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		isWearConnected = false;
 	}
 
 	public class SongFragmentPager extends FragmentStatePagerAdapter {

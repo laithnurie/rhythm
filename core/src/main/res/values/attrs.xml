@@ -14,7 +14,7 @@
         <attr name="pointer_radius" format="dimension"/>
         <attr name="pointer_halo_width" format="dimension"/>
         <attr name="pointer_halo_border_width" format="dimension"></attr>
-        <attr name="circle_color" format="color"></attr>
+        <attr name="csb_circle_color" format="color"></attr>
         <attr name="circle_progress_color" format="color"></attr>
         <attr name="pointer_color" format="color"></attr>
         <attr name="pointer_halo_color" format="color"></attr>

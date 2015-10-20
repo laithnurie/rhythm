@@ -2,7 +2,6 @@ package com.laithlab.core.service;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.widget.RemoteViews;
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
@@ -25,7 +25,7 @@ public class MediaPlayerService extends Service {
 
 	private MediaPlayer m_objMediaPlayer;
 	private Notification notificationCompat;
-	private NotificationManager notificationManager;
+	private NotificationManagerCompat notificationManager;
 	private RemoteViews notiLayoutBig;
 
 	public static final int NOTIFICATION_ID = 104;
@@ -59,7 +59,8 @@ public class MediaPlayerService extends Service {
 			setNotificationPlayer(true, intent);
 			m_objMediaPlayer.pause();
 		}
-	}
+//        createWearNotification();
+    }
 
 	private void setNotificationPlayer(boolean pause, Intent intent) {
 		Intent pendingIntent = new Intent(this, MediaPlayerService.class);
@@ -94,7 +95,7 @@ public class MediaPlayerService extends Service {
 			}
 		}
 		notificationCompat.priority = Notification.PRIORITY_MAX;
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager = NotificationManagerCompat.from(this);
 		startForeground(NOTIFICATION_ID, notificationCompat);
 		notificationManager.notify(NOTIFICATION_ID, notificationCompat);
 	}
@@ -118,4 +119,28 @@ public class MediaPlayerService extends Service {
 		m_objMediaPlayer = null;
 		return super.onUnbind(intent);
 	}
+
+    private void createWearNotification(){
+        int notificationId = 001;
+// Build intent for notification content
+        Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent viewPendingIntent =
+                PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_pause_white)
+                        .setContentTitle("Wear notification")
+                        .setContentText("Hello !")
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setContentIntent(viewPendingIntent);
+
+// Get an instance of the NotificationManager service
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(this);
+
+// Build the notification and issues it with notification manager.
+        notificationManager.notify(notificationId, notificationBuilder.build());
+    }
 }

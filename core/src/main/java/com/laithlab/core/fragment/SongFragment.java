@@ -168,7 +168,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			mListener.changePlayerStyle(vibrantColor, songPosition);
 		} else {
 			if (mediaPlayer != null) {
-				timer.cancel();
+                if(timer != null){
+                    timer.cancel();
+                }
 				mediaPlayer.stop();
 				mediaPlayer.release();
 				mediaPlayer = null;
