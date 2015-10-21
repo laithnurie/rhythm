@@ -131,6 +131,19 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
                 sendCommand(Constants.ACTION_PLAY);
             }
         });
+        findViewById(R.id.wear_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCommand(Constants.ACTION_NEXT);
+            }
+        });
+
+        findViewById(R.id.wear_previous).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCommand(Constants.ACTION_PREVIOUS);
+            }
+        });
     }
 
     /**
