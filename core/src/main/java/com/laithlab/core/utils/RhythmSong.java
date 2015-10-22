@@ -3,6 +3,8 @@ package com.laithlab.core.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 public class RhythmSong implements Parcelable {
 
 	final private String artistTitle;
@@ -121,6 +123,17 @@ public class RhythmSong implements Parcelable {
 			return new RhythmSong[size];
 		}
 	};
+
+	@Override
+	public String toString() {
+		return "RhythmSong{" +
+				"artistTitle='" + artistTitle + '\'' +
+				", albumTitle='" + albumTitle + '\'' +
+				", trackTitle='" + trackTitle + '\'' +
+				", duration=" + duration +
+				", songLocation='" + songLocation + '\'' +
+				'}';
+	}
 }
 
 

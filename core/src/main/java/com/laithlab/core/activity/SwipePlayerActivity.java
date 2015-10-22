@@ -144,7 +144,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         if (songPosition > 0) {
             viewPager.setCurrentItem(songPosition, true);
         }
-        PlayBackUtil.setPlayList(songsList);
     }
 
     @Override
@@ -159,6 +158,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             googleClient.disconnect();
         }
         super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
     @Override

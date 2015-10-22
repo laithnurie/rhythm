@@ -91,8 +91,10 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		trackProgress.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
-				float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
-				updateDuration(milliSecondsToTimer((long) currentDuration), milliSecondsToTimer(mediaPlayer.getDuration()));
+				if(mediaPlayer != null){
+					float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
+					updateDuration(milliSecondsToTimer((long) currentDuration), milliSecondsToTimer(mediaPlayer.getDuration()));
+				}
 			}
 
 			@Override
@@ -201,13 +203,14 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		PlayBackUtil.setMediaPlayer(mp);
-		runMedia();
+//		runMedia();
 	}
 
 	private void playerNotification(String action) {
 		Intent intent = new Intent(getContext(), MediaPlayerService.class);
 		intent.setAction(action);
 		intent.putExtra(SONG_PARAM, rhythmSong);
+		intent.putExtra(SONG_POSITION_PARAM, songPosition);
 		getActivity().startService(intent);
 	}
 
