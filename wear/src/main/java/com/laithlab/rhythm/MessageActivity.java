@@ -35,7 +35,7 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
     private static final long CONNECTION_TIME_OUT_MS = 100;
 
     private GoogleApiClient client;
-    private String nodeId;
+    private List<Node> nodes;
 
     private final WearMessageReceiver messageReceiver = new WearMessageReceiver();
 
@@ -171,10 +171,7 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
                 client.blockingConnect(CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
                 NodeApi.GetConnectedNodesResult result =
                         Wearable.NodeApi.getConnectedNodes(client).await();
-                List<Node> nodes = result.getNodes();
-                if (nodes.size() > 0) {
-                    nodeId = nodes.get(0).getId();
-                }
+                nodes = result.getNodes();
                 client.disconnect();
             }
         }).start();
@@ -184,15 +181,17 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
      * Sends a message to the connected mobile device, telling it to show a Toast.
      */
     private void sendCommand(final String command) {
-        if (nodeId != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    client.blockingConnect(CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
-                    Wearable.MessageApi.sendMessage(client, nodeId, command, null);
-                    client.disconnect();
-                }
-            }).start();
+        if (nodes != null && !nodes.isEmpty()) {
+            for(final Node node : nodes){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        client.blockingConnect(CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
+                        Wearable.MessageApi.sendMessage(client, node.getId(), command, null);
+                        client.disconnect();
+                    }
+                }).start();
+            }
         }
     }
 

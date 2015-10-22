@@ -244,10 +244,12 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 								@Override
 								public void run() {
 									trackProgress.setProgress(currentProgress);
-									playButton.setImageResource(mediaPlayer.isPlaying()
-											? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
-									updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
-											milliSecondsToTimer(mediaPlayer.getDuration()));
+									if(mediaPlayer != null){
+										playButton.setImageResource(mediaPlayer.isPlaying()
+												? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
+										updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
+												milliSecondsToTimer(mediaPlayer.getDuration()));
+									}
 								}
 							});
 						}

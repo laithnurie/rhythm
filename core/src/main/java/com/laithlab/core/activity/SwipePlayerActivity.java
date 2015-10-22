@@ -87,7 +87,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
         viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(3);
 
         artist = (TextView) findViewById(R.id.txt_artist);
         album = (TextView) findViewById(R.id.txt_album);
@@ -246,12 +245,25 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra("player_command");
+            int currentSongIndex = viewPager.getCurrentItem();
+            int lastSongIndex = viewPager.getAdapter().getCount() - 1;
+
             switch (command) {
                 case "next":
-//                    viewPager.getChildCount();
+                    if (currentSongIndex == lastSongIndex) {
+                        viewPager.setCurrentItem(0);
+                    } else {
+                        viewPager.setCurrentItem(currentSongIndex + 1);
+                    }
+
                     Toast.makeText(context, "next", Toast.LENGTH_LONG).show();
                     break;
                 case "previous":
+                    if (currentSongIndex == 0) {
+                        viewPager.setCurrentItem(lastSongIndex);
+                    } else {
+                        viewPager.setCurrentItem(currentSongIndex - 1);
+                    }
                     Toast.makeText(context, "previous", Toast.LENGTH_LONG).show();
                     break;
             }

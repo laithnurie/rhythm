@@ -67,7 +67,7 @@ public class MediaPlayerService extends Service {
         } else if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
             Intent previousIntent = new Intent("player");
             previousIntent.putExtra("player_command", "previous");
-            sendBroadcast(previousIntent);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(previousIntent);
         }
 //        createWearNotification();
     }
@@ -85,6 +85,15 @@ public class MediaPlayerService extends Service {
 
         notiLayoutBig.setOnClickPendingIntent(R.id.noti_play_button,
                 PendingIntent.getService(this, 0, pendingIntent, 0));
+
+        pendingIntent.setAction(Constants.ACTION_NEXT);
+        notiLayoutBig.setOnClickPendingIntent(R.id.noti_next_button,
+                PendingIntent.getService(this, 0, pendingIntent, 0));
+
+        pendingIntent.setAction(Constants.ACTION_PREVIOUS);
+        notiLayoutBig.setOnClickPendingIntent(R.id.noti_prev_button,
+                PendingIntent.getService(this, 0, pendingIntent, 0));
+
         if (Build.VERSION.SDK_INT >= 16) {
             notificationCompat.bigContentView = notiLayoutBig;
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
