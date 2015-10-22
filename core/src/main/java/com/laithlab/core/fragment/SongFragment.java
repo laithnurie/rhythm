@@ -132,6 +132,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 				}
 			}
 		});
+		removePlayerListeners();
 		setPlayerListeners();
 
 		updatePlayerUI();
@@ -156,8 +157,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		if (isVisibleToUser) {
 			if (mediaPlayer == null) {
 				mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+				removePlayerListeners();
 				setPlayerListeners();
-				PlayBackUtil.setMediaPlayer(mediaPlayer);
 			}
 
 			if (beenDrawn) {
@@ -199,6 +200,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	@Override
 	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
+		PlayBackUtil.setMediaPlayer(mp);
 		runMedia();
 	}
 

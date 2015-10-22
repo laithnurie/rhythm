@@ -144,6 +144,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         if (songPosition > 0) {
             viewPager.setCurrentItem(songPosition, true);
         }
+        PlayBackUtil.setPlayList(songsList);
     }
 
     @Override

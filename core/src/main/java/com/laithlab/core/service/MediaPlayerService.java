@@ -40,7 +40,9 @@ public class MediaPlayerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mediaPlayer = PlayBackUtil.getMediaPlayer();
 
-        handleIntent(intent);
+        if (mediaPlayer != null) {
+            handleIntent(intent);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -69,7 +71,6 @@ public class MediaPlayerService extends Service {
             previousIntent.putExtra("player_command", "previous");
             LocalBroadcastManager.getInstance(this).sendBroadcast(previousIntent);
         }
-//        createWearNotification();
     }
 
     private void setNotificationPlayer(boolean pause, Intent intent) {
@@ -79,8 +80,9 @@ public class MediaPlayerService extends Service {
         } else {
             pendingIntent.setAction(Constants.ACTION_PAUSE);
         }
+        RhythmSong rhythmSong = intent.getParcelableExtra(SONG_PARAM);
 
-        notificationCompat = createBuiderNotificationRemovable(pause).build();
+        notificationCompat = createBuiderNotificationRemovable(rhythmSong).build();
         notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
 
         notiLayoutBig.setOnClickPendingIntent(R.id.noti_play_button,
@@ -99,7 +101,6 @@ public class MediaPlayerService extends Service {
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
                     pause ? R.drawable.ic_play_arrow_white : R.drawable.ic_pause_white);
 
-            RhythmSong rhythmSong = intent.getParcelableExtra(SONG_PARAM);
             if (rhythmSong != null) {
                 notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, rhythmSong.getTrackTitle());
                 notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, rhythmSong.getArtistTitle());
@@ -115,18 +116,26 @@ public class MediaPlayerService extends Service {
         }
         notificationCompat.priority = Notification.PRIORITY_MAX;
         notificationManager = NotificationManagerCompat.from(this);
-        startForeground(NOTIFICATION_ID, notificationCompat);
         notificationManager.notify(NOTIFICATION_ID, notificationCompat);
     }
 
-    private NotificationCompat.Builder createBuiderNotificationRemovable(boolean pause) {
+    private NotificationCompat.Builder createBuiderNotificationRemovable(RhythmSong rhythmSong) {
         Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return new NotificationCompat.Builder(this)
-                .setOngoing(false)
-                .setSmallIcon(pause ? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white)
+
+        NotificationCompat.Builder notificationBuild = new NotificationCompat.Builder(this);
+        byte[] imageData = rhythmSong.getImageData();
+        if (imageData != null) {
+            Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+            notificationBuild.setLargeIcon(bmp);
+        }
+        return notificationBuild.setOngoing(false)
+                .setContentTitle("Rhythm")
+                .setContentText(rhythmSong.getArtistTitle() + " - " + rhythmSong.getTrackTitle())
+                .setSmallIcon(R.drawable.ic_play_arrow_white)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(contentIntent);
     }
 
@@ -137,29 +146,5 @@ public class MediaPlayerService extends Service {
         mediaPlayer.reset();
         mediaPlayer = null;
         return super.onUnbind(intent);
-    }
-
-    private void createWearNotification() {
-        int notificationId = 001;
-// Build intent for notification content
-        Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent viewPendingIntent =
-                PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_pause_white)
-                        .setContentTitle("Wear notification")
-                        .setContentText("Hello !")
-                        .setPriority(Notification.PRIORITY_MAX)
-                        .setContentIntent(viewPendingIntent);
-
-// Get an instance of the NotificationManager service
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(this);
-
-// Build the notification and issues it with notification manager.
-        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }
