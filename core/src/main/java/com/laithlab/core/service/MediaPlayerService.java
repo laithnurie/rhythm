@@ -114,7 +114,7 @@ public class MediaPlayerService extends Service {
 
         Intent nextIntent = getMediaIntent(nextPosition, Constants.ACTION_NEXT);
         notiLayoutBig.setOnClickPendingIntent(R.id.noti_next_button,
-                PendingIntent.getService(this, 0, nextIntent, 0));
+                PendingIntent.getService(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
         int previousPosition;
         if (currentPosition == 0) {
@@ -123,6 +123,8 @@ public class MediaPlayerService extends Service {
             previousPosition = currentPosition - 1;
         }
         Log.v("lnln","new previous - " + previousPosition);
+
+        Log.v("lnln", "----------------------------");
 
         Intent previousIntent = getMediaIntent(previousPosition, Constants.ACTION_PREVIOUS);
         notiLayoutBig.setOnClickPendingIntent(R.id.noti_prev_button,
