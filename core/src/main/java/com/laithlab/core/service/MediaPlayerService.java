@@ -18,9 +18,8 @@ import android.widget.RemoteViews;
 
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
-import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.SongDTO;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
 
@@ -65,7 +64,7 @@ public class MediaPlayerService extends Service {
             Log.v("lnln", "song position - " + i + " - " +songDTOs.get(i).getSongTitle());
         }
         if (songDTOs != null && !songDTOs.isEmpty()) {
-            RhythmSong rhythmSong = MusicUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+            RhythmSong rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
             Log.v("lnln", rhythmSong.toString());
             if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
                 if (!mediaPlayer.isPlaying()) {
@@ -128,7 +127,7 @@ public class MediaPlayerService extends Service {
 
         Intent previousIntent = getMediaIntent(previousPosition, Constants.ACTION_PREVIOUS);
         notiLayoutBig.setOnClickPendingIntent(R.id.noti_prev_button,
-                PendingIntent.getService(this, 0, previousIntent, 0));
+                PendingIntent.getService(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (Build.VERSION.SDK_INT >= 16) {
             notificationCompat.bigContentView = notiLayoutBig;

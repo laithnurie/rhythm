@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class ArtistGridAdapter extends BaseAdapter {
 		ArtistDTO artist = artists.get(position);
 		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		if (!artist.getCoverPath().isEmpty()) {
-			byte[] imageData = MusicUtility.getImageData(artist.getCoverPath());
+			byte[] imageData = MusicDataUtility.getImageData(artist.getCoverPath());
 			if (imageData != null) {
 				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 				holder.gridItemImage.setImageBitmap(bmp);

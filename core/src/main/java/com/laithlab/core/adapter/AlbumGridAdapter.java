@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.laithlab.core.R;
 import com.laithlab.core.dto.AlbumDTO;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class AlbumGridAdapter extends BaseAdapter {
 
 		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		if (!albums.get(position).getCoverPath().isEmpty()) {
-			byte[] imageData = MusicUtility.getImageData(albums.get(position).getCoverPath());
+			byte[] imageData = MusicDataUtility.getImageData(albums.get(position).getCoverPath());
 			if (imageData != null) {
 				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 				holder.gridItemImage.setImageBitmap(bmp);

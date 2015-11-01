@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
 import com.laithlab.core.service.Constants;
@@ -70,7 +71,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		if (getArguments().size() > 0) {
 			song = getArguments().getParcelable(SONG_PARAM);
 			songPosition = getArguments().getInt(SONG_POSITION_PARAM);
-			rhythmSong = MusicUtility.getSongMeta(song.getSongLocation());
+			rhythmSong = MusicDataUtility.getSongMeta(song.getSongLocation());
 		}
 	}
 
@@ -81,6 +82,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		View rootView = inflater.inflate(R.layout.fragment_song, container, false);
 		beenDrawn = true;
 		mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		track = (TextView) rootView.findViewById(R.id.txt_track);
 		txtDuration = (TextView) rootView.findViewById(R.id.txt_duration);
 		playButton = (ImageView) rootView.findViewById(R.id.play_button);
@@ -159,6 +161,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		if (isVisibleToUser) {
 			if (mediaPlayer == null) {
 				mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+				mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				removePlayerListeners();
 				setPlayerListeners();
 			}
@@ -203,7 +206,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		PlayBackUtil.setMediaPlayer(mp);
-//		runMedia();
+		startTimer();
 	}
 
 	private void playerNotification(String action) {
@@ -223,6 +226,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public boolean onError(MediaPlayer mp, int what, int extra) {
 		mediaPlayer.release();
 		mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
+		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		removePlayerListeners();
 		setPlayerListeners();
 		PlayBackUtil.setMediaPlayer(mediaPlayer);
@@ -230,11 +234,11 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	}
 
 
-	private void runMedia() {
+	private void startTimer() {
 		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer mp) {
-				trackProgress.setProgress(mp.getCurrentPosition());
+				trackProgress.setProgress(0);
 			}
 		});
 		timer = new Timer();

@@ -16,7 +16,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.adapter.ArtistGridAdapter;
 import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.ArtistDTO;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 
 public class BrowseActivity extends AppCompatActivity {
 
@@ -46,7 +46,7 @@ public class BrowseActivity extends AppCompatActivity {
 		tiltedView.setRotation(-5f);
 
 		final GridView browseGrid = (GridView) findViewById(R.id.browse_grid);
-		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicUtility.allArtists(this))));
+		browseGrid.setAdapter(new ArtistGridAdapter(this, DTOConverter.getArtistList(MusicDataUtility.allArtists(this))));
 		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

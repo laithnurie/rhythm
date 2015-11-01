@@ -33,7 +33,7 @@ import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
 import com.laithlab.core.service.SendToDataLayerThread;
-import com.laithlab.core.utils.MusicUtility;
+import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
 
@@ -122,7 +122,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
                 if (isWearConnected) {
                     String WEARABLE_DATA_PATH = "/wearable_data";
                     SongDTO currentSong = songsList.get(position);
-                    RhythmSong rhythmSong = MusicUtility.getSongMeta(currentSong.getSongLocation());
+                    RhythmSong rhythmSong = MusicDataUtility.getSongMeta(currentSong.getSongLocation());
                     DataMap dataMap = new DataMap();
                     dataMap.putString("song_title", rhythmSong.getTrackTitle());
                     dataMap.putByteArray("song_cover", rhythmSong.getImageData());

@@ -15,14 +15,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class MusicUtility {
+public class MusicDataUtility {
 
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
 	private static String mp3Pattern = ".mp3";
 
 	// Constructor
-	public MusicUtility() {
+	public MusicDataUtility() {
 	}
 
 	public static ArrayList<HashMap<String, String>> getMusicFromStorage() {
