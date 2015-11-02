@@ -35,7 +35,6 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
     private static final long CONNECTION_TIME_OUT_MS = 100;
 
     private GoogleApiClient client;
-    private List<Node> nodes;
 
     private final WearMessageReceiver messageReceiver = new WearMessageReceiver();
 
@@ -92,7 +91,7 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle dataBundle = intent.getBundleExtra("wear_data");
-            TextView songTitle = (TextView)findViewById(R.id.wear_song_played_title);
+            TextView songTitle = (TextView) findViewById(R.id.wear_song_played_title);
             songTitle.setText(dataBundle.getString("song_title"));
             byte[] songCover = dataBundle.getByteArray("song_cover");
 
@@ -112,7 +111,6 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
      */
     private void initApi() {
         client = getGoogleApiClient(this);
-        retrieveDeviceNode();
     }
 
     /**
@@ -146,12 +144,6 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
         });
     }
 
-    /**
-     * Returns a GoogleApiClient that can access the Wear API.
-     *
-     * @param context
-     * @return A GoogleApiClient that can make calls to the Wear API
-     */
     private GoogleApiClient getGoogleApiClient(Context context) {
         return new GoogleApiClient.Builder(context)
                 .addApi(Wearable.API)
@@ -160,39 +152,20 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
                 .build();
     }
 
-    /**
-     * Connects to the GoogleApiClient and retrieves the connected device's Node ID. If there are
-     * multiple connected devices, the first Node ID is returned.
-     */
-    private void retrieveDeviceNode() {
+    private void sendCommand(final String command) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 client.blockingConnect(CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
                 NodeApi.GetConnectedNodesResult result =
                         Wearable.NodeApi.getConnectedNodes(client).await();
-                nodes = result.getNodes();
+                List<Node> nodes = result.getNodes();
+                for (Node node : nodes) {
+                    Wearable.MessageApi.sendMessage(client, node.getId(), command, null);
+                }
                 client.disconnect();
             }
         }).start();
-    }
-
-    /**
-     * Sends a message to the connected mobile device, telling it to show a Toast.
-     */
-    private void sendCommand(final String command) {
-        if (nodes != null && !nodes.isEmpty()) {
-            for(final Node node : nodes){
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        client.blockingConnect(CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
-                        Wearable.MessageApi.sendMessage(client, node.getId(), command, null);
-                        client.disconnect();
-                    }
-                }).start();
-            }
-        }
     }
 
     private final ResultCallback<DataItemBuffer> resultCallback = new ResultCallback<DataItemBuffer>() {
