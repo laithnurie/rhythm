@@ -90,18 +90,13 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
         artist = (TextView) findViewById(R.id.txt_artist);
         album = (TextView) findViewById(R.id.txt_album);
-        Realm realm = Realm.getInstance(this);
 
         Bundle extras = getIntent().getExtras();
         final List<SongDTO> songsList;
         int songPosition;
         if (extras != null) {
-            AlbumDTO currentAlbum = extras.getParcelable("album");
             songPosition = extras.getInt("songPosition");
-            final RealmResults<Song> songs = realm.where(Song.class)
-                    .contains("albumId", currentAlbum.getId())
-                    .findAll();
-            songsList = DTOConverter.getSongList(songs.subList(0, songs.size()));
+            songsList = extras.getParcelableArrayList("songs");
             PlayBackUtil.setPlayList(songsList);
             PlayBackUtil.setCurrentSongPosition(songPosition);
         } else {

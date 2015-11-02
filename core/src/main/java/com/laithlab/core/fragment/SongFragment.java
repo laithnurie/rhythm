@@ -95,7 +95,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
 				if(mediaPlayer != null){
 					float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
-					updateDuration(milliSecondsToTimer((long) currentDuration), milliSecondsToTimer(mediaPlayer.getDuration()));
+					updateDuration(milliSecondsToTimer((long) currentDuration), MusicDataUtility.secondsToTimer(mediaPlayer.getDuration() / 1000));
 				}
 			}
 

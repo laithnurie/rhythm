@@ -8,7 +8,7 @@ public class SongDTO implements Parcelable {
 
 	private String songTitle;
 	private String songImageUrl;
-	private float songDuration;
+	private long songDuration;
 	private String songLocation;
 	private String albumId;
 
@@ -28,11 +28,11 @@ public class SongDTO implements Parcelable {
 		return songImageUrl;
 	}
 
-	public void setSongDuration(float songDuration) {
+	public void setSongDuration(long songDuration) {
 		this.songDuration = songDuration;
 	}
 
-	public float getSongDuration() {
+	public long getSongDuration() {
 		return songDuration;
 	}
 
@@ -61,7 +61,7 @@ public class SongDTO implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(this.songTitle);
 		dest.writeString(this.songImageUrl);
-		dest.writeFloat(this.songDuration);
+		dest.writeLong(this.songDuration);
 		dest.writeString(this.songLocation);
 		dest.writeString(this.albumId);
 	}
@@ -72,7 +72,7 @@ public class SongDTO implements Parcelable {
 	protected SongDTO(Parcel in) {
 		this.songTitle = in.readString();
 		this.songImageUrl = in.readString();
-		this.songDuration = in.readInt();
+		this.songDuration = in.readLong();
 		this.songLocation = in.readString();
 		this.albumId = in.readString();
 	}

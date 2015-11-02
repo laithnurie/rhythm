@@ -11,7 +11,7 @@ public class RhythmSong implements Parcelable {
 	final private String albumTitle;
 	final private String trackTitle;
 	final private byte[] imageData;
-	final private float duration;
+	final private long duration;
 	final private String songLocation;
 
 	private RhythmSong(RhythmSongBuilder builder){
@@ -39,7 +39,7 @@ public class RhythmSong implements Parcelable {
 		return imageData;
 	}
 
-	public float getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 
@@ -52,7 +52,7 @@ public class RhythmSong implements Parcelable {
 		private String albumTitle;
 		private String trackTitle;
 		private byte[] imageData;
-		private float duration;
+		private long duration;
 		private String songLocation;
 
 		public RhythmSongBuilder artistTitle(String artistTitle){
@@ -75,7 +75,7 @@ public class RhythmSong implements Parcelable {
 			return this;
 		}
 
-		public RhythmSongBuilder duration(float duration){
+		public RhythmSongBuilder duration(long duration){
 			this.duration = duration;
 			return this;
 		}
@@ -110,7 +110,7 @@ public class RhythmSong implements Parcelable {
 		this.albumTitle = in.readString();
 		this.trackTitle = in.readString();
 		this.imageData = in.createByteArray();
-		this.duration = in.readFloat();
+		this.duration = in.readLong();
 		this.songLocation = in.readString();
 	}
 

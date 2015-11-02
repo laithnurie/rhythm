@@ -31,6 +31,7 @@
                     android:orientation="vertical">
 
                     <GridView
+                        android:visibility="gone"
                         android:id="@+id/songs_grid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -38,6 +39,12 @@
                         android:numColumns="2"
                         android:stretchMode="columnWidth"
                         android:verticalSpacing="0dp"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_songs_list"
+                        android:scrollbars="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
 
                 </LinearLayout>
             </LinearLayout>

@@ -1,21 +1,20 @@
 package com.laithlab.core.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
+
 import com.laithlab.core.R;
-import com.laithlab.core.adapter.SongGridAdapter;
+import com.laithlab.core.adapter.SongListAdapter;
 import com.laithlab.core.dto.AlbumDTO;
-import com.laithlab.core.dto.ArtistDTO;
 
 public class AlbumActivity extends AppCompatActivity {
 
@@ -31,7 +30,6 @@ public class AlbumActivity extends AppCompatActivity {
 
 		Bundle extras = getIntent().getExtras();
 		final AlbumDTO currentAlbum = extras.getParcelable("album");
-		final ArtistDTO currentArtist = extras.getParcelable("artist");
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -47,18 +45,12 @@ public class AlbumActivity extends AppCompatActivity {
 		tiltedView.setPivotY(0f);
 		tiltedView.setRotation(-5f);
 
-		final GridView songsGrid = (GridView) findViewById(R.id.songs_grid);
-		songsGrid.setAdapter(new SongGridAdapter(this, currentAlbum.getSongs()));
-		songsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent playerActivity = new Intent(AlbumActivity.this, SwipePlayerActivity.class);
-				playerActivity.putExtra("album", currentAlbum);
-				playerActivity.putExtra("songPosition", position);
-				startActivity(playerActivity);
-			}
-		});
-	}
+        RecyclerView songList = (RecyclerView) findViewById(R.id.rv_songs_list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        songList.setLayoutManager(layoutManager);
+        songList.setAdapter(new SongListAdapter(this, currentAlbum.getSongs()));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

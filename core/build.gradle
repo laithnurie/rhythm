@@ -32,4 +32,6 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'io.realm:realm-android:0.82.1'
     compile 'com.mpatric:mp3agic:0.8.1'
+    compile 'com.android.support:recyclerview-v7:23.0.0'
+    compile 'com.facebook.stetho:stetho:1.2.0'
 }

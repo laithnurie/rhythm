@@ -7,7 +7,7 @@ import io.realm.annotations.RealmClass;
 public class Song extends RealmObject {
 	private String songTitle;
 	private String songImageUrl;
-	private float songDuration;
+	private long songDuration;
 	private String songLocation;
 	private String albumId;
 
@@ -27,11 +27,11 @@ public class Song extends RealmObject {
 		return songImageUrl;
 	}
 
-	public void setSongDuration(float songDuration) {
+	public void setSongDuration(long songDuration) {
 		this.songDuration = songDuration;
 	}
 
-	public float getSongDuration() {
+	public long getSongDuration() {
 		return songDuration;
 	}
 
