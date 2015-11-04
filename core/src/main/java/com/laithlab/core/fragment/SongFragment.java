@@ -20,6 +20,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
+import com.laithlab.core.service.MediaPlayerServiceTwo;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
@@ -210,7 +211,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	}
 
 	private void playerNotification(String action) {
-		Intent intent = new Intent(getContext(), MediaPlayerService.class);
+		Intent intent = new Intent(getContext(), MediaPlayerServiceTwo.class);
 		intent.setAction(action);
 		intent.putExtra(SONG_PARAM, rhythmSong);
 		intent.putExtra(SONG_POSITION_PARAM, songPosition);
