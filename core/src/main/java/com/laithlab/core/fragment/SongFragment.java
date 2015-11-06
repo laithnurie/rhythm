@@ -9,8 +9,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +27,7 @@ import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
 import com.laithlab.core.service.Constants;
-import com.laithlab.core.service.MediaPlayerService;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SongFragment extends Fragment implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnInfoListener, MediaPlayer.OnPreparedListener {
@@ -41,7 +39,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private RhythmSong rhythmSong;
 	private int songPosition;
 	private MediaPlayer mediaPlayer;
-	private Timer timer;
 
 	private TextView track;
 	private CircularSeekBar trackProgress;
@@ -49,6 +46,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	private TextView txtDuration;
 	private ImageView playButton;
 	private int vibrantColor;
+	private Handler handler;
 
 	private boolean beenDrawn = false;
 
@@ -80,6 +78,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
+		handler = new Handler();
 		View rootView = inflater.inflate(R.layout.fragment_song, container, false);
 		beenDrawn = true;
 		mediaPlayer = MediaPlayer.create(this.getContext(), Uri.parse(rhythmSong.getSongLocation()));
@@ -94,7 +93,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		trackProgress.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
-				if(mediaPlayer != null){
+				if (mediaPlayer != null) {
 					float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
 					updateDuration(milliSecondsToTimer((long) currentDuration), MusicDataUtility.secondsToTimer(mediaPlayer.getDuration() / 1000));
 				}
@@ -106,6 +105,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 					mediaPlayer.pause();
 				}
 				mediaPlayer.start();
+				startTimer();
 				PlayBackUtil.setMediaPlayer(mediaPlayer);
 				int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
 				mediaPlayer.seekTo(currentMill);
@@ -114,7 +114,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
 			@Override
 			public void onStartTrackingTouch(CircularSeekBar seekBar) {
-
+				stopTimer();
 			}
 		});
 
@@ -127,11 +127,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 				if (mediaPlayer.isPlaying()) {
 					playButton.setImageResource(R.drawable.ic_play_arrow_white);
 					mediaPlayer.pause();
+					stopTimer();
 					playerNotification(Constants.ACTION_PAUSE);
 				} else {
 					playButton.setImageResource(R.drawable.ic_pause_white);
 					CustomAnimUtil.overShootAnimation(albumCover);
 					mediaPlayer.start();
+					startTimer();
 					playerNotification(Constants.ACTION_PLAY);
 
 				}
@@ -142,6 +144,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
 		updatePlayerUI();
 		return rootView;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.v("lnln", "I paused on " + rhythmSong.getTrackTitle());
+		stopTimer();
 	}
 
 	@Override
@@ -175,9 +184,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			mListener.changePlayerStyle(vibrantColor, songPosition);
 		} else {
 			if (mediaPlayer != null) {
-                if(timer != null){
-                    timer.cancel();
-                }
+				stopTimer();
 				mediaPlayer.stop();
 				mediaPlayer.release();
 				mediaPlayer = null;
@@ -200,6 +207,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			mediaPlayer.setOnInfoListener(null);
 			mediaPlayer.setOnPreparedListener(null);
 			mediaPlayer.setScreenOnWhilePlaying(false);
+			stopTimer();
 		}
 	}
 
@@ -207,7 +215,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	public void onPrepared(final MediaPlayer mp) {
 		updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
 		PlayBackUtil.setMediaPlayer(mp);
-		startTimer();
 	}
 
 	private void playerNotification(String action) {
@@ -239,35 +246,46 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(MediaPlayer mp) {
-				trackProgress.setProgress(0);
+				stopTimer();
 			}
 		});
-		timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				if (mediaPlayer != null) {
-					if (!mediaPlayer.isPlaying() || !trackProgress.isPressed()) {
-						final int currentProgress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
-						if (getActivity() != null) {
-							getActivity().runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									trackProgress.setProgress(currentProgress);
-									if(mediaPlayer != null){
-										playButton.setImageResource(mediaPlayer.isPlaying()
-												? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
-										updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
-												milliSecondsToTimer(mediaPlayer.getDuration()));
-									}
+		handler.postDelayed(mRunnable, 500);
+	}
+
+	private void stopTimer(){
+		if(handler != null){
+			handler.removeCallbacks(mRunnable);
+		}
+	}
+
+	private Runnable mRunnable = new Runnable() {
+		@Override
+		public void run() {
+			Log.v("lnln", rhythmSong.getTrackTitle());
+			if (mediaPlayer != null) {
+				if (!mediaPlayer.isPlaying() || !trackProgress.isPressed()) {
+					final int currentProgress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								trackProgress.setProgress(currentProgress);
+								if (mediaPlayer != null) {
+									playButton.setImageResource(mediaPlayer.isPlaying()
+											? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
+									updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
+											milliSecondsToTimer(mediaPlayer.getDuration()));
 								}
-							});
-						}
+							}
+						});
 					}
 				}
 			}
-		}, 0, 500);
-	}
+			handler.postDelayed(mRunnable, 500);
+		}
+	};
+
+
 
 	private void updateDuration(String currentDuration, String totalDuration) {
 		if (getActivity() != null) {

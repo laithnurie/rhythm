@@ -19,16 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Wearable;
 import com.laithlab.core.R;
-import com.laithlab.core.converter.DTOConverter;
-import com.laithlab.core.db.Song;
-import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
@@ -36,9 +32,6 @@ import com.laithlab.core.service.SendToDataLayerThread;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 import java.util.List;
 
@@ -54,6 +47,9 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
     private boolean isWearConnected = false;
     private GoogleApiClient googleClient;
+
+    private String SONG_POSITION_PARAM = "songPosition";
+    private String SONGS_PARAM = "songs";
 
 
     @Override
@@ -95,8 +91,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         final List<SongDTO> songsList;
         int songPosition;
         if (extras != null) {
-            songPosition = extras.getInt("songPosition");
-            songsList = extras.getParcelableArrayList("songs");
+            songPosition = extras.getInt(SONG_POSITION_PARAM);
+            songsList = extras.getParcelableArrayList(SONGS_PARAM);
             PlayBackUtil.setPlayList(songsList);
             PlayBackUtil.setCurrentSongPosition(songPosition);
         } else {
@@ -220,7 +216,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             this.songDTOs = songDTOs;
         }
 
-
         @Override
         public Fragment getItem(int position) {
             return SongFragment.newInstance(songDTOs.get(position), position);
@@ -251,8 +246,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
                     } else {
                         viewPager.setCurrentItem(currentSongIndex + 1);
                     }
-
-                    Toast.makeText(context, "next", Toast.LENGTH_LONG).show();
                     break;
                 case "previous":
                     if (currentSongIndex == 0) {
@@ -260,7 +253,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
                     } else {
                         viewPager.setCurrentItem(currentSongIndex - 1);
                     }
-                    Toast.makeText(context, "previous", Toast.LENGTH_LONG).show();
                     break;
             }
 

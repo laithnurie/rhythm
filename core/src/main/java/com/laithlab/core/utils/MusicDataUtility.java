@@ -81,7 +81,6 @@ public class MusicDataUtility {
             album = album != null ? album : "Unknown Album";
             track = track != null ? track : "Unknown Track";
             duration = mp3file.getLengthInSeconds();
-            Log.v("lnln", "duration - db seconds " + duration);
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             e.printStackTrace();
         }
