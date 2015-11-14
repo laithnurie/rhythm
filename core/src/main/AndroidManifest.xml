@@ -17,7 +17,7 @@
             android:launchMode="singleTop"/>
 
         <service
-            android:name=".service.MediaPlayerServiceTwo"
+            android:name=".service.MediaPlayerService"
             android:stopWithTask="true"
             android:enabled="true"
             android:exported="true">

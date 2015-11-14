@@ -46,6 +46,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     private ViewPager viewPager;
 
     private boolean isWearConnected = false;
+    private boolean changedSongFromNotification = false;
+
     private GoogleApiClient googleClient;
 
     private String SONG_POSITION_PARAM = "songPosition";
@@ -193,6 +195,16 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     }
 
     @Override
+    public void resetChangedSongFromNotification() {
+        changedSongFromNotification = false;
+    }
+
+    @Override
+    public boolean songChangedFromNotification() {
+        return changedSongFromNotification;
+    }
+
+    @Override
     public void onConnected(Bundle bundle) {
         isWearConnected = true;
     }
@@ -255,6 +267,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
                     }
                     break;
             }
+            changedSongFromNotification = true;
 
         }
     };

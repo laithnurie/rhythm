@@ -1,20 +1,27 @@
 package com.laithlab.core.service;
 
-import android.annotation.SuppressLint;
+
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.media.session.MediaSessionManager;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.media.RatingCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
@@ -28,163 +35,236 @@ import java.util.List;
 
 public class MediaPlayerService extends Service {
 
-    private static final String SONG_PARAM = "song";
     private static final String SONG_POSITION_PARAM = "songPosition";
-    public static final int NOTIFICATION_ID = 104;
+    private static int NOTIFICATION_ID = 17;
 
-    private MediaPlayer mediaPlayer;
+
+    private MediaPlayer mMediaPlayer;
+    private MediaSessionManager mManager;
+    private MediaSessionCompat mSession;
+    private MediaControllerCompat mController;
     private List<SongDTO> songDTOs;
+    private int currentPosition;
+    private RhythmSong rhythmSong;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mediaPlayer = PlayBackUtil.getMediaPlayer();
-
-        if (mediaPlayer != null) {
-            handleIntent(intent);
-        }
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void handleIntent(Intent intent) {
         if (intent == null || intent.getAction() == null) {
             return;
         }
 
         String action = intent.getAction();
-        int currentPosition = intent.getIntExtra(SONG_POSITION_PARAM, 0);
-        Log.v("lnln", action + " - " + currentPosition);
         songDTOs = PlayBackUtil.getCurrentPlayList();
-        for(int i = 0; i<songDTOs.size(); i++){
-            Log.v("lnln", "song position - " + i + " - " +songDTOs.get(i).getSongTitle());
-        }
-        if (songDTOs != null && !songDTOs.isEmpty()) {
-            RhythmSong rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
-            Log.v("lnln", rhythmSong.toString());
-            if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
-                if (!mediaPlayer.isPlaying()) {
-                    mediaPlayer.start();
-                }
-                setNotificationPlayer(false, rhythmSong, currentPosition);
-            } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
-                setNotificationPlayer(true, rhythmSong, currentPosition);
-                mediaPlayer.pause();
-            } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
-                setNotificationPlayer(false, rhythmSong, currentPosition);
-                Intent nextIntent = new Intent("player");
-                nextIntent.putExtra("player_command", "next");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(nextIntent);
 
-            } else if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
-                setNotificationPlayer(false, rhythmSong, currentPosition);
-                Intent previousIntent = new Intent("player");
-                previousIntent.putExtra("player_command", "previous");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(previousIntent);
-            }
+        currentPosition = PlayBackUtil.getCurrentSongPosition();
+        rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+
+
+        if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
+            mController.getTransportControls().play();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
+            mController.getTransportControls().pause();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
+            mController.getTransportControls().skipToPrevious();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
+            mController.getTransportControls().skipToNext();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
+            mController.getTransportControls().stop();
         }
     }
 
-    private void setNotificationPlayer(boolean pause, RhythmSong rhythmSong, int currentPosition) {
-        Intent playIntent;
-        if (pause) {
-            playIntent = getMediaIntent(currentPosition, Constants.ACTION_PLAY);
-        } else{
-            playIntent = getMediaIntent(currentPosition, Constants.ACTION_PAUSE);
-        }
-
-        Notification notificationCompat = createBuiderNotificationRemovable(rhythmSong).build();
-        RemoteViews notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
-
-        notiLayoutBig.setOnClickPendingIntent(R.id.noti_play_button,
-                PendingIntent.getService(this, 0, playIntent, 0));
-
-        int nextPosition;
-        if (currentPosition == songDTOs.size() - 1) {
-            nextPosition = 0;
-        } else {
-            nextPosition = currentPosition + 1;
-        }
-        Log.v("lnln","new next - " + nextPosition);
-
-        Intent nextIntent = getMediaIntent(nextPosition, Constants.ACTION_NEXT);
-        notiLayoutBig.setOnClickPendingIntent(R.id.noti_next_button,
-                PendingIntent.getService(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-        int previousPosition;
-        if (currentPosition == 0) {
-            previousPosition = songDTOs.size() - 1;
-        } else {
-            previousPosition = currentPosition - 1;
-        }
-        Log.v("lnln","new previous - " + previousPosition);
-
-        Log.v("lnln", "----------------------------");
-
-        Intent previousIntent = getMediaIntent(previousPosition, Constants.ACTION_PREVIOUS);
-        notiLayoutBig.setOnClickPendingIntent(R.id.noti_prev_button,
-                PendingIntent.getService(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-        if (Build.VERSION.SDK_INT >= 16) {
-            notificationCompat.bigContentView = notiLayoutBig;
-            notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                    pause ? R.drawable.ic_play_arrow_white : R.drawable.ic_pause_white);
-
-            if (rhythmSong != null) {
-                notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, rhythmSong.getTrackTitle());
-                notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, rhythmSong.getArtistTitle());
-                notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, rhythmSong.getAlbumTitle());
-                byte[] imageData = rhythmSong.getImageData();
-                if (imageData != null) {
-                    Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-                    notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, bmp);
-                } else {
-                    notificationCompat.bigContentView.setImageViewResource(R.id.noti_album_art, R.drawable.ic_play_arrow_white);
-                }
-            }
-        }
-        notificationCompat.priority = Notification.PRIORITY_MAX;
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(NOTIFICATION_ID, notificationCompat);
+    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
+    private NotificationCompat.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        intent.setAction(intentAction);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        return new NotificationCompat.Action.Builder(icon, title, pendingIntent).build();
     }
 
-    private Intent getMediaIntent(int position, String action) {
-        Intent pendingIntent = new Intent(this, MediaPlayerService.class);
-        pendingIntent.putExtra(SONG_POSITION_PARAM, position);
-        pendingIntent.setAction(action);
-        return pendingIntent;
-    }
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void buildNotification(NotificationCompat.Action action) {
+        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle();
+        style.setMediaSession(mSession.getSessionToken());
 
-    private NotificationCompat.Builder createBuiderNotificationRemovable(RhythmSong rhythmSong) {
-        Intent notificationIntent = new Intent(this, SwipePlayerActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent playerIntent = new Intent(getApplicationContext(), SwipePlayerActivity.class);
+        playerIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                playerIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuild = new NotificationCompat.Builder(this);
+        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        intent.setAction(Constants.ACTION_STOP);
+        PendingIntent deleteIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         byte[] imageData = rhythmSong.getImageData();
         if (imageData != null) {
-            Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-            notificationBuild.setLargeIcon(bmp);
+            builder.setLargeIcon(getAlbumArt(imageData));
         }
-        return notificationBuild.setOngoing(false)
-                .setContentTitle("Rhythm")
-                .setContentText(rhythmSong.getArtistTitle() + " - " + rhythmSong.getTrackTitle())
-                .setSmallIcon(R.drawable.ic_play_arrow_white)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setContentIntent(contentIntent);
+
+        builder.setSmallIcon(R.drawable.ic_play_arrow_white);
+
+
+        builder.setContentTitle(rhythmSong.getTrackTitle())
+                .setContentText(rhythmSong.getArtistTitle())
+                .setDeleteIntent(deleteIntent)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setContentIntent(contentIntent)
+                .setStyle(style);
+
+        builder.addAction(generateAction(R.drawable.ic_previous_arrow_white, "Previous", Constants.ACTION_PREVIOUS));
+        builder.addAction(action);
+        builder.addAction(generateAction(R.drawable.ic_next_arrow_white, "Next", Constants.ACTION_NEXT));
+        style.setShowActionsInCompactView(0, 1, 2);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
-    @SuppressLint("NewApi")
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (mManager == null) {
+            initMediaSessions();
+        }
+
+        handleIntent(intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initMediaSessions() {
+        mMediaPlayer = PlayBackUtil.getMediaPlayer();
+
+        mSession = new MediaSessionCompat(getApplicationContext(), "simple player session");
+        try {
+            mController = new MediaControllerCompat(getApplicationContext(), mSession.getSessionToken());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        mSession.setCallback(new MediaSessionCompat.Callback() {
+                                 @Override
+                                 public void onPlay() {
+                                     super.onPlay();
+                                     mMediaPlayer.start();
+                                     Log.e("MediaPlayerService", "onPlay");
+                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                                 }
+
+                                 @Override
+                                 public void onPause() {
+                                     super.onPause();
+                                     mMediaPlayer.pause();
+                                     Log.e("MediaPlayerService", "onPause");
+                                     buildNotification(generateAction(R.drawable.ic_play_arrow_white, "Play", Constants.ACTION_PLAY));
+                                 }
+
+                                 @Override
+                                 public void onSkipToNext() {
+                                     super.onSkipToNext();
+                                     Log.e("MediaPlayerService", "onSkipToNext");
+                                     int lastIndex = songDTOs.size() - 1;
+                                     if (currentPosition == lastIndex) {
+                                         currentPosition = 0;
+                                     } else {
+                                         currentPosition++;
+                                     }
+                                     reInitialiseMediaSession(currentPosition);
+
+                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+
+                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+
+                                     Intent nextIntent = new Intent("player");
+                                     nextIntent.putExtra("player_command", "next");
+                                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(nextIntent);
+                                 }
+
+                                 @Override
+                                 public void onSkipToPrevious() {
+                                     super.onSkipToPrevious();
+                                     Log.e("MediaPlayerService", "onSkipToPrevious");
+                                     //Change media here
+                                     if (currentPosition == 0) {
+                                         currentPosition = songDTOs.size() - 1;
+                                     } else {
+                                         currentPosition--;
+                                     }
+                                     reInitialiseMediaSession(currentPosition);
+
+                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+                                     Log.v("lnsn", rhythmSong.getTrackTitle());
+
+                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+
+                                     Intent previousIntent = new Intent("player");
+                                     previousIntent.putExtra("player_command", "previous");
+                                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(previousIntent);
+                                 }
+
+                                 @Override
+                                 public void onFastForward() {
+                                     super.onFastForward();
+                                     Log.e("MediaPlayerService", "onFastForward");
+                                     //Manipulate current media here
+                                 }
+
+                                 @Override
+                                 public void onRewind() {
+                                     super.onRewind();
+                                     Log.e("MediaPlayerService", "onRewind");
+                                     //Manipulate current media here
+                                 }
+
+                                 @Override
+                                 public void onStop() {
+                                     super.onStop();
+                                     Log.e("MediaPlayerService", "onStop");
+                                     //Stop media player here
+                                     NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                                     notificationManager.cancel(NOTIFICATION_ID);
+                                     Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+                                     stopService(intent);
+                                 }
+
+                                 @Override
+                                 public void onSeekTo(long pos) {
+                                     super.onSeekTo(pos);
+                                 }
+
+                                 @Override
+                                 public void onSetRating(RatingCompat rating) {
+                                     super.onSetRating(rating);
+                                 }
+                             }
+        );
+    }
+
+    private void reInitialiseMediaSession(int currentPosition) {
+        PlayBackUtil.setCurrentSongPosition(currentPosition);
+        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(this, songDTOs.get(currentPosition).getSongLocation());
+        mMediaPlayer.start();
+        initMediaSessions();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onUnbind(Intent intent) {
-        mediaPlayer.release();
-        mediaPlayer.reset();
-        mediaPlayer = null;
+        mSession.release();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
         return super.onUnbind(intent);
+    }
+
+    private Bitmap getAlbumArt(byte[] imageData) {
+        Resources res = getResources();
+        int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
+        int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
+        Bitmap largeIcon = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+        return Bitmap.createScaledBitmap(largeIcon, width, height, false);
     }
 }

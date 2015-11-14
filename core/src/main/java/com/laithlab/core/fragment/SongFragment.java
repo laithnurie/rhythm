@@ -22,7 +22,7 @@ import com.laithlab.core.customview.CircularSeekBar;
 import com.laithlab.core.customview.CustomAnimUtil;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.service.Constants;
-import com.laithlab.core.service.MediaPlayerServiceTwo;
+import com.laithlab.core.service.MediaPlayerService;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.RhythmSong;
@@ -131,7 +131,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 					mediaPlayer.start();
 					startTimer();
 					playerNotification(Constants.ACTION_PLAY);
-
 				}
 			}
 		});
@@ -166,7 +165,12 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
 			if (mediaPlayer == null) {
-				mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+				if(mListener.songChangedFromNotification()){
+					mediaPlayer = PlayBackUtil.getMediaPlayer();
+					mListener.resetChangedSongFromNotification();
+				} else {
+					mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+				}
 				removePlayerListeners();
 				setPlayerListeners();
 			}
@@ -180,6 +184,10 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 		} else {
 			if (mediaPlayer != null) {
 				stopTimer();
+				removePlayerListeners();
+				mediaPlayer.stop();
+				mediaPlayer.release();
+				mediaPlayer = null;
 			}
 		}
 	}
@@ -209,7 +217,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	}
 
 	private void playerNotification(String action) {
-		Intent intent = new Intent(getContext(), MediaPlayerServiceTwo.class);
+		Intent intent = new Intent(getContext(), MediaPlayerService.class);
 		intent.setAction(action);
 		intent.putExtra(SONG_PARAM, rhythmSong);
 		intent.putExtra(SONG_POSITION_PARAM, songPosition);

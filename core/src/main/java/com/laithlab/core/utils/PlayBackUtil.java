@@ -21,15 +21,21 @@ public class PlayBackUtil {
 	}
 
 	public static MediaPlayer setMediaPlayerOne(Context context, String songLocation){
-		if(mediaPlayerService != null){
-			if(mediaPlayerService.isPlaying()){
-				mediaPlayerService.stop();
+		try {
+			if(mediaPlayerService != null){
+				if(mediaPlayerService.isPlaying()){
+					mediaPlayerService.stop();
+				}
+				mediaPlayerService.reset();
 			}
-			mediaPlayerService.reset();
+			mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
+			mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			return mediaPlayerService;
+		} catch (Exception e){
+			mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
+			mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			return mediaPlayerService;
 		}
-		mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
-		mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		return mediaPlayerService;
 	}
 
 	public static List<SongDTO> getCurrentPlayList(){
