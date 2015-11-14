@@ -11,10 +11,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.session.MediaSessionManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -177,7 +175,10 @@ public class MediaPlayerServiceTwo extends Service {
                                      }
                                      reInitialiseMediaSession(currentPosition);
 
-                                     buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE));
+                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+                                     Log.v("lnsn", rhythmSong.getTrackTitle());
+
+                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
 
                                      Intent nextIntent = new Intent("player");
                                      nextIntent.putExtra("player_command", "next");
@@ -196,7 +197,10 @@ public class MediaPlayerServiceTwo extends Service {
                                      }
                                      reInitialiseMediaSession(currentPosition);
 
-                                     buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE));
+                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+                                     Log.v("lnsn", rhythmSong.getTrackTitle());
+
+                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
 
                                      Intent previousIntent = new Intent("player");
                                      previousIntent.putExtra("player_command", "previous");
@@ -243,13 +247,8 @@ public class MediaPlayerServiceTwo extends Service {
 
     private void reInitialiseMediaSession(int currentPosition) {
         PlayBackUtil.setCurrentSongPosition(currentPosition);
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
-        mMediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(rhythmSong.getSongLocation()));
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(this, songDTOs.get(currentPosition).getSongLocation());
         mMediaPlayer.start();
-        PlayBackUtil.setMediaPlayer(mMediaPlayer);
         initMediaSessions();
     }
 

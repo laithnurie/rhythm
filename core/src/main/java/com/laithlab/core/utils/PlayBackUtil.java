@@ -1,9 +1,13 @@
 package com.laithlab.core.utils;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
-import com.laithlab.core.dto.SongDTO;
+import android.net.Uri;
 
 import java.util.List;
+
+import com.laithlab.core.dto.SongDTO;
 
 public class PlayBackUtil {
 
@@ -16,8 +20,15 @@ public class PlayBackUtil {
 		return mediaPlayerService;
 	}
 
-	public static MediaPlayer setMediaPlayer(MediaPlayer mediaPlayer) {
-		mediaPlayerService = mediaPlayer;
+	public static MediaPlayer setMediaPlayerOne(Context context, String songLocation){
+		if(mediaPlayerService != null){
+			if(mediaPlayerService.isPlaying()){
+				mediaPlayerService.stop();
+			}
+			mediaPlayerService.reset();
+		}
+		mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
+		mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		return mediaPlayerService;
 	}
 
@@ -25,7 +36,7 @@ public class PlayBackUtil {
 		return currentPlayList;
 	}
 
-	public static void setPlayList(List<SongDTO>newPlayList){
+	public static void setCurrentPlayList(List<SongDTO> newPlayList){
 		currentPlayList = newPlayList;
 	}
 

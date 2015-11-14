@@ -93,7 +93,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         if (extras != null) {
             songPosition = extras.getInt(SONG_POSITION_PARAM);
             songsList = extras.getParcelableArrayList(SONGS_PARAM);
-            PlayBackUtil.setPlayList(songsList);
+            PlayBackUtil.setCurrentPlayList(songsList);
             PlayBackUtil.setCurrentSongPosition(songPosition);
         } else {
             songsList = PlayBackUtil.getCurrentPlayList();
