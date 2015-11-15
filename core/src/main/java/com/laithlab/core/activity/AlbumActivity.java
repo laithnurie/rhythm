@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.SongListAdapter;
@@ -28,15 +29,17 @@ public class AlbumActivity extends AppCompatActivity {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		Bundle extras = getIntent().getExtras();
-		final AlbumDTO currentAlbum = extras.getParcelable("album");
-
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			getSupportActionBar().setDisplayShowTitleEnabled(false);
 			actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
+		Bundle extras = getIntent().getExtras();
+		final AlbumDTO currentAlbum = extras.getParcelable("album");
+
+		TextView albumTitle = (TextView)findViewById(R.id.txt_album);
+		albumTitle.setText(currentAlbum.getAlbumTitle());
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
