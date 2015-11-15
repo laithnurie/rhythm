@@ -42,7 +42,7 @@ public class ArtistGridAdapter extends BaseAdapter {
 
 		ArtistDTO artist = artists.get(position);
 		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
-		if (!artist.getCoverPath().isEmpty()) {
+		if (artist.getCoverPath() != null && !artist.getCoverPath().isEmpty()) {
 			byte[] imageData = MusicDataUtility.getImageData(artist.getCoverPath());
 			if (imageData != null) {
 				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);

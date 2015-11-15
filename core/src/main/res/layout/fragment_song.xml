@@ -69,8 +69,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="30dp"
-                    app:border_color="#FF000000"
-                    app:border_width="2dp"
+                    app:civ_border_color="#FF000000"
+                    app:civ_border_width="2dp"
                     tools:background="#FFFFFF"/>
 
                 <FrameLayout

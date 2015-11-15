@@ -41,7 +41,7 @@ public class AlbumGridAdapter extends BaseAdapter {
 		}
 
 		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
-		if (!albums.get(position).getCoverPath().isEmpty()) {
+		if (albums.get(position).getCoverPath() != null && !albums.get(position).getCoverPath().isEmpty()) {
 			byte[] imageData = MusicDataUtility.getImageData(albums.get(position).getCoverPath());
 			if (imageData != null) {
 				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
