@@ -3,8 +3,6 @@ package com.laithlab.core.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Arrays;
-
 public class RhythmSong implements Parcelable {
 
 	final private String artistTitle;
