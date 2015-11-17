@@ -9,3 +9,10 @@ Rhythm is an android music player, it is a side project to follow up a design th
 
 
 It is still in progress! there is alot of of work to do!
+
+![alt text](https://github.com/laithnurie/rhythm/raw/master/demo.gif "Demo")
+
+Things needs to be done :
+* shuffle/repeat playlist
+* show loading while the app looking through the device storage to find the mp3 files.
+* Search functionality
