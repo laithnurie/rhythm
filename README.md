@@ -10,8 +10,6 @@ Rhythm is an android music player, it is a side project to follow up a design th
 
 It is still in progress! there is alot of of work to do!
 
-![alt text](https://github.com/laithnurie/rhythm/raw/master/demo.gif "Demo")
-
 <img src="https://github.com/laithnurie/rhythm/raw/master/demo.gif" width="300" height="533" />
 
 Things needs to be done :
