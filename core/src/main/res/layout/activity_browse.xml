@@ -56,7 +56,7 @@
                         android:id="@+id/tilted_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/white"
+                        android:background="@color/color_primary"
                         android:layout_marginLeft="-50dp"
                         />
 
@@ -70,8 +70,8 @@
                         <com.laithlab.core.customview.RhythmTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Artists"
-                            android:textColor="@color/color_primary"
+                            android:text="@string/artists"
+                            android:textColor="@color/white"
                             android:textSize="40sp"
                             app:textType="regular"
                             />
