@@ -8,6 +8,8 @@ Rhythm is an android music player, it is a side project to follow up a design th
 *   [mp3agic](https://github.com/mpatric/mp3agic)
 
 
+I also experimented android wear app, however I found the mediaSession notification does the trick for me.
+
 It is still in progress! there is alot of of work to do!
 
 <img src="https://github.com/laithnurie/rhythm/raw/master/demo.gif" width="300" height="533" />
