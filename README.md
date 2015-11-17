@@ -12,6 +12,8 @@ It is still in progress! there is alot of of work to do!
 
 ![alt text](https://github.com/laithnurie/rhythm/raw/master/demo.gif "Demo")
 
+<img src="https://github.com/laithnurie/rhythm/raw/master/demo.gif" width="300" height="533" />
+
 Things needs to be done :
 * shuffle/repeat playlist
 * show loading while the app looking through the device storage to find the mp3 files.
