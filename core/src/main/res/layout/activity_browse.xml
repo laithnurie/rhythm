@@ -80,6 +80,44 @@
                 </FrameLayout>
             </LinearLayout>
 
+
+            <LinearLayout
+                android:id="@+id/loadingContainer"
+                android:layout_gravity="center"
+                android:background="@color/color_primary"
+                android:layout_width="fill_parent"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal"
+                android:layout_height="100dp">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:text="@string/loading_message"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/loadingProgess"
+                    android:indeterminateBehavior="repeat"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    tools:visibility="visible"/>
+            </LinearLayout>
+
         </FrameLayout>
 
     </LinearLayout>
