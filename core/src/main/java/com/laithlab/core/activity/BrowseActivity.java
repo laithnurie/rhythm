@@ -31,13 +31,11 @@ import java.util.List;
 public class BrowseActivity extends AppCompatActivity implements MusicDBProgressCallBack {
 
 	private DrawerLayout drawerLayout;
-	private ProgressBar loadingProgess;
-    private GridView browseGrid;
+	private GridView browseGrid;
     private Context context;
 	private View loadingContainer;
 
 	private SharedPreferences sharedPreferences;
-	private boolean firstTimeLaunched;
 
 
 	@Override
@@ -60,7 +58,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 		loadingContainer = findViewById(R.id.loadingContainer);
-		loadingProgess = (ProgressBar) findViewById(R.id.loadingProgess);
+		ProgressBar loadingProgess = (ProgressBar) findViewById(R.id.loadingProgess);
 		loadingProgess.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
 		View tiltedView = findViewById(R.id.tilted_view);
@@ -86,8 +84,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 	@Override
 	protected void onResume() {
 		super.onResume();
-		firstTimeLaunched = sharedPreferences.getBoolean(getString(R.string.first_time_pref_key), true);
-		updateDb(this, firstTimeLaunched);
+		updateDb(this);
 	}
 
 	@Override
@@ -106,19 +103,20 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void updateDb(final MusicDBProgressCallBack callBack, boolean firstTime){
-		if(firstTime){
-			loadingContainer.setVisibility(View.VISIBLE);
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putBoolean(getString(R.string.first_time_pref_key), false);
-			editor.apply();
-		} else {
-			loadingContainer.setVisibility(View.GONE);
-		}
+	private void updateDb(final MusicDBProgressCallBack callBack){
+        boolean firstTimeLaunched = sharedPreferences.getBoolean(getString(R.string.first_time_pref_key), true);
+        if(firstTimeLaunched){
+            loadingContainer.setVisibility(View.VISIBLE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getString(R.string.first_time_pref_key), false);
+            editor.apply();
+        } else {
+            loadingContainer.setVisibility(View.GONE);
+        }
 
 		new Thread(new Runnable() {
 			public void run() {
-				MusicDataUtility.updateMusicDB(BrowseActivity.this);
+				MusicDataUtility.updateMusicDB(context);
 				callBack.finishedDBUpdate();
 			}
 		}).start();
