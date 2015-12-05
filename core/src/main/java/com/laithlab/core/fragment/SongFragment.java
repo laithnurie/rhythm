@@ -288,7 +288,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
 	private void updatePlayerUI() {
 		updateDuration("0:00", milliSecondsToTimer(0));
-		mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 		track.setText(rhythmSong.getTrackTitle());
 		if (rhythmSong.getImageData() != null) {
 			Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);

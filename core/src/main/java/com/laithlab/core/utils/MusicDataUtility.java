@@ -253,6 +253,11 @@ public class MusicDataUtility {
         return realm.allObjects(Artist.class);
     }
 
+    public static List<Song> getAllSongs(Context context) {
+        Realm realm = Realm.getInstance(context);
+        return realm.allObjects(Song.class);
+    }
+
     public static String[] getStorageDirectories() {
         // Final set of paths
         final Set<String> rv = new HashSet<String>();

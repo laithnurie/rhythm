@@ -67,9 +67,12 @@ public class ArtistActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
+		int i = item.getItemId();
+		if (i == android.R.id.home) {
 			drawerLayout.openDrawer(GravityCompat.START);
+			return true;
+		} else if (i == R.id.search_menu_item) {
+			startActivity(SearchActivity.getSearchIntent(this));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
