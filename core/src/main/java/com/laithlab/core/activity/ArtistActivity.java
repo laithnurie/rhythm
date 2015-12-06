@@ -1,5 +1,6 @@
 package com.laithlab.core.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +21,12 @@ import com.laithlab.core.dto.ArtistDTO;
 public class ArtistActivity extends AppCompatActivity {
 
 	private DrawerLayout drawerLayout;
+
+	public static Intent getIntent(Context context, ArtistDTO artist) {
+		Intent artistActivity = new Intent(context, ArtistActivity.class);
+		artistActivity.putExtra("artist", artist);
+		return artistActivity;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +79,7 @@ public class ArtistActivity extends AppCompatActivity {
 			drawerLayout.openDrawer(GravityCompat.START);
 			return true;
 		} else if (i == R.id.search_menu_item) {
-			startActivity(SearchActivity.getSearchIntent(this));
+			startActivity(SearchActivity.getIntent(this));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -14,14 +14,13 @@ import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.SearchAdapter;
-import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.utils.MusicDataUtility;
 
 public class SearchActivity extends AppCompatActivity {
 
     private RecyclerView searchList;
 
-    public static Intent getSearchIntent(Context context) {
+    public static Intent getIntent(Context context) {
         return new Intent(context, SearchActivity.class);
     }
 
@@ -48,7 +47,7 @@ public class SearchActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchList.setLayoutManager(layoutManager);
-        searchList.setAdapter(new SearchAdapter(this, DTOConverter.getSongList(MusicDataUtility.getAllSongs(this))));
+        searchList.setAdapter(new SearchAdapter(MusicDataUtility.getAllSearchResults(this)));
 
     }
 

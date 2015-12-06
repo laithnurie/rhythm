@@ -174,7 +174,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             drawerLayout.openDrawer(GravityCompat.START);
             return true;
         } else if (i == R.id.search_menu_item) {
-            startActivity(SearchActivity.getSearchIntent(this));
+            startActivity(SearchActivity.getIntent(this));
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -74,9 +74,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 		browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent artistActivity = new Intent(BrowseActivity.this, ArtistActivity.class);
-				artistActivity.putExtra("artist", (ArtistDTO) browseGrid.getItemAtPosition(position));
-				startActivity(artistActivity);
+				startActivity(ArtistActivity.getIntent(BrowseActivity.this, (ArtistDTO) browseGrid.getItemAtPosition(position)));
 			}
 		});
 	}
@@ -105,7 +103,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 			drawerLayout.openDrawer(GravityCompat.START);
 			return true;
 		} else if (i == R.id.search_menu_item) {
-			startActivity(SearchActivity.getSearchIntent(this));
+			startActivity(SearchActivity.getIntent(this));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
+import com.laithlab.core.dto.SearchResult;
 import com.mpatric.mp3agic.*;
 
 import io.realm.Realm;
@@ -104,6 +105,28 @@ public class MusicDataUtility {
             }
         }
         // return songs list array
+    }
+
+    public static List<SearchResult> getAllSearchResults(Context context) {
+        List<SearchResult> results = new ArrayList<>();
+        List<Artist> artists = allArtists(context);
+        for(Artist artist : artists){
+            results.add(createSearchResult(artist.getArtistName(), artist.getAlbums().size() + " albums", SearchResult.ResultType.ARTIST));
+            for(Album album : artist.getAlbums()){
+                results.add(createSearchResult(album.getAlbumTitle(), artist.getArtistName(), SearchResult.ResultType.ALBUM));
+                for(Song song : album.getSongs()){
+                    results.add(createSearchResult(song.getSongTitle(),
+                            artist.getArtistName() + " - " + album.getAlbumTitle()
+                            , SearchResult.ResultType.SONG));
+                }
+            }
+        }
+
+        return results;
+    }
+
+    private static SearchResult createSearchResult(String mainTitle, String subTitle, SearchResult.ResultType resultType){
+        return new SearchResult.SearchResultBuilder().mainTitle(mainTitle).subTitle(subTitle).setResultType(resultType).build();
     }
 
     private static void scanDirectory(File directory) {
