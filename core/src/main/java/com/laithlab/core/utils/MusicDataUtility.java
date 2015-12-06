@@ -111,11 +111,11 @@ public class MusicDataUtility {
         List<SearchResult> results = new ArrayList<>();
         List<Artist> artists = allArtists(context);
         for(Artist artist : artists){
-            results.add(createSearchResult(artist.getArtistName(), artist.getAlbums().size() + " albums", SearchResult.ResultType.ARTIST));
+            results.add(createSearchResult(artist.getId(), artist.getArtistName(), artist.getAlbums().size() + " albums", SearchResult.ResultType.ARTIST));
             for(Album album : artist.getAlbums()){
-                results.add(createSearchResult(album.getAlbumTitle(), artist.getArtistName(), SearchResult.ResultType.ALBUM));
+                results.add(createSearchResult(album.getId(), album.getAlbumTitle(), artist.getArtistName(), SearchResult.ResultType.ALBUM));
                 for(Song song : album.getSongs()){
-                    results.add(createSearchResult(song.getSongTitle(),
+                    results.add(createSearchResult(song.getId(), song.getSongTitle(),
                             artist.getArtistName() + " - " + album.getAlbumTitle()
                             , SearchResult.ResultType.SONG));
                 }
@@ -125,8 +125,8 @@ public class MusicDataUtility {
         return results;
     }
 
-    private static SearchResult createSearchResult(String mainTitle, String subTitle, SearchResult.ResultType resultType){
-        return new SearchResult.SearchResultBuilder().mainTitle(mainTitle).subTitle(subTitle).setResultType(resultType).build();
+    private static SearchResult createSearchResult(String id, String mainTitle, String subTitle, SearchResult.ResultType resultType){
+        return new SearchResult.SearchResultBuilder().id(id).mainTitle(mainTitle).subTitle(subTitle).setResultType(resultType).build();
     }
 
     private static void scanDirectory(File directory) {
@@ -260,6 +260,7 @@ public class MusicDataUtility {
         }
         if (songRecord == null) {
             songRecord = realm.createObject(Song.class);
+            songRecord.setId(UUID.randomUUID().toString());
             songRecord.setSongTitle(songTitle != null ? songTitle : "Untitled Song");
             songRecord.setAlbumId(albumRecord.getId());
             songRecord.setSongLocation(songPath);
@@ -279,6 +280,36 @@ public class MusicDataUtility {
     public static List<Song> getAllSongs(Context context) {
         Realm realm = Realm.getInstance(context);
         return realm.allObjects(Song.class);
+    }
+
+    public static Song getSongById(String id, Context context){
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        Song song  = realm.where(Song.class)
+                .contains("id", id)
+                .findFirst();
+        realm.commitTransaction();
+        return song;
+    }
+
+    public static Album getAlbumById(String id, Context context){
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        Album album  = realm.where(Album.class)
+                .contains("id", id)
+                .findFirst();
+        realm.commitTransaction();
+        return album;
+    }
+
+    public static Artist getArtistById(String id, Context context) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        Artist artist  = realm.where(Artist.class)
+                .contains("id", id)
+                .findFirst();
+        realm.commitTransaction();
+        return artist;
     }
 
     public static String[] getStorageDirectories() {

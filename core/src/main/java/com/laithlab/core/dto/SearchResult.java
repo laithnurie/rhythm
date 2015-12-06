@@ -6,18 +6,24 @@ import android.os.Parcelable;
 
 public class SearchResult implements Parcelable {
 
+    final private String id;
     final private String mainTitle;
     final private String subTitle;
     final private ResultType resultType;
 
     public enum ResultType {
-        ARTIST, ALBUM, SONG
+        ARTIST, ALBUM, SONG;
     }
 
     private SearchResult(SearchResultBuilder builder){
+        this.id = builder.id;
         this.mainTitle = builder.mainTitle;
         this.subTitle = builder.subTitle;
         this.resultType = builder.resultType;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getMainTitle() {
@@ -34,9 +40,15 @@ public class SearchResult implements Parcelable {
 
 
     public static class SearchResultBuilder {
+        public String id;
         private String mainTitle;
         private String subTitle;
         public ResultType resultType;
+
+        public SearchResultBuilder id(String id){
+            this.id = id;
+            return this;
+        }
 
         public SearchResultBuilder mainTitle(String mainTitle){
             this.mainTitle = mainTitle;
@@ -65,12 +77,14 @@ public class SearchResult implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeString(this.mainTitle);
         dest.writeString(this.subTitle);
         dest.writeString(String.valueOf(this.resultType));
     }
 
     protected SearchResult(Parcel in) {
+        this.id = in.readString();
         this.mainTitle = in.readString();
         this.subTitle = in.readString();
         this.resultType = ResultType.valueOf(in.readString());
@@ -89,6 +103,7 @@ public class SearchResult implements Parcelable {
     @Override
     public String toString() {
         return "SearchResult{" +
+                "id='" + id + '\'' +
                 "mainTitle='" + mainTitle + '\'' +
                 ", subTitle='" + subTitle + '\'' +
                 ", resultType='" + resultType + '\'' +

@@ -5,11 +5,20 @@ import io.realm.annotations.RealmClass;
 
 @RealmClass
 public class Song extends RealmObject {
+	private String id;
 	private String songTitle;
 	private String songImageUrl;
 	private long songDuration;
 	private String songLocation;
 	private String albumId;
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
 
 	public void setSongTitle(String songTitle) {
 		this.songTitle = songTitle;

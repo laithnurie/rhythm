@@ -15,16 +15,27 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.AlbumGridAdapter;
+import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.AlbumDTO;
 import com.laithlab.core.dto.ArtistDTO;
+import com.laithlab.core.utils.MusicDataUtility;
 
 public class ArtistActivity extends AppCompatActivity {
 
+	private static final java.lang.String ARTIST_ID_PARAM = "artistId" ;
+	private static final java.lang.String ARTIST_PARAM = "artist" ;
 	private DrawerLayout drawerLayout;
+	private ArtistDTO currentArtist;
+
+	public static Intent getIntent(Context context, String artistId) {
+		Intent artistActivity = new Intent(context, ArtistActivity.class);
+		artistActivity.putExtra(ARTIST_ID_PARAM, artistId);
+		return artistActivity;
+	}
 
 	public static Intent getIntent(Context context, ArtistDTO artist) {
 		Intent artistActivity = new Intent(context, ArtistActivity.class);
-		artistActivity.putExtra("artist", artist);
+		artistActivity.putExtra(ARTIST_PARAM, artist);
 		return artistActivity;
 	}
 
@@ -37,7 +48,10 @@ public class ArtistActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 
 		Bundle extras = getIntent().getExtras();
-		final ArtistDTO currentArtist = extras.getParcelable("artist");
+		currentArtist = extras.getParcelable(ARTIST_PARAM);
+		if(currentArtist == null){
+			currentArtist =  DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
+		}
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {

@@ -1,5 +1,7 @@
 package com.laithlab.core.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,11 +17,20 @@ import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.SongListAdapter;
+import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.AlbumDTO;
+import com.laithlab.core.utils.MusicDataUtility;
 
 public class AlbumActivity extends AppCompatActivity {
 
+	private static String ALBUM_ID_PARAM = "albumId";
 	private DrawerLayout drawerLayout;
+
+	public static Intent getIntent(Context context, String id) {
+		Intent artistActivity = new Intent(context, AlbumActivity.class);
+		artistActivity.putExtra(ALBUM_ID_PARAM, id);
+		return artistActivity;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +47,10 @@ public class AlbumActivity extends AppCompatActivity {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 		Bundle extras = getIntent().getExtras();
-		final AlbumDTO currentAlbum = extras.getParcelable("album");
+		AlbumDTO currentAlbum = extras.getParcelable("album");
+		if(currentAlbum == null){
+			currentAlbum = DTOConverter.getAlbumDTO(MusicDataUtility.getAlbumById(extras.getString(ALBUM_ID_PARAM), this));
+		}
 
 		TextView albumTitle = (TextView)findViewById(R.id.txt_album);
 		albumTitle.setText(currentAlbum.getAlbumTitle());

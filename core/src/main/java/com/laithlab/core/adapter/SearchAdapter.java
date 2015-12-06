@@ -1,8 +1,9 @@
 package com.laithlab.core.adapter;
 
 
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,13 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.laithlab.core.R;
+import com.laithlab.core.activity.AlbumActivity;
+import com.laithlab.core.activity.ArtistActivity;
+import com.laithlab.core.activity.SwipePlayerActivity;
+import com.laithlab.core.converter.DTOConverter;
 import com.laithlab.core.dto.SearchResult;
+import com.laithlab.core.dto.SongDTO;
+import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -150,15 +157,16 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            List<SearchResult> singleList = new ArrayList<>(Collections.singletonList(currentSearchResults.get(getLayoutPosition())));
+            List<SongDTO> singleList = new ArrayList<>(Collections.singletonList(
+                    DTOConverter.getSongDTO(MusicDataUtility.getSongById(
+                            currentSearchResults.get(getLayoutPosition()).getId(), v.getContext()))
+            ));
 
-            Log.v("lnln", "position - " + singleList.get(0).getMainTitle());
-            Log.v("lnln", "position - " + singleList.get(0).getSubTitle());
-//            Intent playerActivity = new Intent(context, SwipePlayerActivity.class);
-//            playerActivity.putParcelableArrayListExtra("songs",
-//                    (ArrayList<? extends Parcelable>) singleList);
-//            playerActivity.putExtra("songPosition", 0);
-//            context.startActivity(playerActivity);
+            Intent playerActivity = new Intent(v.getContext(), SwipePlayerActivity.class);
+            playerActivity.putParcelableArrayListExtra("songs",
+                    (ArrayList<? extends Parcelable>) singleList);
+            playerActivity.putExtra("songPosition", 0);
+            v.getContext().startActivity(playerActivity);
         }
     }
 
@@ -175,15 +183,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            List<SearchResult> singleList = new ArrayList<>(Collections.singletonList(currentSearchResults.get(getLayoutPosition())));
-
-            Log.v("lnln", "position - " + singleList.get(0).getMainTitle());
-            Log.v("lnln", "position - " + singleList.get(0).getSubTitle());
-//            Intent playerActivity = new Intent(context, SwipePlayerActivity.class);
-//            playerActivity.putParcelableArrayListExtra("songs",
-//                    (ArrayList<? extends Parcelable>) singleList);
-//            playerActivity.putExtra("songPosition", 0);
-//            context.startActivity(playerActivity);
+            v.getContext().startActivity(AlbumActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
         }
     }
 
@@ -200,15 +200,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            List<SearchResult> singleList = new ArrayList<>(Collections.singletonList(currentSearchResults.get(getLayoutPosition())));
-
-            Log.v("lnln", "position - " + singleList.get(0).getMainTitle());
-            Log.v("lnln", "position - " + singleList.get(0).getSubTitle());
-//            Intent playerActivity = new Intent(context, SwipePlayerActivity.class);
-//            playerActivity.putParcelableArrayListExtra("songs",
-//                    (ArrayList<? extends Parcelable>) singleList);
-//            playerActivity.putExtra("songPosition", 0);
-//            context.startActivity(playerActivity);
+            v.getContext().startActivity(ArtistActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
         }
     }
 }
