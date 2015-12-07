@@ -12,7 +12,7 @@ public class SearchResult implements Parcelable {
     final private ResultType resultType;
 
     public enum ResultType {
-        ARTIST, ALBUM, SONG;
+        HEADER, ARTIST, ALBUM, SONG
     }
 
     private SearchResult(SearchResultBuilder builder){

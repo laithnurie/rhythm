@@ -53,11 +53,11 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setupSearchView(SearchView sv) {
         ImageView searchButton = (ImageView) sv.findViewById(R.id.search_mag_icon);
-        searchButton.setImageResource(R.drawable.ic_search_24dp_blue);
+        searchButton.setImageResource(R.drawable.ic_search_24dp_white);
         TextView searchBox = (TextView) sv.findViewById(R.id.search_src_text);
         searchBox.setHint("Search...");
-        searchBox.setHintTextColor(getResources().getColor(R.color.color_primary));
-        searchBox.setTextColor(getResources().getColor(R.color.color_primary));
+        searchBox.setHintTextColor(getResources().getColor(R.color.white));
+        searchBox.setTextColor(getResources().getColor(R.color.white));
 
         ImageView searchClose = (ImageView) sv.findViewById(R.id.search_close_btn);
         searchClose.setImageResource(R.drawable.ic_clear_24dp);

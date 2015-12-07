@@ -32,6 +32,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int TYPE_SONG = 0;
     private static final int TYPE_ALBUM = 1;
     private static final int TYPE_ARTIST = 2;
+    private static final int TYPE_HEADER = 3;
 
     public SearchAdapter(List<SearchResult> searchResults) {
         this.originalSearchResults = searchResults;
@@ -40,13 +41,15 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        int viewType = 0;
+        int viewType;
         if (currentSearchResults.get(position).getResultType() == SearchResult.ResultType.ARTIST) {
             viewType = TYPE_ARTIST;
         } else if (currentSearchResults.get(position).getResultType() == SearchResult.ResultType.ALBUM) {
             viewType = TYPE_ALBUM;
         } else if (currentSearchResults.get(position).getResultType() == SearchResult.ResultType.SONG) {
             viewType = TYPE_SONG;
+        } else {
+            viewType = TYPE_HEADER;
         }
         return viewType;
     }
@@ -56,7 +59,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         LayoutInflater mInflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case TYPE_SONG:
-                ViewGroup vSong = (ViewGroup) mInflater.inflate(R.layout.song_list_item, parent, false);
+                ViewGroup vSong = (ViewGroup) mInflater.inflate(R.layout.search_song_item, parent, false);
                 return new SongViewHolder(vSong);
             case TYPE_ALBUM:
                 ViewGroup vAlbum = (ViewGroup) mInflater.inflate(R.layout.search_album_item, parent, false);
@@ -64,6 +67,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case TYPE_ARTIST:
                 ViewGroup vArtist = (ViewGroup) mInflater.inflate(R.layout.search_artist_item, parent, false);
                 return new ArtistViewHolder(vArtist);
+            case TYPE_HEADER:
+                ViewGroup vHeader = (ViewGroup) mInflater.inflate(R.layout.search_header, parent, false);
+                return new HeaderViewHolder(vHeader);
             default:
                 ViewGroup vDefault = (ViewGroup) mInflater.inflate(R.layout.song_list_item, parent, false);
                 return new SongViewHolder(vDefault);
@@ -90,7 +96,10 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 artistViewHolder.artistName.setText(currentSearchResults.get(position).getMainTitle());
                 artistViewHolder.artistDetails.setText(currentSearchResults.get(position).getSubTitle());
                 break;
-
+            case HEADER:
+                HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+                headerViewHolder.headerText.setText(currentSearchResults.get(position).getMainTitle());
+                break;
         }
 
     }
@@ -122,7 +131,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 ArrayList<SearchResult> filteredSongList = new ArrayList<SearchResult>();
                 for (SearchResult result : originalSearchResults) {
                     if (result.getMainTitle().toLowerCase().contains(constraint.toString().toLowerCase())
-                            || result.getSubTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            || result.getResultType() == SearchResult.ResultType.HEADER) {
                         filteredSongList.add(result);
                     }
                 }
@@ -201,6 +210,15 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @Override
         public void onClick(View v) {
             v.getContext().startActivity(ArtistActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
+        }
+    }
+
+    public class HeaderViewHolder extends RecyclerView.ViewHolder {
+        public TextView headerText;
+
+        public HeaderViewHolder(View v) {
+            super(v);
+            headerText = (TextView) v.findViewById(R.id.txt_header);
         }
     }
 }
