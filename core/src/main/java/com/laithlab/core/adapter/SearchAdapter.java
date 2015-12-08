@@ -71,7 +71,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 ViewGroup vHeader = (ViewGroup) mInflater.inflate(R.layout.search_header, parent, false);
                 return new HeaderViewHolder(vHeader);
             default:
-                ViewGroup vDefault = (ViewGroup) mInflater.inflate(R.layout.song_list_item, parent, false);
+                ViewGroup vDefault = (ViewGroup) mInflater.inflate(R.layout.search_song_item, parent, false);
                 return new SongViewHolder(vDefault);
         }
     }

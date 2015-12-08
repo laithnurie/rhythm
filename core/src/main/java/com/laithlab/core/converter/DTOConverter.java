@@ -24,7 +24,6 @@ public class DTOConverter {
 	public static ArtistDTO getArtistDTO(Artist artist) {
 		ArtistDTO artistDTO = new ArtistDTO();
 		artistDTO.setArtistName(artist.getArtistName());
-		artistDTO.setArtistImageUrl(artist.getArtistImageUrl());
 		artistDTO.setCoverPath(artist.getCoverPath());
 		artistDTO.setAlbums(getAlbumList(artist.getAlbums()));
 		artistDTO.setId(artist.getId());
@@ -63,7 +62,6 @@ public class DTOConverter {
 		SongDTO songDTO = new SongDTO();
 		songDTO.setSongTitle(song.getSongTitle());
 		songDTO.setSongDuration(song.getSongDuration());
-		songDTO.setSongImageUrl(song.getSongImageUrl());
 		songDTO.setSongLocation(song.getSongLocation());
 		songDTO.setAlbumId(song.getAlbumId());
 		return songDTO;

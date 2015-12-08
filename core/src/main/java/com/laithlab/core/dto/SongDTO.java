@@ -7,7 +7,6 @@ import android.os.Parcelable;
 public class SongDTO implements Parcelable {
 
 	private String songTitle;
-	private String songImageUrl;
 	private long songDuration;
 	private String songLocation;
 	private String albumId;
@@ -18,14 +17,6 @@ public class SongDTO implements Parcelable {
 
 	public String getSongTitle() {
 		return songTitle;
-	}
-
-	public void setSongImageUrl(String songImageUrl) {
-		this.songImageUrl = songImageUrl;
-	}
-
-	public String getSongImageUrl() {
-		return songImageUrl;
 	}
 
 	public void setSongDuration(long songDuration) {
@@ -60,7 +51,6 @@ public class SongDTO implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(this.songTitle);
-		dest.writeString(this.songImageUrl);
 		dest.writeLong(this.songDuration);
 		dest.writeString(this.songLocation);
 		dest.writeString(this.albumId);
@@ -71,7 +61,6 @@ public class SongDTO implements Parcelable {
 
 	protected SongDTO(Parcel in) {
 		this.songTitle = in.readString();
-		this.songImageUrl = in.readString();
 		this.songDuration = in.readLong();
 		this.songLocation = in.readString();
 		this.albumId = in.readString();

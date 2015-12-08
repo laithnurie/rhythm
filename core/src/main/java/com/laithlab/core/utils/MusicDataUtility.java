@@ -9,12 +9,10 @@ import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.SearchResult;
-import com.mpatric.mp3agic.*;
 
 import io.realm.Realm;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -36,55 +34,17 @@ public class MusicDataUtility {
     }
 
     public static byte[] getImageData(String songLocation) {
-        Mp3File mp3file = null;
-        try {
-            mp3file = new Mp3File(songLocation);
-            if (mp3file.hasId3v2Tag()) {
-                ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-                return id3v2Tag.getAlbumImage();
-            }
-        } catch (IOException | UnsupportedTagException | InvalidDataException e) {
-            return null;
-        }
-
-        return null;
+        MusicMetaData musicMetaData = new MusicMetaData(songLocation);
+        return musicMetaData.getAlbumArt();
     }
 
     public static RhythmSong getSongMeta(String songLocation) {
-        String artist = null;
-        String album = null;
-        String track = null;
-        byte[] imageData = null;
-        long duration = 0;
-        try {
-            Mp3File mp3file = new Mp3File(songLocation);
-            if (mp3file.hasId3v2Tag()) {
-                ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-                imageData = id3v2Tag.getAlbumImage();
-                artist = (id3v2Tag.getArtist() != null && !id3v2Tag.getArtist().isEmpty() ? id3v2Tag.getArtist() : null);
-                album = (id3v2Tag.getAlbum() != null && !id3v2Tag.getAlbum().isEmpty() ? id3v2Tag.getAlbum() : null);
-                track = (id3v2Tag.getTitle() != null && !id3v2Tag.getTitle().isEmpty() ? id3v2Tag.getTitle() : null);
-            }
-            if (mp3file.hasId3v1Tag()) {
-                ID3v1 id3v1Tag = mp3file.getId3v1Tag();
-                if (artist == null) {
-                    artist = (id3v1Tag.getArtist() != null && !id3v1Tag.getArtist().isEmpty() ? id3v1Tag.getArtist() : null);
-                }
-                if (album == null) {
-                    album = (id3v1Tag.getAlbum() != null && !id3v1Tag.getAlbum().isEmpty() ? id3v1Tag.getAlbum() : null);
-                }
-                if (track == null) {
-                    track = (id3v1Tag.getTitle() != null && !id3v1Tag.getTitle().isEmpty() ? id3v1Tag.getTitle() : null);
-                }
-            }
-            artist = artist != null ? artist : "Unknown Artist";
-            album = album != null ? album : "Unknown Album";
-            track = track != null ? track : "Unknown Track";
-            duration = mp3file.getLengthInSeconds();
-        } catch (IOException | UnsupportedTagException | InvalidDataException e) {
-            e.printStackTrace();
-        }
-
+        MusicMetaData musicMetaData = new MusicMetaData(songLocation);
+        String artist = musicMetaData.getArtistName() != null ? musicMetaData.getArtistName() : "Unknown Artist";
+        String album = musicMetaData.getAlbumName() != null ? musicMetaData.getAlbumName() : "Unknown Album";
+        String track = musicMetaData.getSongTitle() != null ? musicMetaData.getSongTitle() : "Unknown Track";
+        byte[] imageData = musicMetaData.getAlbumArt();
+        long duration = musicMetaData.getDuration() / 1000 ;
         return new RhythmSong.RhythmSongBuilder().songLocation(songLocation).artistTitle(artist).albumTitle(album)
                 .trackTitle(track).imageData(imageData).duration(duration).build();
     }
