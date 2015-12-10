@@ -40,10 +40,10 @@ public class SearchResult implements Parcelable {
 
 
     public static class SearchResultBuilder {
-        public String id;
+        private String id;
         private String mainTitle;
         private String subTitle;
-        public ResultType resultType;
+        private ResultType resultType;
 
         public SearchResultBuilder id(String id){
             this.id = id;
