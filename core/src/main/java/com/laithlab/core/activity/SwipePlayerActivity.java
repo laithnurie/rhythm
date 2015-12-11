@@ -31,9 +31,13 @@ import com.laithlab.core.fragment.SongFragmentListener;
 import com.laithlab.core.service.SendToDataLayerThread;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
+import com.laithlab.core.utils.PlayMode;
 import com.laithlab.core.utils.RhythmSong;
 
+import java.util.Collections;
 import java.util.List;
+
+import static com.laithlab.core.utils.PlayMode.*;
 
 public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -44,15 +48,16 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     private TextView artist;
     private TextView album;
     private ViewPager viewPager;
+    private Menu menu;
 
     private boolean isWearConnected = false;
     private boolean changedSongFromNotification = false;
-
-    private GoogleApiClient googleClient;
-
     private String SONG_POSITION_PARAM = "songPosition";
     private String SONGS_PARAM = "songs";
+    private int songPosition;
+    private List<SongDTO> songsList;
 
+    private GoogleApiClient googleClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +95,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         album = (TextView) findViewById(R.id.txt_album);
 
         Bundle extras = getIntent().getExtras();
-        final List<SongDTO> songsList;
-        int songPosition;
         if (extras != null) {
             songPosition = extras.getInt(SONG_POSITION_PARAM);
             songsList = extras.getParcelableArrayList(SONGS_PARAM);
@@ -164,6 +167,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_player, menu);
+        this.menu = menu;
+        updateMenu(PlayBackUtil.getCurrentPlayMode());
         return true;
     }
 
@@ -176,8 +181,51 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         } else if (i == R.id.search_menu_item) {
             startActivity(SearchActivity.getIntent(this));
             return true;
+        } else if (i == R.id.repeat_mode) {
+            updateMenu(PlayBackUtil.getUpdateCurrentPlayMode(REPEAT));
+        } else if (i == R.id.shuffle_mode) {
+            updateMenu(PlayBackUtil.getUpdateCurrentPlayMode(SHUFFLE));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateMenu(PlayMode playMode) {
+        MenuItem shuffle = menu.findItem(R.id.shuffle_mode);
+        MenuItem repeat = menu.findItem(R.id.repeat_mode);
+        switch (playMode) {
+            case NONE:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_grey_24dp);
+                break;
+            case SHUFFLE:
+                shuffle.setIcon(R.drawable.ic_shuffle_white_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_grey_24dp);
+                shuffleSongs();
+                break;
+            case SINGLE_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_one_white_24dp);
+                break;
+            case ALL_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_white_24dp);
+                break;
+            case SHUFFLE_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_white_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_white_24dp);
+                break;
+        }
+    }
+
+    private void shuffleSongs() {
+        SongDTO currentSong = songsList.get(songPosition);
+        Collections.shuffle(songsList);
+        songPosition = songsList.indexOf(currentSong);
+        songsList.set(0, currentSong);
+        songPosition = 0;
+
+        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
+                songsList));
     }
 
     @Override
@@ -189,6 +237,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             toolbar.setBackgroundColor(vibrantColor);
             tiltedView.setBackgroundColor(vibrantColor);
         }
+        this.songPosition = songPosition;
     }
 
     @Override
