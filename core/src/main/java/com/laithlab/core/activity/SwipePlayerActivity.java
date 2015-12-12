@@ -260,6 +260,11 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     }
 
     @Override
+    public void playNext() {
+        handleCommand("next");
+    }
+
+    @Override
     public void onConnected(Bundle bundle) {
         isWearConnected = true;
     }
@@ -303,28 +308,31 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra("player_command");
-            int currentSongIndex = viewPager.getCurrentItem();
-            int lastSongIndex = viewPager.getAdapter().getCount() - 1;
-
-            switch (command) {
-                case "next":
-                    if (currentSongIndex == lastSongIndex) {
-                        viewPager.setCurrentItem(0);
-                    } else {
-                        viewPager.setCurrentItem(currentSongIndex + 1);
-                    }
-                    break;
-                case "previous":
-                    if (currentSongIndex == 0) {
-                        viewPager.setCurrentItem(lastSongIndex);
-                    } else {
-                        viewPager.setCurrentItem(currentSongIndex - 1);
-                    }
-                    break;
-            }
-            changedSongFromNotification = true;
-
+            handleCommand(command);
         }
     };
+
+    private void handleCommand(String command) {
+        int currentSongIndex = viewPager.getCurrentItem();
+        int lastSongIndex = viewPager.getAdapter().getCount() - 1;
+
+        switch (command) {
+            case "next":
+                if (currentSongIndex == lastSongIndex) {
+                    viewPager.setCurrentItem(0);
+                } else {
+                    viewPager.setCurrentItem(currentSongIndex + 1);
+                }
+                break;
+            case "previous":
+                if (currentSongIndex == 0) {
+                    viewPager.setCurrentItem(lastSongIndex);
+                } else {
+                    viewPager.setCurrentItem(currentSongIndex - 1);
+                }
+                break;
+        }
+        changedSongFromNotification = true;
+    }
 
 }
