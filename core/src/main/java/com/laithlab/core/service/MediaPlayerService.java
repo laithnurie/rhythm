@@ -35,9 +35,7 @@ import java.util.List;
 
 public class MediaPlayerService extends Service {
 
-    private static final String SONG_POSITION_PARAM = "songPosition";
     private static int NOTIFICATION_ID = 17;
-
 
     private MediaPlayer mMediaPlayer;
     private MediaSessionManager mManager;
@@ -63,7 +61,6 @@ public class MediaPlayerService extends Service {
 
         currentPosition = PlayBackUtil.getCurrentSongPosition();
         rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
-
 
         if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
             mController.getTransportControls().play();
@@ -106,10 +103,8 @@ public class MediaPlayerService extends Service {
             builder.setLargeIcon(getAlbumArt(imageData));
         }
 
-        builder.setSmallIcon(R.drawable.ic_play_arrow_white);
-
-
         builder.setContentTitle(rhythmSong.getTrackTitle())
+                .setSmallIcon(R.drawable.ic_play_arrow_white)
                 .setContentText(rhythmSong.getArtistTitle())
                 .setDeleteIntent(deleteIntent)
                 .setPriority(Notification.PRIORITY_HIGH)
@@ -146,101 +141,91 @@ public class MediaPlayerService extends Service {
             e.printStackTrace();
         }
 
-        mSession.setCallback(new MediaSessionCompat.Callback() {
-                                 @Override
-                                 public void onPlay() {
-                                     super.onPlay();
-                                     mMediaPlayer.start();
-                                     Log.e("MediaPlayerService", "onPlay");
-                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
-                                 }
+        mSession.setCallback(
+            new MediaSessionCompat.Callback() {
+                @Override
+                public void onPlay() {
+                    super.onPlay();
+                    mMediaPlayer.start();
+                    buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                }
 
-                                 @Override
-                                 public void onPause() {
-                                     super.onPause();
-                                     mMediaPlayer.pause();
-                                     Log.e("MediaPlayerService", "onPause");
-                                     buildNotification(generateAction(R.drawable.ic_play_arrow_white, "Play", Constants.ACTION_PLAY));
-                                 }
+                @Override
+                public void onPause() {
+                    super.onPause();
+                    mMediaPlayer.pause();
+                    buildNotification(generateAction(R.drawable.ic_play_arrow_white, "Play", Constants.ACTION_PLAY));
+                }
 
-                                 @Override
-                                 public void onSkipToNext() {
-                                     super.onSkipToNext();
-                                     Log.e("MediaPlayerService", "onSkipToNext");
-                                     int lastIndex = songDTOs.size() - 1;
-                                     if (currentPosition == lastIndex) {
-                                         currentPosition = 0;
-                                     } else {
-                                         currentPosition++;
-                                     }
-                                     reInitialiseMediaSession(currentPosition);
+                @Override
+                public void onSkipToNext() {
+                    super.onSkipToNext();
+                    int lastIndex = songDTOs.size() - 1;
+                    if (currentPosition == lastIndex) {
+                        currentPosition = 0;
+                    } else {
+                        currentPosition++;
+                    }
+                    reInitialiseMediaSession(currentPosition);
 
-                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
+                    rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                    buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
 
-                                     Intent nextIntent = new Intent("player");
-                                     nextIntent.putExtra("player_command", "next");
-                                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(nextIntent);
-                                 }
+                    Intent nextIntent = new Intent(Constants.PLAYER);
+                    nextIntent.putExtra("player_command", "next");
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(nextIntent);
+                }
 
-                                 @Override
-                                 public void onSkipToPrevious() {
-                                     super.onSkipToPrevious();
-                                     Log.e("MediaPlayerService", "onSkipToPrevious");
-                                     //Change media here
-                                     if (currentPosition == 0) {
-                                         currentPosition = songDTOs.size() - 1;
-                                     } else {
-                                         currentPosition--;
-                                     }
-                                     reInitialiseMediaSession(currentPosition);
+                @Override
+                public void onSkipToPrevious() {
+                    super.onSkipToPrevious();
+                    //Change media here
+                    if (currentPosition == 0) {
+                        currentPosition = songDTOs.size() - 1;
+                    } else {
+                        currentPosition--;
+                    }
+                    reInitialiseMediaSession(currentPosition);
 
-                                     rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
-                                     Log.v("lnsn", rhythmSong.getTrackTitle());
+                    rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                                     buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                    buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
 
-                                     Intent previousIntent = new Intent("player");
-                                     previousIntent.putExtra("player_command", "previous");
-                                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(previousIntent);
-                                 }
+                    Intent previousIntent = new Intent(Constants.PLAYER);
+                    previousIntent.putExtra("player_command", "previous");
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(previousIntent);
+                }
 
-                                 @Override
-                                 public void onFastForward() {
-                                     super.onFastForward();
-                                     Log.e("MediaPlayerService", "onFastForward");
-                                     //Manipulate current media here
-                                 }
+                @Override
+                public void onFastForward() {
+                    super.onFastForward();
+                }
 
-                                 @Override
-                                 public void onRewind() {
-                                     super.onRewind();
-                                     Log.e("MediaPlayerService", "onRewind");
-                                     //Manipulate current media here
-                                 }
+                @Override
+                public void onRewind() {
+                    super.onRewind();
+                }
 
-                                 @Override
-                                 public void onStop() {
-                                     super.onStop();
-                                     Log.e("MediaPlayerService", "onStop");
-                                     //Stop media player here
-                                     NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                                     notificationManager.cancel(NOTIFICATION_ID);
-                                     Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
-                                     stopService(intent);
-                                 }
+                @Override
+                public void onStop() {
+                    super.onStop();
+                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(NOTIFICATION_ID);
+                    Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+                    stopService(intent);
+                }
 
-                                 @Override
-                                 public void onSeekTo(long pos) {
-                                     super.onSeekTo(pos);
-                                 }
+                @Override
+                public void onSeekTo(long pos) {
+                    super.onSeekTo(pos);
+                }
 
-                                 @Override
-                                 public void onSetRating(RatingCompat rating) {
-                                     super.onSetRating(rating);
-                                 }
-                             }
+                @Override
+                public void onSetRating(RatingCompat rating) {
+                    super.onSetRating(rating);
+                }
+            }
         );
     }
 

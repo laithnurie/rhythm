@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,7 +143,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.v("lnln", "I paused on " + rhythmSong.getTrackTitle());
 		stopTimer();
 	}
 
@@ -178,6 +176,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			if (beenDrawn) {
 				trackProgress.setProgress(0);
 				updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
+				mediaPlayer.start();
+				startTimer();
 			}
 			mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
 			mListener.changePlayerStyle(vibrantColor, songPosition);
@@ -243,6 +243,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 			@Override
 			public void onCompletion(MediaPlayer mp) {
 				stopTimer();
+				trackProgress.setProgress(0);
+				updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
+				playButton.setImageResource(R.drawable.ic_play_arrow_white);
 			}
 		});
 		handler.postDelayed(mRunnable, 500);
@@ -287,7 +290,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 	}
 
 	private void updatePlayerUI() {
-		updateDuration("0:00", milliSecondsToTimer(0));
+		updateDuration("0:00", milliSecondsToTimer(rhythmSong.getDuration()));
 		track.setText(rhythmSong.getTrackTitle());
 		if (rhythmSong.getImageData() != null) {
 			Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);

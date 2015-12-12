@@ -24,10 +24,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Wearable;
+
 import com.laithlab.core.R;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
+import com.laithlab.core.service.Constants;
 import com.laithlab.core.service.SendToDataLayerThread;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
@@ -64,7 +66,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_player);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("player"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(Constants.PLAYER));
 
         googleClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -220,12 +222,13 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     private void shuffleSongs() {
         SongDTO currentSong = songsList.get(songPosition);
         Collections.shuffle(songsList);
-        songPosition = songsList.indexOf(currentSong);
-        songsList.set(0, currentSong);
+        songsList.remove(currentSong);
+        songsList.add(0, currentSong);
         songPosition = 0;
-
-        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
-                songsList));
+        PlayBackUtil.setCurrentSongPosition(songPosition);
+        PlayBackUtil.setCurrentPlayList(songsList);
+        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songsList));
+        viewPager.setCurrentItem(0, true);
     }
 
     @Override

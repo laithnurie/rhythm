@@ -10,5 +10,6 @@ public class Constants {
 	public static final String ACTION_PREVIOUS = "action_previous";
 	public static final String ACTION_STOP = "action_stop";
 	public static final String LOG_TAG = "MediaService";
+	public static final String PLAYER = "player";
 
 }
