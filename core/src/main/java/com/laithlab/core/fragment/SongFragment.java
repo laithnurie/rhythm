@@ -176,8 +176,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             if (beenDrawn) {
                 trackProgress.setProgress(0);
                 updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
-                mediaPlayer.start();
-                startTimer();
             }
             mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
             mListener.changePlayerStyle(vibrantColor, songPosition);
@@ -214,6 +212,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     @Override
     public void onPrepared(final MediaPlayer mp) {
         updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
+        startTimer();
+        mp.start();
     }
 
     private void playerNotification(String action) {
@@ -248,6 +248,10 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 playButton.setImageResource(R.drawable.ic_play_arrow_white);
                 if (mListener != null) {
                     mListener.playNext();
+                } else {
+                    Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+                    intent.setAction(Constants.ACTION_NEXT);
+                    track.getContext().startService(intent);
                 }
             }
         });

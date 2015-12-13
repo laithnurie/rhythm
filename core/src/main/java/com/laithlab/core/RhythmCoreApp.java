@@ -1,6 +1,7 @@
 package com.laithlab.core;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.res.Resources;
 
 import com.facebook.stetho.Stetho;
