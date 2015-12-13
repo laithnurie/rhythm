@@ -214,6 +214,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         updateDuration("0:00", milliSecondsToTimer(mp.getDuration()));
         startTimer();
         mp.start();
+        playerNotification(Constants.ACTION_PLAY);
     }
 
     private void playerNotification(String action) {
