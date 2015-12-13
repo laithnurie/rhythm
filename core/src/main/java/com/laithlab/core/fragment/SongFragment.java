@@ -218,7 +218,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     }
 
     private void playerNotification(String action) {
-        Intent intent = new Intent(getContext(), MediaPlayerService.class);
+        Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
         intent.setAction(action);
         intent.putExtra(SONG_PARAM, rhythmSong);
         intent.putExtra(SONG_POSITION_PARAM, songPosition);
@@ -247,16 +247,36 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 trackProgress.setProgress(0);
                 updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
                 playButton.setImageResource(R.drawable.ic_play_arrow_white);
-                if (mListener != null) {
-                    mListener.playNext();
-                } else {
-                    Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
-                    intent.setAction(Constants.ACTION_NEXT);
-                    track.getContext().startService(intent);
+                mediaPlayer.pause();
+
+                switch (PlayBackUtil.getCurrentPlayMode()) {
+                    case SHUFFLE_REPEAT:
+                    case ALL_REPEAT:
+                        playNext();
+                        break;
+                    case NONE:
+                        if (songPosition != PlayBackUtil.getCurrentSongPosition()) {
+                            playNext();
+                        }
+                        break;
+                    case SINGLE_REPEAT:
+                        startTimer();
+                        mediaPlayer.start();
+                        break;
                 }
             }
         });
         handler.postDelayed(mRunnable, 500);
+    }
+
+    private void playNext() {
+        if (mListener != null) {
+            mListener.playNext();
+        } else {
+            Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+            intent.setAction(Constants.ACTION_NEXT);
+            track.getContext().startService(intent);
+        }
     }
 
     private void stopTimer() {
