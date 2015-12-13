@@ -24,16 +24,22 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Wearable;
+
 import com.laithlab.core.R;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
 import com.laithlab.core.fragment.SongFragmentListener;
+import com.laithlab.core.service.Constants;
 import com.laithlab.core.service.SendToDataLayerThread;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
+import com.laithlab.core.utils.PlayMode;
 import com.laithlab.core.utils.RhythmSong;
 
+import java.util.Collections;
 import java.util.List;
+
+import static com.laithlab.core.utils.PlayMode.*;
 
 public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -44,22 +50,23 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     private TextView artist;
     private TextView album;
     private ViewPager viewPager;
+    private Menu menu;
 
     private boolean isWearConnected = false;
     private boolean changedSongFromNotification = false;
-
-    private GoogleApiClient googleClient;
-
     private String SONG_POSITION_PARAM = "songPosition";
     private String SONGS_PARAM = "songs";
+    private int songPosition;
+    private List<SongDTO> songsList;
 
+    private GoogleApiClient googleClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_player);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("player"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(Constants.PLAYER));
 
         googleClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -90,8 +97,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         album = (TextView) findViewById(R.id.txt_album);
 
         Bundle extras = getIntent().getExtras();
-        final List<SongDTO> songsList;
-        int songPosition;
         if (extras != null) {
             songPosition = extras.getInt(SONG_POSITION_PARAM);
             songsList = extras.getParcelableArrayList(SONGS_PARAM);
@@ -164,6 +169,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_player, menu);
+        this.menu = menu;
+        updateMenu(PlayBackUtil.getCurrentPlayMode());
         return true;
     }
 
@@ -176,8 +183,52 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         } else if (i == R.id.search_menu_item) {
             startActivity(SearchActivity.getIntent(this));
             return true;
+        } else if (i == R.id.repeat_mode) {
+            updateMenu(PlayBackUtil.getUpdateCurrentPlayMode(REPEAT));
+        } else if (i == R.id.shuffle_mode) {
+            updateMenu(PlayBackUtil.getUpdateCurrentPlayMode(SHUFFLE));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateMenu(PlayMode playMode) {
+        MenuItem shuffle = menu.findItem(R.id.shuffle_mode);
+        MenuItem repeat = menu.findItem(R.id.repeat_mode);
+        switch (playMode) {
+            case NONE:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_grey_24dp);
+                break;
+            case SHUFFLE:
+                shuffle.setIcon(R.drawable.ic_shuffle_white_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_grey_24dp);
+                shuffleSongs();
+                break;
+            case SINGLE_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_one_white_24dp);
+                break;
+            case ALL_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_grey_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_white_24dp);
+                break;
+            case SHUFFLE_REPEAT:
+                shuffle.setIcon(R.drawable.ic_shuffle_white_24dp);
+                repeat.setIcon(R.drawable.ic_repeat_white_24dp);
+                break;
+        }
+    }
+
+    private void shuffleSongs() {
+        SongDTO currentSong = songsList.get(songPosition);
+        Collections.shuffle(songsList);
+        songsList.remove(currentSong);
+        songsList.add(0, currentSong);
+        songPosition = 0;
+        PlayBackUtil.setCurrentSongPosition(songPosition);
+        PlayBackUtil.setCurrentPlayList(songsList);
+        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songsList));
+        viewPager.setCurrentItem(0, true);
     }
 
     @Override
@@ -189,6 +240,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             toolbar.setBackgroundColor(vibrantColor);
             tiltedView.setBackgroundColor(vibrantColor);
         }
+        this.songPosition = songPosition;
     }
 
     @Override
@@ -205,6 +257,11 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     @Override
     public boolean songChangedFromNotification() {
         return changedSongFromNotification;
+    }
+
+    @Override
+    public void playNext() {
+        handleCommand("next");
     }
 
     @Override
@@ -251,28 +308,31 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra("player_command");
-            int currentSongIndex = viewPager.getCurrentItem();
-            int lastSongIndex = viewPager.getAdapter().getCount() - 1;
-
-            switch (command) {
-                case "next":
-                    if (currentSongIndex == lastSongIndex) {
-                        viewPager.setCurrentItem(0);
-                    } else {
-                        viewPager.setCurrentItem(currentSongIndex + 1);
-                    }
-                    break;
-                case "previous":
-                    if (currentSongIndex == 0) {
-                        viewPager.setCurrentItem(lastSongIndex);
-                    } else {
-                        viewPager.setCurrentItem(currentSongIndex - 1);
-                    }
-                    break;
-            }
+            handleCommand(command);
             changedSongFromNotification = true;
-
         }
     };
+
+    private void handleCommand(String command) {
+        int currentSongIndex = viewPager.getCurrentItem();
+        int lastSongIndex = viewPager.getAdapter().getCount() - 1;
+
+        switch (command) {
+            case "next":
+                if (currentSongIndex == lastSongIndex) {
+                    viewPager.setCurrentItem(0);
+                } else {
+                    viewPager.setCurrentItem(currentSongIndex + 1);
+                }
+                break;
+            case "previous":
+                if (currentSongIndex == 0) {
+                    viewPager.setCurrentItem(lastSongIndex);
+                } else {
+                    viewPager.setCurrentItem(currentSongIndex - 1);
+                }
+                break;
+        }
+    }
 
 }

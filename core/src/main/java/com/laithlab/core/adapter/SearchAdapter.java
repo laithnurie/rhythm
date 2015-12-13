@@ -128,7 +128,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 filterResults.values = originalSearchResults;
                 filterResults.count = originalSearchResults.size();
             } else {
-                ArrayList<SearchResult> filteredSongList = new ArrayList<SearchResult>();
+                ArrayList<SearchResult> filteredSongList = new ArrayList<>();
                 for (SearchResult result : originalSearchResults) {
                     if (result.getMainTitle().toLowerCase().contains(constraint.toString().toLowerCase())
                             || result.getResultType() == SearchResult.ResultType.HEADER) {

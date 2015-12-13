@@ -9,4 +9,6 @@ public interface SongFragmentListener {
 	void resetChangedSongFromNotification();
 
 	boolean songChangedFromNotification();
+
+	void playNext();
 }

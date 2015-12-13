@@ -96,7 +96,7 @@ public class MessageActivity extends Activity implements GoogleApiClient.Connect
             byte[] songCover = dataBundle.getByteArray("song_cover");
 
             CircleImageView circleImageView = (CircleImageView) findViewById(R.id.wear_song_cover);
-            if (dataBundle.getByteArray("song_cover") != null) {
+            if (songCover != null) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(songCover, 0, songCover.length);
                 circleImageView.setImageBitmap(bmp);
             } else {

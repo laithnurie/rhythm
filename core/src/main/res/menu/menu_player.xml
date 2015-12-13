@@ -2,32 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".PlayerActivity">
 
-    <item android:id="@+id/replay_mode"
-        android:title="replay mode"
+    <item android:id="@+id/repeat_mode"
+        android:title="@string/repeat_mode"
         android:visible="true"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_playback_repeat">
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_repeat_grey_24dp">
     </item>
 
     <item android:id="@+id/shuffle_mode"
-        android:title="shuffle mode"
+        android:title="@string/shuffle_mode"
         android:visible="true"
         app:showAsAction="always"
-        android:icon="@drawable/ic_action_playback_shuffle">
-    </item>
-
-    <item android:id="@+id/mute_mode"
-        android:title="mute mode"
-        android:visible="true"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_volume_mute">
+        android:icon="@drawable/ic_shuffle_grey_24dp">
     </item>
 
     <item android:id="@+id/search_menu_item"
-        android:title="Search"
+        android:title="@string/search"
         android:visible="true"
         app:showAsAction="always"
-        android:icon="@drawable/ic_search_24dp_white">
+        android:icon="@drawable/ic_search_white_24dp">
     </item>
 
 </menu>
