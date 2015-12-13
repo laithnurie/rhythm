@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class MusicDataUtility {
 
-    private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+    private static ArrayList<HashMap<String, String>> songsList = new ArrayList<>();
     private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
     private static String mp3Pattern = ".mp3";
 
@@ -126,7 +126,7 @@ public class MusicDataUtility {
 
     private static void addSongToList(File song) {
         if (song.getName().endsWith(mp3Pattern)) {
-            HashMap<String, String> songMap = new HashMap<String, String>();
+            HashMap<String, String> songMap = new HashMap<>();
             songMap.put("songTitle",
                     song.getName().substring(0, (song.getName().length() - 4)));
             songMap.put("songPath", song.getPath());
@@ -293,7 +293,7 @@ public class MusicDataUtility {
 
     public static String[] getStorageDirectories() {
         // Final set of paths
-        final Set<String> rv = new HashSet<String>();
+        final Set<String> rv = new HashSet<>();
         // Primary physical SD-CARD (not emulated)
         final String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
         // All Secondary SD-CARDs (all exclude primary) separated by ":"

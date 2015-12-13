@@ -1,7 +1,6 @@
 package com.laithlab.core.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -83,11 +82,6 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 	protected void onStart() {
 		super.onStart();
 		updateDb(this);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 	}
 
 	@Override

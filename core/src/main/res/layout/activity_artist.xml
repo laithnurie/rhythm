@@ -1,8 +1,8 @@
 <android.support.v4.widget.DrawerLayout
-    android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,7 +13,7 @@
         android:orientation="vertical"
         tools:context=".BrowseActivity">
 
-        <include layout="@layout/toolbar"/>
+        <include layout="@layout/toolbar" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -22,9 +22,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:gravity="bottom"
+                android:orientation="vertical"
                 android:weightSum="10">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -38,7 +39,7 @@
                         android:horizontalSpacing="0dp"
                         android:numColumns="2"
                         android:stretchMode="columnWidth"
-                        android:verticalSpacing="0dp"/>
+                        android:verticalSpacing="0dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -48,6 +49,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:weightSum="10">
+
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -57,9 +59,8 @@
                         android:id="@+id/tilted_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/color_primary"
                         android:layout_marginLeft="-50dp"
-                        />
+                        android:background="@color/color_primary" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -85,6 +86,6 @@
 
     </LinearLayout>
 
-    <include layout="@layout/navigation_menu"/>
+    <include layout="@layout/navigation_menu" />
 
 </android.support.v4.widget.DrawerLayout>

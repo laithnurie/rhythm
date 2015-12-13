@@ -17,11 +17,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.media.RatingCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 
 import com.laithlab.core.R;
 import com.laithlab.core.activity.SwipePlayerActivity;
@@ -198,32 +196,12 @@ public class MediaPlayerService extends Service {
                 }
 
                 @Override
-                public void onFastForward() {
-                    super.onFastForward();
-                }
-
-                @Override
-                public void onRewind() {
-                    super.onRewind();
-                }
-
-                @Override
                 public void onStop() {
                     super.onStop();
                     NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.cancel(NOTIFICATION_ID);
                     Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
                     stopService(intent);
-                }
-
-                @Override
-                public void onSeekTo(long pos) {
-                    super.onSeekTo(pos);
-                }
-
-                @Override
-                public void onSetRating(RatingCompat rating) {
-                    super.onSetRating(rating);
                 }
             }
         );

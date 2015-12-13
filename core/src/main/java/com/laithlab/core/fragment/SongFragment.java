@@ -309,7 +309,6 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 mListener.changePlayerStyle(vibrantColor, songPosition);
             } else {
                 vibrantColor = getResources().getColor(R.color.color_primary);
-                changePlayerStyle(vibrantSwatch.getRgb());
                 mListener.changePlayerStyle(vibrantColor, songPosition);
             }
         }

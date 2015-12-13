@@ -40,7 +40,7 @@
             android:singleLine="true"
             tools:text="Song Name"
             android:textColor="#fff"
-            android:textSize="16dp"/>
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/noti_song_artist"
@@ -52,7 +52,7 @@
             android:singleLine="true"
             tools:text="Artist Name"
             android:textColor="#c7c7c7"
-            android:textSize="12dp"/>
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/noti_song_album"
@@ -64,7 +64,7 @@
             android:singleLine="true"
             tools:text="Album Name"
             android:textColor="#c7c7c7"
-            android:textSize="12dp"/>
+            android:textSize="12sp"/>
 
 
         <LinearLayout
