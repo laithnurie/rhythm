@@ -21,6 +21,7 @@ public class MusicDataUtility {
     private static ArrayList<HashMap<String, String>> songsList = new ArrayList<>();
     private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
     private static String mp3Pattern = ".mp3";
+    private static boolean isUpdating = false;
 
     // Constructor
     public MusicDataUtility() {
@@ -44,7 +45,7 @@ public class MusicDataUtility {
         String album = musicMetaData.getAlbumName() != null ? musicMetaData.getAlbumName() : "Unknown Album";
         String track = musicMetaData.getSongTitle() != null ? musicMetaData.getSongTitle() : "Unknown Track";
         byte[] imageData = musicMetaData.getAlbumArt();
-        long duration = musicMetaData.getDuration() / 1000 ;
+        long duration = musicMetaData.getDuration() / 1000;
         return new RhythmSong.RhythmSongBuilder().songLocation(songLocation).artistTitle(artist).albumTitle(album)
                 .trackTitle(track).imageData(imageData).duration(duration).build();
     }
@@ -136,8 +137,12 @@ public class MusicDataUtility {
     }
 
     public static void updateMusicDB(Context context) {
-        for (final HashMap<String, String> song : getMusicFromStorage()) {
-            createSongEntry(context, song.get("songPath"));
+        if (!isUpdating) {
+            isUpdating = true;
+            for (final HashMap<String, String> song : getMusicFromStorage()) {
+                createSongEntry(context, song.get("songPath"));
+            }
+            isUpdating = false;
         }
     }
 
