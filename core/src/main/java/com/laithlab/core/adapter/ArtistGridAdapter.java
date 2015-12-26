@@ -69,6 +69,11 @@ public class ArtistGridAdapter extends BaseAdapter {
 		return position;
 	}
 
+	public void updateData(List<ArtistDTO> artists) {
+		this.artists = artists;
+		notifyDataSetChanged();
+	}
+
 	private static class ViewHolder {
 		ImageView gridItemImage;
 		TextView gridItemTitle;

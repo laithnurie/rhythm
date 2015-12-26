@@ -15,7 +15,7 @@ public class SearchResult implements Parcelable {
         HEADER, ARTIST, ALBUM, SONG
     }
 
-    private SearchResult(SearchResultBuilder builder){
+    private SearchResult(SearchResultBuilder builder) {
         this.id = builder.id;
         this.mainTitle = builder.mainTitle;
         this.subTitle = builder.subTitle;
@@ -34,7 +34,7 @@ public class SearchResult implements Parcelable {
         return subTitle;
     }
 
-    public ResultType getResultType(){
+    public ResultType getResultType() {
         return resultType;
     }
 
@@ -45,27 +45,27 @@ public class SearchResult implements Parcelable {
         private String subTitle;
         private ResultType resultType;
 
-        public SearchResultBuilder id(String id){
+        public SearchResultBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public SearchResultBuilder mainTitle(String mainTitle){
+        public SearchResultBuilder mainTitle(String mainTitle) {
             this.mainTitle = mainTitle;
             return this;
         }
 
-        public SearchResultBuilder subTitle(String subTitle){
+        public SearchResultBuilder subTitle(String subTitle) {
             this.subTitle = subTitle;
             return this;
         }
 
-        public SearchResultBuilder setResultType(ResultType resultType){
+        public SearchResultBuilder setResultType(ResultType resultType) {
             this.resultType = resultType;
             return this;
         }
 
-        public SearchResult build(){
+        public SearchResult build() {
             return new SearchResult(this);
         }
     }

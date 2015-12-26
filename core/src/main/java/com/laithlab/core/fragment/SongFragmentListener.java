@@ -2,13 +2,13 @@ package com.laithlab.core.fragment;
 
 
 public interface SongFragmentListener {
-	void changePlayerStyle(int vibrantColor, int songPosition);
+    void changePlayerStyle(int vibrantColor, int songPosition);
 
-	void setToolBarText(String artistTitle, String albumTitle);
+    void setToolBarText(String artistTitle, String albumTitle);
 
-	void resetChangedSongFromNotification();
+    void resetChangedSongFromNotification();
 
-	boolean songChangedFromNotification();
+    boolean songChangedFromNotification();
 
-	void playNext();
+    void playNext();
 }

@@ -31,7 +31,7 @@ public class SendToDataLayerThread extends Thread {
             PutDataMapRequest putDMR = PutDataMapRequest.create(path);
             putDMR.getDataMap().putAll(dataMap);
             PutDataRequest request = putDMR.asPutDataRequest();
-            DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleClient,request).await();
+            DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleClient, request).await();
             if (result.getStatus().isSuccess()) {
                 Log.v("myTag", "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
             } else {
