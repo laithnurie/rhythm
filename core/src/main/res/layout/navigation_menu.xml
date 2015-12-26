@@ -15,16 +15,162 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/home_drawer_item"
+            android:id="@+id/library_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_menu_item"
+            android:paddingTop="@dimen/margin_menu_item">
 
-            <com.laithlab.core.customview.RhythmTextView
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="@string/home"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_menu_item">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_library_music_white_24dp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_menu_item"
+                android:layout_marginRight="@dimen/margin_menu_item"
+                android:text="@string/library"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/playlists_drawer_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_menu_item"
+            android:paddingTop="@dimen/margin_menu_item">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_menu_item">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_playlist_play_white_24dp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_menu_item"
+                android:layout_marginRight="@dimen/margin_menu_item"
+                android:text="@string/playlists"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/now_playing_drawer_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_menu_item"
+            android:paddingTop="@dimen/margin_menu_item">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_menu_item">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_now_playing_white_24dp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_menu_item"
+                android:layout_marginRight="@dimen/margin_menu_item"
+                android:text="@string/now_playing"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white" />
+
+        <LinearLayout
+            android:id="@+id/settings_drawer_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_menu_item"
+            android:paddingTop="@dimen/margin_menu_item">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_menu_item">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_settings_white_24dp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_menu_item"
+                android:layout_marginRight="@dimen/margin_menu_item"
+                android:text="@string/settings"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/about_drawer_item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_menu_item"
+            android:paddingTop="@dimen/margin_menu_item">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_menu_item">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_info_outline_white_24dp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_menu_item"
+                android:layout_marginRight="@dimen/margin_menu_item"
+                android:text="@string/about"
                 android:textColor="#ffffff" />
 
         </LinearLayout>
