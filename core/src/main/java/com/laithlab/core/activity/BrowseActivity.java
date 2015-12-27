@@ -24,6 +24,7 @@ import com.laithlab.core.db.Artist;
 import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.utils.MusicDBProgressCallBack;
 import com.laithlab.core.utils.MusicDataUtility;
+import com.laithlab.core.utils.ViewUtils;
 
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
                 startActivity(ArtistActivity.getIntent(BrowseActivity.this, (ArtistDTO) browseGrid.getItemAtPosition(position)));
             }
         });
+        ViewUtils.drawerClickListener(this);
     }
 
     @Override

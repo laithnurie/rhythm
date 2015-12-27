@@ -11,6 +11,7 @@
         android:label="@string/app_name">
         <activity android:name=".activity.ArtistActivity" />
         <activity android:name=".activity.AlbumActivity" />
+        <activity android:name=".activity.PlaylistActivity" />
         <activity
             android:name=".activity.SwipePlayerActivity"
             android:launchMode="singleTop" />
