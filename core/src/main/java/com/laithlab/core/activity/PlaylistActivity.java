@@ -1,6 +1,7 @@
 package com.laithlab.core.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -9,8 +10,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
 
 import com.laithlab.core.R;
+import com.laithlab.core.adapter.PlaylistGridAdapter;
+import com.laithlab.core.utils.DialogHelper;
+import com.laithlab.core.utils.MusicDataUtility;
 
 
 public class PlaylistActivity extends AppCompatActivity {
@@ -39,6 +44,17 @@ public class PlaylistActivity extends AppCompatActivity {
         tiltedView.setPivotY(0f);
         tiltedView.setRotation(-5f);
 
+        PlaylistGridAdapter playlistGridAdapter = new PlaylistGridAdapter(this, MusicDataUtility.getPlayists(this));
+        GridView playlistGridView = (GridView)findViewById(R.id.playist_grid);
+        playlistGridView.setAdapter(playlistGridAdapter);
+
+        FloatingActionButton addPlaylist = (FloatingActionButton)findViewById(R.id.add_playlist);
+        addPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.showAddPlaylistDialog(PlaylistActivity.this);
+            }
+        });
     }
 
     @Override

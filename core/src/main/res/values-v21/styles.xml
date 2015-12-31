@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Rhythm" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
@@ -9,5 +10,12 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@color/color_primary</item>
         <item name="colorControlActivated">@color/color_primary</item>
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="actionModeStyle">@style/Rhythm.ActionMode</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_arrow_back_white_24dp</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="actionMenuTextColor">@color/white</item>
     </style>
 </resources>

@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Rhythm" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
@@ -7,5 +8,28 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowNoTitle">true</item>
         <item name="colorControlActivated">@color/color_primary</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+    </style>
+
+    <style name="RhythmAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">@color/white</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!-- Used for the background -->
+        <item name="android:background">@color/color_primary</item>
+    </style>
+
+
+    <style name="Rhythm.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="android:background">@color/color_primary</item>
+        <item name="background">@color/color_primary</item>
+        <item name="titleTextStyle">@style/TitleTextStyle</item>
+    </style>
+
+    <style name="TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

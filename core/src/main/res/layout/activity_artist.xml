@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:orientation="vertical"
-        tools:context=".BrowseActivity">
+        tools:context=".activity.ArtistActivity">
 
         <include layout="@layout/toolbar" />
 

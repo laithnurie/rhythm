@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/white"
-        tools:context=".BrowseActivity">
+        tools:context=".activity.AlbumActivity">
 
         <include layout="@layout/toolbar" />
 

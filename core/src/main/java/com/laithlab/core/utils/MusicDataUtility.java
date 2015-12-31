@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
+import com.laithlab.core.db.Playlist;
 import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.SearchResult;
 
@@ -266,6 +267,11 @@ public class MusicDataUtility {
         return realm.allObjects(Song.class);
     }
 
+    public static List<Playlist> getPlayists(Context context) {
+        Realm realm = Realm.getInstance(context);
+        return realm.allObjects(Playlist.class);
+    }
+
     public static Song getSongById(String id, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
@@ -294,6 +300,17 @@ public class MusicDataUtility {
                 .findFirst();
         realm.commitTransaction();
         return artist;
+    }
+
+    public static void createPlaylist(String playlistName, Context context) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+
+        Playlist playlistRecord = realm.createObject(Playlist.class);
+        playlistRecord.setId(UUID.randomUUID().toString());
+        playlistRecord.setPlaylistName(playlistName);
+
+        realm.commitTransaction();
     }
 
     public static String[] getStorageDirectories() {
