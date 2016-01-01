@@ -1,7 +1,7 @@
 package com.laithlab.core.fragment;
 
 
-public interface SongFragmentListener {
+public interface SongFragmentCallback {
     void changePlayerStyle(int vibrantColor, int songPosition);
 
     void setToolBarText(String artistTitle, String albumTitle);

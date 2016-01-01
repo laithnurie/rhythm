@@ -1,8 +1,8 @@
 package com.laithlab.core.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -15,45 +15,24 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.laithlab.core.R;
-import com.laithlab.core.adapter.AlbumGridAdapter;
-import com.laithlab.core.converter.DTOConverter;
-import com.laithlab.core.dto.ArtistDTO;
+import com.laithlab.core.adapter.PlaylistGridAdapter;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.utils.ContentType;
+import com.laithlab.core.utils.DialogHelper;
 import com.laithlab.core.utils.MusicDataUtility;
 
-public class ArtistActivity extends AppCompatActivity {
 
-    private static final java.lang.String ARTIST_ID_PARAM = "artistId";
-    private static final java.lang.String ARTIST_PARAM = "artist";
+public class PlaylistGridActivity extends AppCompatActivity {
+
     private DrawerLayout drawerLayout;
-    private ArtistDTO currentArtist;
-
-    public static Intent getIntent(Context context, String artistId) {
-        Intent artistActivity = new Intent(context, ArtistActivity.class);
-        artistActivity.putExtra(ARTIST_ID_PARAM, artistId);
-        return artistActivity;
-    }
-
-    public static Intent getIntent(Context context, ArtistDTO artist) {
-        Intent artistActivity = new Intent(context, ArtistActivity.class);
-        artistActivity.putExtra(ARTIST_PARAM, artist);
-        return artistActivity;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist);
+        setContentView(R.layout.activity_playlist_grid);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Bundle extras = getIntent().getExtras();
-        currentArtist = extras.getParcelable(ARTIST_PARAM);
-        if (currentArtist == null) {
-            currentArtist = DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
-        }
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -69,19 +48,29 @@ public class ArtistActivity extends AppCompatActivity {
         tiltedView.setPivotY(0f);
         tiltedView.setRotation(-5f);
 
-        final GridView albumGrid = (GridView) findViewById(R.id.album_grid);
-        albumGrid.setAdapter(new AlbumGridAdapter(this, currentArtist.getAlbums()));
-        albumGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        final PlaylistGridAdapter playlistGridAdapter = new PlaylistGridAdapter(this, MusicDataUtility.getPlayists(this));
+        GridView playlistGridView = (GridView)findViewById(R.id.playist_grid);
+        playlistGridView.setAdapter(playlistGridAdapter);
+        playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MusicContent musicContent = new MusicContent();
-                musicContent.setContentType(ContentType.ALBUM);
-                musicContent.setPlaylistName(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getAlbumTitle());
-                musicContent.setId(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getId());
+                musicContent.setContentType(ContentType.PLAYLIST);
+                musicContent.setPlaylistName(playlistGridAdapter.getItem(position).getPlaylistName());
+                musicContent.setId(playlistGridAdapter.getItem(position).getId());
 
-                Intent intent = new Intent(ArtistActivity.this, PlaylistActivity.class);
+                Intent intent = new Intent(PlaylistGridActivity.this, PlaylistActivity.class);
                 intent.putExtra("musicContent", musicContent);
                 startActivity(intent);
+
+            }
+        });
+
+        FloatingActionButton addPlaylist = (FloatingActionButton)findViewById(R.id.add_playlist);
+        addPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.showAddPlaylistDialog(PlaylistGridActivity.this);
             }
         });
     }
@@ -106,3 +95,4 @@ public class ArtistActivity extends AppCompatActivity {
     }
 
 }
+

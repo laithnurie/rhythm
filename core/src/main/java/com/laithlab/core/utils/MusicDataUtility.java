@@ -9,6 +9,7 @@ import com.laithlab.core.db.Album;
 import com.laithlab.core.db.Artist;
 import com.laithlab.core.db.Playlist;
 import com.laithlab.core.db.Song;
+import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.dto.SearchResult;
 
 import io.realm.Realm;
@@ -300,6 +301,30 @@ public class MusicDataUtility {
                 .findFirst();
         realm.commitTransaction();
         return artist;
+    }
+
+    public static Playlist getPlaylistById(String id, Context context) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        Playlist playlist = realm.where(Playlist.class)
+                .contains("id", id)
+                .findFirst();
+        realm.commitTransaction();
+        return playlist;
+    }
+
+    public static List<Song> getSongsFromList(MusicContent musicContent, Context context){
+        switch (musicContent.getContentType()){
+            case ARTIST:
+                //TODO: get all songs from artist
+                return getArtistById(musicContent.getId(), context).getAlbums().get(0).getSongs();
+            case ALBUM:
+                return getAlbumById(musicContent.getId(), context).getSongs();
+            case PLAYLIST:
+                return getPlaylistById(musicContent.getId(), context).getSongs();
+        }
+
+        return null;
     }
 
     public static void createPlaylist(String playlistName, Context context) {

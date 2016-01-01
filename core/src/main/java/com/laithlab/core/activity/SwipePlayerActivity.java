@@ -28,7 +28,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.laithlab.core.R;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.SongFragment;
-import com.laithlab.core.fragment.SongFragmentListener;
+import com.laithlab.core.fragment.SongFragmentCallback;
 import com.laithlab.core.service.Constants;
 import com.laithlab.core.service.SendToDataLayerThread;
 import com.laithlab.core.utils.MusicDataUtility;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import static com.laithlab.core.utils.PlayMode.*;
 
-public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentListener, GoogleApiClient.ConnectionCallbacks,
+public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private DrawerLayout drawerLayout;

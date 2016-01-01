@@ -8,9 +8,9 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         android:orientation="vertical"
-        tools:context=".BrowseActivity">
+        android:background="@color/white"
+        tools:context=".activity.PlaylistActivity">
 
         <include layout="@layout/toolbar" />
 
@@ -21,24 +21,36 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="bottom"
                 android:orientation="vertical"
                 android:weightSum="10">
+
+                <View
+                    android:id="@+id/empty_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="9"
+                    android:layout_weight="8"
                     android:orientation="vertical">
 
                     <GridView
-                        android:id="@+id/playist_grid"
+                        android:id="@+id/songs_grid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:horizontalSpacing="0dp"
                         android:numColumns="2"
                         android:stretchMode="columnWidth"
-                        android:verticalSpacing="0dp" />
+                        android:verticalSpacing="0dp"
+                        android:visibility="gone" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_songs_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="vertical" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -65,30 +77,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:layout_marginTop="20dp"
                         android:orientation="vertical">
 
                         <com.laithlab.core.customview.RhythmTextView
+                            android:id="@+id/txt_album"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/playlists"
+                            android:singleLine="true"
                             android:textColor="@color/white"
                             android:textSize="40sp"
-                            app:textType="regular" />
+                            app:textType="regular"
+                            tools:text="Songs" />
 
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/add_playlist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_playlist_add_white_24dp"
-                android:layout_gravity="bottom|right"
-                app:backgroundTint="@color/color_primary"
-                android:layout_margin="16dp"
-                app:elevation="4dp" />
 
         </FrameLayout>
 

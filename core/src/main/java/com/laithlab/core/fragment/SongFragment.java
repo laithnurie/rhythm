@@ -33,7 +33,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     private static final String SONG_PARAM = "song";
     private static final String SONG_POSITION_PARAM = "songPosition";
 
-    private SongFragmentListener mListener;
+    private SongFragmentCallback mListener;
     private SongDTO song;
     private RhythmSong rhythmSong;
     private int songPosition;
@@ -149,7 +149,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mListener = (SongFragmentListener) activity;
+        mListener = (SongFragmentCallback) activity;
     }
 
     @Override

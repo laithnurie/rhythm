@@ -12,7 +12,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.laithlab.core.R;
-import com.laithlab.core.activity.AlbumActivity;
+import com.laithlab.core.activity.PlaylistActivity;
 import com.laithlab.core.activity.ArtistActivity;
 import com.laithlab.core.activity.SwipePlayerActivity;
 import com.laithlab.core.converter.DTOConverter;
@@ -192,7 +192,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            v.getContext().startActivity(AlbumActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
+            v.getContext().startActivity(PlaylistActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
         }
     }
 

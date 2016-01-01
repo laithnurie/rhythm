@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import com.laithlab.core.R;
 import com.laithlab.core.activity.BrowseActivity;
-import com.laithlab.core.activity.PlaylistActivity;
+import com.laithlab.core.activity.PlaylistGridActivity;
 import com.laithlab.core.activity.SwipePlayerActivity;
 
 public class ViewUtils {
@@ -21,7 +21,7 @@ public class ViewUtils {
                     Intent browse = new Intent(activity, BrowseActivity.class);
                     activity.startActivity(browse);
                 } else if (i == R.id.playlists_drawer_item) {
-                    Intent playlists = new Intent(activity, PlaylistActivity.class);
+                    Intent playlists = new Intent(activity, PlaylistGridActivity.class);
                     activity.startActivity(playlists);
                 } else if (i == R.id.now_playing_drawer_item) {
                     Intent playerIntent = new Intent(activity, SwipePlayerActivity.class);
