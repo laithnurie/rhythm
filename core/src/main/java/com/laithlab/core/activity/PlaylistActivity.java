@@ -28,6 +28,7 @@ import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.PlaylistCallback;
 import com.laithlab.core.fragment.PlaylistSelectDialog;
 import com.laithlab.core.utils.MusicDataUtility;
+import com.laithlab.core.utils.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,8 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         songList.setLayoutManager(layoutManager);
         songListAdapter = new SongListAdapter(songs, this);
         songList.setAdapter(songListAdapter);
+
+        ViewUtils.drawerClickListener(this);
     }
 
     @Override
@@ -152,7 +155,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         Playlist playlistSelected = playlists.get(position);
 
         List<Song> songs = MusicDataUtility.getSongsFromList(musicContent, this);
-        if(songs !=null){
+        if (songs != null) {
             Realm realm = Realm.getInstance(PlaylistActivity.this);
             realm.beginTransaction();
             List<Integer> selectedSongs = songListAdapter.getSelectedItems();

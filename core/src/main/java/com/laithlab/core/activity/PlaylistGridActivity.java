@@ -20,6 +20,7 @@ import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.utils.ContentType;
 import com.laithlab.core.utils.DialogHelper;
 import com.laithlab.core.utils.MusicDataUtility;
+import com.laithlab.core.utils.ViewUtils;
 
 
 public class PlaylistGridActivity extends AppCompatActivity {
@@ -49,7 +50,7 @@ public class PlaylistGridActivity extends AppCompatActivity {
         tiltedView.setRotation(-5f);
 
         final PlaylistGridAdapter playlistGridAdapter = new PlaylistGridAdapter(this, MusicDataUtility.getPlayists(this));
-        GridView playlistGridView = (GridView)findViewById(R.id.playist_grid);
+        GridView playlistGridView = (GridView) findViewById(R.id.playist_grid);
         playlistGridView.setAdapter(playlistGridAdapter);
         playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -66,13 +67,15 @@ public class PlaylistGridActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton addPlaylist = (FloatingActionButton)findViewById(R.id.add_playlist);
+        FloatingActionButton addPlaylist = (FloatingActionButton) findViewById(R.id.add_playlist);
         addPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogHelper.showAddPlaylistDialog(PlaylistGridActivity.this);
             }
         });
+
+        ViewUtils.drawerClickListener(this);
     }
 
     @Override

@@ -35,6 +35,7 @@ import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.PlayBackUtil;
 import com.laithlab.core.utils.PlayMode;
 import com.laithlab.core.utils.RhythmSong;
+import com.laithlab.core.utils.ViewUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -134,6 +135,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
             }
         });
+
+        ViewUtils.drawerClickListener(this);
     }
 
     private void populateSongs(List<SongDTO> songsList, int songPosition) {

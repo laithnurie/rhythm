@@ -21,6 +21,7 @@ import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.utils.ContentType;
 import com.laithlab.core.utils.MusicDataUtility;
+import com.laithlab.core.utils.ViewUtils;
 
 public class ArtistActivity extends AppCompatActivity {
 
@@ -84,6 +85,7 @@ public class ArtistActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        ViewUtils.drawerClickListener(this);
     }
 
     @Override
