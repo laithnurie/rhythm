@@ -14,6 +14,7 @@ public class PlayBackUtil {
     private static int currentSongPosition = 0;
     private static MediaPlayer mediaPlayerService = null;
     private static PlayMode currentPlayMode = PlayMode.NONE;
+    private static RhythmSong currentSong;
 
     public static MediaPlayer getMediaPlayer() {
         return mediaPlayerService;
@@ -82,5 +83,13 @@ public class PlayBackUtil {
             }
         }
         return currentPlayMode;
+    }
+
+    public static RhythmSong getCurrentSong() {
+        return currentSong;
+    }
+
+    public static void setCurrentSong(RhythmSong currentSong) {
+        PlayBackUtil.currentSong = currentSong;
     }
 }

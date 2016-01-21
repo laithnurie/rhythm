@@ -172,9 +172,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ));
 
             Intent playerActivity = new Intent(v.getContext(), SwipePlayerActivity.class);
-            playerActivity.putParcelableArrayListExtra("songs",
+            playerActivity.putParcelableArrayListExtra(SwipePlayerActivity.SONGS_PARAM,
                     (ArrayList<? extends Parcelable>) singleList);
-            playerActivity.putExtra("songPosition", 0);
+            playerActivity.putExtra(SwipePlayerActivity.SONG_POSITION_PARAM, 0);
             v.getContext().startActivity(playerActivity);
         }
     }

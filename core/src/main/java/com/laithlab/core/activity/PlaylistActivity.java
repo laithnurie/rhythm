@@ -37,7 +37,7 @@ import io.realm.Realm;
 
 public class PlaylistActivity extends AppCompatActivity implements SongListAdapter.ClickListener, PlaylistCallback {
 
-    private static String ALBUM_ID_PARAM = "albumId";
+    public static String ALBUM_ID_PARAM = "albumId";
 
     private DrawerLayout drawerLayout;
     private SongListAdapter songListAdapter;
@@ -121,8 +121,8 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             toggleSelection(position);
         } else {
             Intent playerActivity = new Intent(this, SwipePlayerActivity.class);
-            playerActivity.putParcelableArrayListExtra("songs", (ArrayList<? extends Parcelable>) songs);
-            playerActivity.putExtra("songPosition", position);
+            playerActivity.putParcelableArrayListExtra(SwipePlayerActivity.SONGS_PARAM, (ArrayList<? extends Parcelable>) songs);
+            playerActivity.putExtra(SwipePlayerActivity.SONG_POSITION_PARAM, position);
             startActivity(playerActivity);
         }
     }
@@ -165,6 +165,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             realm.commitTransaction();
         }
         songListAdapter.clearSelection();
+        actionMode.finish();
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
@@ -187,7 +188,6 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             int i = item.getItemId();
             if (i == R.id.add_to_playlist_menu_item) {
                 showDialog();
-                mode.finish();
                 return true;
             } else {
                 return false;
@@ -197,6 +197,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             actionMode = null;
+            songListAdapter.clearSelection();
         }
     }
 

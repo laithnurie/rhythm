@@ -71,13 +71,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             songPosition = getArguments().getInt(SONG_POSITION_PARAM);
             rhythmSong = MusicDataUtility.getSongMeta(song.getSongLocation());
         }
+        handler = new Handler();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        handler = new Handler();
         View rootView = inflater.inflate(R.layout.fragment_song, container, false);
         beenDrawn = true;
         track = (TextView) rootView.findViewById(R.id.txt_track);
@@ -167,7 +167,16 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                     mediaPlayer = PlayBackUtil.getMediaPlayer();
                     mListener.resetChangedSongFromNotification();
                 } else {
-                    mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+                    if(PlayBackUtil.getCurrentSong()!= null && rhythmSong.getSongLocation().equals(PlayBackUtil.getCurrentSong().getSongLocation())){
+                        mediaPlayer = PlayBackUtil.getMediaPlayer();
+//                            updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
+//                                    milliSecondsToTimer(mediaPlayer.getDuration()));
+                            startTimer();
+
+                    } else {
+                        PlayBackUtil.setCurrentSong(rhythmSong);
+                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+                    }
                 }
                 removePlayerListeners();
                 setPlayerListeners();
@@ -179,6 +188,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             }
             mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
             mListener.changePlayerStyle(vibrantColor, songPosition);
+            PlayBackUtil.setCurrentSong(rhythmSong);
         } else {
             if (mediaPlayer != null) {
                 stopTimer();
@@ -288,7 +298,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mediaPlayer != null) {
+            if (mediaPlayer != null && beenDrawn) {
                 if (!mediaPlayer.isPlaying() || !trackProgress.isPressed()) {
                     final int currentProgress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
                     if (getActivity() != null) {

@@ -39,5 +39,6 @@ public class ViewUtils {
         activity.findViewById(R.id.settings_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.about_drawer_item).setOnClickListener(clickListener);
 
+        activity.findViewById(R.id.now_playing_drawer_item).setVisibility(PlayBackUtil.getMediaPlayer() != null ? View.VISIBLE : View.GONE);
     }
 }

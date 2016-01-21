@@ -55,8 +55,8 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
 
     private boolean isWearConnected = false;
     private boolean changedSongFromNotification = false;
-    private String SONG_POSITION_PARAM = "songPosition";
-    private String SONGS_PARAM = "songs";
+    public static String SONG_POSITION_PARAM = "songPosition";
+    public static String SONGS_PARAM = "songs";
     private int songPosition;
     private List<SongDTO> songsList;
 
