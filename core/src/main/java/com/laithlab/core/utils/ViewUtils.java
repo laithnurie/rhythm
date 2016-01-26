@@ -28,7 +28,7 @@ public class ViewUtils {
                     playerIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     activity.startActivity(playerIntent);
                 } else if (i == R.id.about_drawer_item) {
-                    Toast.makeText(activity, "about", Toast.LENGTH_SHORT).show();
+                    DialogHelper.aboutDialog(activity);
                 }
             }
         };
