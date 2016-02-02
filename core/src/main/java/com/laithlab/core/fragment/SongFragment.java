@@ -225,6 +225,11 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         startTimer();
         mp.start();
         playerNotification(Constants.ACTION_PLAY);
+        updateSongCount();
+    }
+
+    private void updateSongCount() {
+        MusicDataUtility.updateSongCount(song.getId(), getContext());
     }
 
     private void playerNotification(String action) {

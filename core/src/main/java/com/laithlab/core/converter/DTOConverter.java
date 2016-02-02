@@ -64,6 +64,7 @@ public class DTOConverter {
         songDTO.setSongDuration(song.getSongDuration());
         songDTO.setSongLocation(song.getSongLocation());
         songDTO.setAlbumId(song.getAlbumId());
+        songDTO.setId(song.getId());
         return songDTO;
     }
 }

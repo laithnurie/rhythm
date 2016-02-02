@@ -10,6 +10,8 @@ public class Song extends RealmObject {
     private long songDuration;
     private String songLocation;
     private String albumId;
+    private int noOfPlayed;
+    private long lastPlayed;
 
     public void setId(String id) {
         this.id = id;
@@ -49,5 +51,21 @@ public class Song extends RealmObject {
 
     public String getAlbumId() {
         return albumId;
+    }
+
+    public void setNoOfPlayed(int noOfPlayed) {
+        this.noOfPlayed = noOfPlayed;
+    }
+
+    public int getNoOfPlayed() {
+        return noOfPlayed;
+    }
+
+    public void setLastPlayed(long lastPlayed) {
+        this.lastPlayed = lastPlayed;
+    }
+
+    public long getLastPlayed() {
+        return lastPlayed;
     }
 }

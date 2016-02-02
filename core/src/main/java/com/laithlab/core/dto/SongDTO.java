@@ -10,6 +10,7 @@ public class SongDTO implements Parcelable {
     private long songDuration;
     private String songLocation;
     private String albumId;
+    private String id;
 
     public void setSongTitle(String songTitle) {
         this.songTitle = songTitle;
@@ -43,6 +44,14 @@ public class SongDTO implements Parcelable {
         this.albumId = albumId;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -54,6 +63,7 @@ public class SongDTO implements Parcelable {
         dest.writeLong(this.songDuration);
         dest.writeString(this.songLocation);
         dest.writeString(this.albumId);
+        dest.writeString(this.id);
     }
 
     public SongDTO() {
@@ -64,6 +74,7 @@ public class SongDTO implements Parcelable {
         this.songDuration = in.readLong();
         this.songLocation = in.readString();
         this.albumId = in.readString();
+        this.id = in.readString();
     }
 
     public static final Parcelable.Creator<SongDTO> CREATOR = new Parcelable.Creator<SongDTO>() {

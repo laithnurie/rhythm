@@ -13,6 +13,8 @@ import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.dto.SearchResult;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 import java.io.File;
 import java.util.*;
@@ -268,6 +270,20 @@ public class MusicDataUtility {
         return realm.allObjects(Song.class);
     }
 
+    public static List<Song> getLastPlayedSongs(Context context) {
+        Realm realm = Realm.getInstance(context);
+        RealmResults<Song> result = realm.where(Song.class).greaterThan("lastPlayed", 0).findAll();
+        result.sort("lastPlayed", Sort.DESCENDING);
+        return result;
+    }
+
+    public static List<Song> getMostPlayedSongs(Context context) {
+        Realm realm = Realm.getInstance(context);
+        RealmResults<Song> result = realm.where(Song.class).greaterThan("noOfPlayed", 0).findAll();
+        result.sort("noOfPlayed", Sort.DESCENDING);
+        return result;
+    }
+
     public static List<Playlist> getPlayists(Context context) {
         Realm realm = Realm.getInstance(context);
         return realm.allObjects(Playlist.class);
@@ -322,6 +338,10 @@ public class MusicDataUtility {
                 return getAlbumById(musicContent.getId(), context).getSongs();
             case PLAYLIST:
                 return getPlaylistById(musicContent.getId(), context).getSongs();
+            case MOST_PLAYED:
+                return getMostPlayedSongs(context);
+            case LAST_PLAYED:
+                return getLastPlayedSongs(context);
         }
 
         return null;
@@ -334,6 +354,18 @@ public class MusicDataUtility {
         Playlist playlistRecord = realm.createObject(Playlist.class);
         playlistRecord.setId(UUID.randomUUID().toString());
         playlistRecord.setPlaylistName(playlistName);
+
+        realm.commitTransaction();
+    }
+
+    public static void updateSongCount(String songId, Context context){
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        Song song = realm.where(Song.class)
+                .contains("id", songId)
+                .findFirst();
+        song.setNoOfPlayed(song.getNoOfPlayed() + 1);
+        song.setLastPlayed(System.currentTimeMillis());
 
         realm.commitTransaction();
     }

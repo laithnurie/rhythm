@@ -66,7 +66,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_player);
-
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(Constants.PLAYER));
 
         googleClient = new GoogleApiClient.Builder(this)
