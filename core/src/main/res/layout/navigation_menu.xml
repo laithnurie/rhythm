@@ -61,7 +61,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_library_music_white_24dp" />
+                    android:src="@drawable/ic_star_white_24dp" />
             </FrameLayout>
 
             <TextView
@@ -70,7 +70,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_menu_item"
                 android:layout_marginRight="@dimen/margin_menu_item"
-                android:text="Most Played"
+                android:text="@string/most_played"
                 android:textColor="#ffffff" />
 
         </LinearLayout>
@@ -92,7 +92,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_library_music_white_24dp" />
+                    android:src="@drawable/ic_history_white_24dp" />
             </FrameLayout>
 
             <TextView
@@ -101,7 +101,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/margin_menu_item"
                 android:layout_marginRight="@dimen/margin_menu_item"
-                android:text="Last Played"
+                android:text="@string/last_played"
                 android:textColor="#ffffff" />
 
         </LinearLayout>
