@@ -9,29 +9,28 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.ArtistGridAdapter;
 import com.laithlab.core.converter.DTOConverter;
+import com.laithlab.core.customview.GridAutoFitLayoutManager;
 import com.laithlab.core.db.Artist;
-import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.utils.MusicDBProgressCallBack;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.ViewUtils;
 
 import java.util.List;
 
-public class BrowseActivity extends AppCompatActivity implements MusicDBProgressCallBack {
+public class BrowseActivity extends AppCompatActivity implements MusicDBProgressCallBack, ArtistGridAdapter.ClickListener {
 
     private DrawerLayout drawerLayout;
-    private GridView browseGrid;
+    private RecyclerView browseGrid;
     private Context context;
     private View loadingContainer;
 
@@ -67,18 +66,14 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         tiltedView.setPivotY(0f);
         tiltedView.setRotation(-5f);
 
-        browseGrid = (GridView) findViewById(R.id.browse_grid);
         List<Artist> artists = MusicDataUtility.allArtists(this);
+        browseGrid = (RecyclerView) findViewById(R.id.browse_grid);
+        GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
+        browseGrid.setLayoutManager(gridLayoutManager);
         if (artists != null && 0 < artists.size()) {
-            artistGridAdapter = new ArtistGridAdapter(this, DTOConverter.getArtistList(artists));
+            artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(artists), this);
             browseGrid.setAdapter(artistGridAdapter);
         }
-        browseGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(ArtistActivity.getIntent(BrowseActivity.this, (ArtistDTO) browseGrid.getItemAtPosition(position)));
-            }
-        });
         ViewUtils.drawerClickListener(this);
     }
 
@@ -132,7 +127,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
             @Override
             public void run() {
                 if(browseGrid.getAdapter() == null){
-                    artistGridAdapter = new ArtistGridAdapter(context, DTOConverter.getArtistList(MusicDataUtility.allArtists(context)));
+                    artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(MusicDataUtility.allArtists(context)), BrowseActivity.this);
                     browseGrid.setAdapter(artistGridAdapter);
                 } else {
                     artistGridAdapter.updateData(DTOConverter.getArtistList(MusicDataUtility.allArtists(context)));
@@ -140,5 +135,10 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
                 loadingContainer.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        startActivity(ArtistActivity.getIntent(BrowseActivity.this, artistGridAdapter.getItem(position)));
     }
 }

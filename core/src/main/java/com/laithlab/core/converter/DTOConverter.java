@@ -31,7 +31,7 @@ public class DTOConverter {
     }
 
 
-    public static List<AlbumDTO> getAlbumList(List<Album> albums) {
+    private static List<AlbumDTO> getAlbumList(List<Album> albums) {
         List<AlbumDTO> albumDTOs = new ArrayList<>();
         for (Album album : albums) {
             albumDTOs.add(getAlbumDTO(album));
@@ -39,7 +39,7 @@ public class DTOConverter {
         return albumDTOs;
     }
 
-    public static AlbumDTO getAlbumDTO(Album album) {
+    private static AlbumDTO getAlbumDTO(Album album) {
         AlbumDTO albumDTO = new AlbumDTO();
         albumDTO.setAlbumTitle(album.getAlbumTitle());
         albumDTO.setAlbumImageUrl(album.getAlbumImageUrl());

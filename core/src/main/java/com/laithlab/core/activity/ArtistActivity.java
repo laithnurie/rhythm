@@ -7,28 +7,28 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.AlbumGridAdapter;
 import com.laithlab.core.converter.DTOConverter;
+import com.laithlab.core.customview.GridAutoFitLayoutManager;
 import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.utils.ContentType;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.ViewUtils;
 
-public class ArtistActivity extends AppCompatActivity {
+public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapter.ClickListener {
 
     private static final java.lang.String ARTIST_ID_PARAM = "artistId";
     private static final java.lang.String ARTIST_PARAM = "artist";
     private DrawerLayout drawerLayout;
-    private ArtistDTO currentArtist;
+    private RecyclerView albumGrid;
 
     public static Intent getIntent(Context context, String artistId) {
         Intent artistActivity = new Intent(context, ArtistActivity.class);
@@ -51,7 +51,7 @@ public class ArtistActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Bundle extras = getIntent().getExtras();
-        currentArtist = extras.getParcelable(ARTIST_PARAM);
+        ArtistDTO currentArtist = extras.getParcelable(ARTIST_PARAM);
         if (currentArtist == null) {
             currentArtist = DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
         }
@@ -70,21 +70,10 @@ public class ArtistActivity extends AppCompatActivity {
         tiltedView.setPivotY(0f);
         tiltedView.setRotation(-5f);
 
-        final GridView albumGrid = (GridView) findViewById(R.id.album_grid);
-        albumGrid.setAdapter(new AlbumGridAdapter(this, currentArtist.getAlbums()));
-        albumGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MusicContent musicContent = new MusicContent();
-                musicContent.setContentType(ContentType.ALBUM);
-                musicContent.setPlaylistName(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getAlbumTitle());
-                musicContent.setId(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getId());
-
-                Intent intent = new Intent(ArtistActivity.this, PlaylistActivity.class);
-                intent.putExtra("musicContent", musicContent);
-                startActivity(intent);
-            }
-        });
+        GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
+        albumGrid = (RecyclerView) findViewById(R.id.album_grid);
+        albumGrid.setLayoutManager(gridLayoutManager);
+        albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
         ViewUtils.drawerClickListener(this);
     }
 
@@ -107,4 +96,15 @@ public class ArtistActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemClicked(int position) {
+        MusicContent musicContent = new MusicContent();
+        musicContent.setContentType(ContentType.ALBUM);
+        musicContent.setPlaylistName(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getAlbumTitle());
+        musicContent.setId(((AlbumGridAdapter) albumGrid.getAdapter()).getItem(position).getId());
+
+        Intent intent = new Intent(ArtistActivity.this, PlaylistActivity.class);
+        intent.putExtra("musicContent", musicContent);
+        startActivity(intent);
+    }
 }

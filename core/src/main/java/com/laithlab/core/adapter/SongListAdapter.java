@@ -16,10 +16,9 @@ import com.laithlab.core.utils.MusicDataUtility;
 import java.util.List;
 
 public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolder> {
+
     private final List<SongDTO> songs;
-
     private ClickListener clickListener;
-
 
     public SongListAdapter(List<SongDTO> songs, ClickListener clickListener) {
         this.songs = songs;
@@ -60,31 +59,28 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
         public TextView songTitle;
         public TextView songDuration;
         public View rowView;
-        private ClickListener listener;
+        private ClickListener clickListener;
 
-        public ViewHolder(View v, ClickListener listener) {
+        public ViewHolder(View v, ClickListener clickListener) {
             super(v);
             songTitle = (TextView) v.findViewById(R.id.txt_song_item_title);
             songDuration = (TextView) v.findViewById(R.id.txt_song_item_duration);
             rowView = v.findViewById(R.id.row_view);
-            this.listener = listener;
+            this.clickListener = clickListener;
             v.setOnClickListener(this);
             v.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (listener != null) {
-                listener.onItemClicked(getAdapterPosition());
+            if (clickListener != null) {
+                clickListener.onItemClicked(getAdapterPosition());
             }
         }
 
         @Override
         public boolean onLongClick(View v) {
-            if (listener != null) {
-                return listener.onItemLongClicked(getLayoutPosition());
-            }
-            return false;
+            return clickListener != null && clickListener.onItemLongClicked(getLayoutPosition());
         }
     }
 

@@ -36,7 +36,7 @@ public class PlaylistSelectDialog extends DialogFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_1, listItems);
         mylist.setAdapter(adapter);
         mylist.setOnItemClickListener(this);

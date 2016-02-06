@@ -3,65 +3,51 @@ package com.laithlab.core.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.laithlab.core.R;
 import com.laithlab.core.dto.ArtistDTO;
 import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
 
-public class ArtistGridAdapter extends BaseAdapter {
+public class ArtistGridAdapter extends SelectableAdapter<ArtistGridAdapter.ViewHolder> {
 
-	private final LayoutInflater inflater;
 	private List<ArtistDTO> artists;
+	private ClickListener clickListener;
 
-	public ArtistGridAdapter(Context context, List<ArtistDTO> artists) {
+	public ArtistGridAdapter(List<ArtistDTO> artists, ClickListener clickListener) {
 		this.artists = artists;
-		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.clickListener = clickListener;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder;
-		if (convertView == null || convertView.getTag() == null) {
-			convertView = inflater.inflate(R.layout.grid_item, parent, false);
+	public ArtistGridAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		Context context = parent.getContext();
+		LayoutInflater inflater = LayoutInflater.from(context);
 
-			holder = new ViewHolder();
-			holder.gridItemImage = (ImageView) convertView.findViewById(R.id.grid_image);
-			holder.gridItemImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			holder.gridItemTitle = (TextView) convertView.findViewById(R.id.grid_title);
-			convertView.setTag(holder);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
+		View contactView = inflater.inflate(R.layout.grid_item, parent, false);
+		return new ViewHolder(contactView, clickListener);
+	}
 
-		ArtistDTO artist = artists.get(position);
-		holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
-		if (artist.getCoverPath() != null && !artist.getCoverPath().isEmpty()) {
-			byte[] imageData = MusicDataUtility.getImageData(artist.getCoverPath());
+	@Override
+	public void onBindViewHolder(ViewHolder holder, int position) {
+		holder.gridItemTitle.setText(artists.get(position).getArtistName());
+		if (artists.get(position).getCoverPath() != null && !artists.get(position).getCoverPath().isEmpty()) {
+			byte[] imageData = MusicDataUtility.getImageData(artists.get(position).getCoverPath());
 			if (imageData != null) {
 				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 				holder.gridItemImage.setImageBitmap(bmp);
 			}
+		} else {
+			holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
 		}
 
-		holder.gridItemTitle.setText(artists.get(position).getArtistName());
-		return convertView;
-	}
-
-	@Override
-	public int getCount() {
-		return artists.size();
-	}
-
-	@Override
-	public ArtistDTO getItem(int position) {
-		return artists.get(position);
 	}
 
 	@Override
@@ -69,14 +55,43 @@ public class ArtistGridAdapter extends BaseAdapter {
 		return position;
 	}
 
+	@Override
+	public int getItemCount() {
+		return artists.size();
+	}
+
+	public ArtistDTO getItem(int position) {
+		return artists.get(position);
+	}
+
 	public void updateData(List<ArtistDTO> artists) {
 		this.artists = artists;
 		notifyDataSetChanged();
 	}
 
-	private static class ViewHolder {
+	public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 		ImageView gridItemImage;
 		TextView gridItemTitle;
+		private ClickListener clickListener;
+
+		public ViewHolder(View itemView, ClickListener clickListener) {
+			super(itemView);
+			gridItemImage = (ImageView) itemView.findViewById(R.id.grid_image);
+			gridItemTitle = (TextView) itemView.findViewById(R.id.grid_title);
+			this.clickListener = clickListener;
+			itemView.setOnClickListener(this);
+		}
+
+		@Override
+		public void onClick(View view) {
+			if (clickListener != null) {
+				clickListener.onItemClicked(getAdapterPosition());
+			}
+		}
+	}
+
+	public interface ClickListener {
+		void onItemClicked(int position);
 	}
 
 }

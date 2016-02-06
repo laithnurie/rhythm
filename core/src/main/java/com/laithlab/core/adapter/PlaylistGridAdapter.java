@@ -3,10 +3,10 @@ package com.laithlab.core.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,32 +16,28 @@ import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
 
-public class PlaylistGridAdapter extends BaseAdapter {
+public class PlaylistGridAdapter extends SelectableAdapter<PlaylistGridAdapter.ViewHolder> {
 
-    private final LayoutInflater inflater;
     private List<Playlist> playlists;
+    private ClickListener clickListener;
 
-    public PlaylistGridAdapter(Context context, List<Playlist> playlists) {
+    public PlaylistGridAdapter(List<Playlist> playlists, ClickListener clickListener) {
         this.playlists = playlists;
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.clickListener = clickListener;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null || convertView.getTag() == null) {
-            convertView = inflater.inflate(R.layout.grid_item, parent, false);
+    public PlaylistGridAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
 
-            holder = new ViewHolder();
-            holder.gridItemImage = (ImageView) convertView.findViewById(R.id.grid_image);
-            holder.gridItemImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            holder.gridItemTitle = (TextView) convertView.findViewById(R.id.grid_title);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+        View contactView = inflater.inflate(R.layout.grid_item, parent, false);
+        return new ViewHolder(contactView, clickListener);
+    }
 
-        holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.gridItemTitle.setText(playlists.get(position).getPlaylistName());
         if (playlists.get(position).getCoverPath() != null && !playlists.get(position).getCoverPath().isEmpty()) {
             byte[] imageData = MusicDataUtility.getImageData(playlists.get(position).getCoverPath());
             if (imageData != null) {
@@ -49,29 +45,53 @@ public class PlaylistGridAdapter extends BaseAdapter {
                 holder.gridItemImage.setImageBitmap(bmp);
             }
         }
-
-        holder.gridItemTitle.setText(playlists.get(position).getPlaylistName());
-        return convertView;
-    }
-
-    @Override
-    public int getCount() {
-        return playlists.size();
-    }
-
-    @Override
-    public Playlist getItem(int position) {
-        return playlists.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
-    private static class ViewHolder {
-        ImageView gridItemImage;
-        TextView gridItemTitle;
+    @Override
+    public int getItemCount() {
+        return playlists.size();
+    }
+
+    public Playlist getItem(int position) {
+        return playlists.get(position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        private ImageView gridItemImage;
+        private TextView gridItemTitle;
+        private ClickListener clickListener;
+
+        public ViewHolder(View itemView, ClickListener clickListener) {
+            super(itemView);
+            gridItemImage = (ImageView) itemView.findViewById(R.id.grid_image);
+            gridItemTitle = (TextView) itemView.findViewById(R.id.grid_title);
+            this.clickListener = clickListener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (clickListener != null) {
+                clickListener.onItemClicked(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            return clickListener != null && clickListener.onItemLongClicked(getLayoutPosition());
+        }
+    }
+
+    public interface ClickListener {
+        void onItemClicked(int position);
+
+        boolean onItemLongClicked(int position);
     }
 
 }
