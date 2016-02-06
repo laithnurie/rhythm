@@ -135,6 +135,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         });
         removePlayerListeners();
         setPlayerListeners();
+        if (mediaPlayer != null && mediaPlayer.isPlaying() && rhythmSong.getSongLocation().equals(PlayBackUtil.getCurrentSong().getSongLocation())) {
+            startTimer();
+        }
 
         updatePlayerUI();
         return rootView;
@@ -167,15 +170,15 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                     mediaPlayer = PlayBackUtil.getMediaPlayer();
                     mListener.resetChangedSongFromNotification();
                 } else {
-                    if(PlayBackUtil.getCurrentSong()!= null && rhythmSong.getSongLocation().equals(PlayBackUtil.getCurrentSong().getSongLocation())){
+                    if (PlayBackUtil.getCurrentSong() != null && rhythmSong.getSongLocation()
+                            .equals(PlayBackUtil.getCurrentSong().getSongLocation())) {
                         mediaPlayer = PlayBackUtil.getMediaPlayer();
-//                            updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
-//                                    milliSecondsToTimer(mediaPlayer.getDuration()));
-                            startTimer();
+                        startTimer();
 
                     } else {
                         PlayBackUtil.setCurrentSong(rhythmSong);
-                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(),
+                                rhythmSong.getSongLocation());
                     }
                 }
                 removePlayerListeners();
