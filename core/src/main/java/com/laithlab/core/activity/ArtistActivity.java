@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.adapter.AlbumGridAdapter;
@@ -56,6 +57,9 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
             currentArtist = DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
         }
 
+        TextView currentArtistTitle = (TextView)findViewById(R.id.current_artist_title);
+        currentArtistTitle.setText(currentArtist.getArtistName());
+
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -94,6 +98,15 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

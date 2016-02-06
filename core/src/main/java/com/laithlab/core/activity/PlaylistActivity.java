@@ -70,10 +70,6 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         }
         Bundle extras = getIntent().getExtras();
         musicContent = extras.getParcelable("musicContent");
-//        if (currentPlaylist == null) {
-//            currentPlaylist = DTOConverter.getAlbumDTO(MusicDataUtility.getAlbumById(extras.getString(ALBUM_ID_PARAM), this));
-//        }
-
         songs = DTOConverter.getSongList(MusicDataUtility.getSongsFromList(musicContent, this));
 
         TextView albumTitle = (TextView) findViewById(R.id.txt_album);
@@ -113,6 +109,15 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

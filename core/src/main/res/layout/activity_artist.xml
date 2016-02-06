@@ -65,6 +65,7 @@
                         android:orientation="vertical">
 
                         <com.laithlab.core.customview.RhythmTextView
+                            android:id="@+id/current_artist_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/albums"

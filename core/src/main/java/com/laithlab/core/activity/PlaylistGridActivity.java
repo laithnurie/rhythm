@@ -23,6 +23,7 @@ import com.laithlab.core.utils.DialogHelper;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.ViewUtils;
 
+import java.util.List;
 
 public class PlaylistGridActivity extends AppCompatActivity implements PlaylistGridAdapter.ClickListener {
 
@@ -90,15 +91,28 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
     }
 
     @Override
-    public void onItemClicked(int position) {
-        MusicContent musicContent = new MusicContent();
-        musicContent.setContentType(ContentType.PLAYLIST);
-        musicContent.setPlaylistName(playlistGridAdapter.getItem(position).getPlaylistName());
-        musicContent.setId(playlistGridAdapter.getItem(position).getId());
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
-        Intent intent = new Intent(PlaylistGridActivity.this, PlaylistActivity.class);
-        intent.putExtra("musicContent", musicContent);
-        startActivity(intent);
+    @Override
+    public void onItemClicked(int position) {
+        if(actionMode != null){
+            toggleSelection(position);
+        } else {
+            MusicContent musicContent = new MusicContent();
+            musicContent.setContentType(ContentType.PLAYLIST);
+            musicContent.setPlaylistName(playlistGridAdapter.getItem(position).getPlaylistName());
+            musicContent.setId(playlistGridAdapter.getItem(position).getId());
+
+            Intent intent = new Intent(PlaylistGridActivity.this, PlaylistActivity.class);
+            intent.putExtra("musicContent", musicContent);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -141,6 +155,7 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             int i = item.getItemId();
             if (i == R.id.delete_playlist_menu_item) {
+                deletePlaylist();
                 actionMode.finish();
                 return true;
             } else {
@@ -153,6 +168,15 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
             actionMode = null;
             playlistGridAdapter.clearSelection();
         }
+    }
+
+    private void deletePlaylist() {
+        final List<Integer> selectedPlaylists = playlistGridAdapter.getSelectedItems();
+        for (int j = selectedPlaylists.size() - 1; j >= 0; j--) {
+            MusicDataUtility.deletePlaylist(playlistGridAdapter
+                    .getItem(selectedPlaylists.get(j)).getId(), PlaylistGridActivity.this);
+        }
+        playlistGridAdapter.notifyDataSetChanged();
     }
 }
 

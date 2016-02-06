@@ -329,8 +329,8 @@ public class MusicDataUtility {
         return playlist;
     }
 
-    public static List<Song> getSongsFromList(MusicContent musicContent, Context context){
-        switch (musicContent.getContentType()){
+    public static List<Song> getSongsFromList(MusicContent musicContent, Context context) {
+        switch (musicContent.getContentType()) {
             case ARTIST:
                 //TODO: get all songs from artist
                 return getArtistById(musicContent.getId(), context).getAlbums().get(0).getSongs();
@@ -358,7 +358,18 @@ public class MusicDataUtility {
         realm.commitTransaction();
     }
 
-    public static void updateSongCount(String songId, Context context){
+    public static void deletePlaylist(String playlistID, Context context) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+
+        Playlist playlistToDelete = realm.where(Playlist.class)
+                .equalTo("id", playlistID)
+                .findFirst();
+        playlistToDelete.removeFromRealm();
+        realm.commitTransaction();
+    }
+
+    public static void updateSongCount(String songId, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
         Song song = realm.where(Song.class)

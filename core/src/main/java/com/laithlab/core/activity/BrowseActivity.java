@@ -102,6 +102,15 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void updateDb(final MusicDBProgressCallBack callBack) {
         boolean firstTimeLaunched = sharedPreferences.getBoolean(getString(R.string.first_time_pref_key), true);
         if (firstTimeLaunched) {

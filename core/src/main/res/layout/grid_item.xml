@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="end"
-        android:background="#55000000"
+        android:background="@color/transparent_black"
         android:layout_gravity="bottom"
         android:paddingBottom="15dp"
         android:paddingLeft="10dp"

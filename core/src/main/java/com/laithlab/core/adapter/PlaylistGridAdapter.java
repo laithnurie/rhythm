@@ -45,6 +45,12 @@ public class PlaylistGridAdapter extends SelectableAdapter<PlaylistGridAdapter.V
                 holder.gridItemImage.setImageBitmap(bmp);
             }
         }
+
+        if(isSelected(position)){
+            holder.gridItemTitle.setBackgroundResource(R.color.red);
+        } else {
+            holder.gridItemTitle.setBackgroundResource(R.color.transparent_black);
+        }
     }
 
     @Override
