@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="first_category"
+        android:title="Settings">
+
+        <Preference
+            android:key="reset_stats"
+            android:title="Reset Playing stats" />
+        <Preference
+            android:key="disclaimer"
+            android:title="Disclaimer" />
+
+        <Preference
+            android:key="about"
+            android:title="@string/about" />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

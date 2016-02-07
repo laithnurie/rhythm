@@ -168,6 +168,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
                 playlistSelected.getSongs().add(songs.get(selectedSongs.get(j)));
             }
             realm.commitTransaction();
+            realm.close();
         }
         songListAdapter.clearSelection();
         actionMode.finish();

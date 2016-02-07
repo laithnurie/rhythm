@@ -159,6 +159,7 @@ public class MusicDataUtility {
         Album albumRecord = getOrCreateAlbum(realm, artistRecord, songEntry);
         getOrCreateSong(realm, albumRecord, songEntry.getTrackTitle(), songEntry.getDuration(), songPath);
         realm.commitTransaction();
+        realm.close();
 
     }
 
@@ -296,6 +297,7 @@ public class MusicDataUtility {
                 .contains("id", id)
                 .findFirst();
         realm.commitTransaction();
+        realm.close();
         return song;
     }
 
@@ -306,6 +308,7 @@ public class MusicDataUtility {
                 .contains("id", id)
                 .findFirst();
         realm.commitTransaction();
+        realm.close();
         return album;
     }
 
@@ -316,6 +319,7 @@ public class MusicDataUtility {
                 .contains("id", id)
                 .findFirst();
         realm.commitTransaction();
+        realm.close();
         return artist;
     }
 
@@ -326,6 +330,7 @@ public class MusicDataUtility {
                 .contains("id", id)
                 .findFirst();
         realm.commitTransaction();
+        realm.close();
         return playlist;
     }
 
@@ -356,6 +361,7 @@ public class MusicDataUtility {
         playlistRecord.setPlaylistName(playlistName);
 
         realm.commitTransaction();
+        realm.close();
     }
 
     public static void deletePlaylist(String playlistID, Context context) {
@@ -367,6 +373,7 @@ public class MusicDataUtility {
                 .findFirst();
         playlistToDelete.removeFromRealm();
         realm.commitTransaction();
+        realm.close();
     }
 
     public static void updateSongCount(String songId, Context context) {
@@ -379,6 +386,7 @@ public class MusicDataUtility {
         song.setLastPlayed(System.currentTimeMillis());
 
         realm.commitTransaction();
+        realm.close();
     }
 
     public static String[] getStorageDirectories() {
@@ -456,5 +464,16 @@ public class MusicDataUtility {
 
         // return timer string
         return finalTimerString;
+    }
+
+    public static void resetMusicStats(Context context) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        realm.where(Artist.class).findAll().clear();
+        realm.where(Album.class).findAll().clear();
+        realm.where(Song.class).findAll().clear();
+        realm.where(Playlist.class).findAll().clear();
+        realm.commitTransaction();
+        realm.close();
     }
 }

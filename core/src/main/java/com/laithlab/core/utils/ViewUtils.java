@@ -8,6 +8,7 @@ import com.laithlab.core.R;
 import com.laithlab.core.activity.BrowseActivity;
 import com.laithlab.core.activity.PlaylistActivity;
 import com.laithlab.core.activity.PlaylistGridActivity;
+import com.laithlab.core.activity.RhythmPrefs;
 import com.laithlab.core.activity.SwipePlayerActivity;
 import com.laithlab.core.dto.MusicContent;
 
@@ -44,6 +45,9 @@ public class ViewUtils {
                     activity.startActivity(playerIntent);
                 } else if (i == R.id.about_drawer_item) {
                     DialogHelper.aboutDialog(activity);
+                } else if (i == R.id.settings_drawer_item){
+                    Intent settings = new Intent(activity, RhythmPrefs.class);
+                    activity.startActivity(settings);
                 }
             }
         };
@@ -55,6 +59,7 @@ public class ViewUtils {
         activity.findViewById(R.id.now_playing_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.settings_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.about_drawer_item).setOnClickListener(clickListener);
+        activity.findViewById(R.id.settings_drawer_item).setOnClickListener(clickListener);
 
         activity.findViewById(R.id.now_playing_drawer_item).setVisibility(PlayBackUtil.getMediaPlayer() != null ? View.VISIBLE : View.GONE);
     }

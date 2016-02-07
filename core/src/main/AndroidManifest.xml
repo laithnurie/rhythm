@@ -16,6 +16,10 @@
             android:name=".activity.SwipePlayerActivity"
             android:launchMode="singleTop" />
 
+        <activity
+            android:name=".activity.RhythmPrefs"
+            android:launchMode="singleTop"/>
+
         <service
             android:name=".service.MediaPlayerService"
             android:enabled="true"

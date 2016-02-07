@@ -1,8 +1,10 @@
 package com.laithlab.core.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -62,5 +64,31 @@ public class DialogHelper {
 
         AlertDialog b = dialogBuilder.create();
         b.show();
+    }
+
+    public static void resetMusicDataAlert(final Activity activity) {
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(activity);
+
+        alertDialogBuilder.setTitle("Reset Music Data");
+        alertDialogBuilder
+                .setMessage("Including Most Played, Last Played and your Personal Playlists ?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                MusicDataUtility.resetMusicStats(activity);
+                SharedPreferences sharedPreferences = activity
+                        .getSharedPreferences("com.laithlab.rhythm", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(activity.getString(R.string.first_time_pref_key), true);
+                editor.apply();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }
