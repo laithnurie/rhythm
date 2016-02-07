@@ -11,7 +11,6 @@ public class AlbumDTO implements Parcelable {
     private String id;
     private String artistId;
     private String albumTitle;
-    private String albumImageUrl;
     private List<SongDTO> songs;
     private String coverPath;
 
@@ -39,14 +38,6 @@ public class AlbumDTO implements Parcelable {
         return albumTitle;
     }
 
-    public void setAlbumImageUrl(String albumImageUrl) {
-        this.albumImageUrl = albumImageUrl;
-    }
-
-    public String getAlbumImageUrl() {
-        return albumImageUrl;
-    }
-
     public void setSongs(List<SongDTO> songs) {
         this.songs = songs;
     }
@@ -71,7 +62,6 @@ public class AlbumDTO implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.albumTitle);
-        dest.writeString(this.albumImageUrl);
         dest.writeTypedList(this.songs);
         dest.writeString(this.id);
         dest.writeString(this.artistId);
@@ -83,7 +73,6 @@ public class AlbumDTO implements Parcelable {
 
     protected AlbumDTO(Parcel in) {
         this.albumTitle = in.readString();
-        this.albumImageUrl = in.readString();
         this.songs = new ArrayList<>();
         in.readTypedList(this.songs, SongDTO.CREATOR);
         this.id = in.readString();

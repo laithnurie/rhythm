@@ -165,7 +165,12 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             realm.beginTransaction();
             List<Integer> selectedSongs = songListAdapter.getSelectedItems();
             for (int j = 0; j < selectedSongs.size(); j++) {
-                playlistSelected.getSongs().add(songs.get(selectedSongs.get(j)));
+                Song song = songs.get(selectedSongs.get(j));
+                byte[] imageData = MusicDataUtility.getImageData(song.getSongLocation());
+                if(imageData != null){
+                    playlistSelected.setCoverPath(song.getSongLocation());
+                }
+                playlistSelected.getSongs().add(song);
             }
             realm.commitTransaction();
             realm.close();

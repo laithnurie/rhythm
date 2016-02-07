@@ -12,13 +12,20 @@ import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.dto.SearchResult;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-
-import java.io.File;
-import java.util.*;
-import java.util.regex.Pattern;
 
 public class MusicDataUtility {
 

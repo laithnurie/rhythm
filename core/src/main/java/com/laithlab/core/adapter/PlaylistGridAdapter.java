@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.db.Playlist;
+import com.laithlab.core.utils.LRUCache;
 import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
@@ -39,11 +40,19 @@ public class PlaylistGridAdapter extends SelectableAdapter<PlaylistGridAdapter.V
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.gridItemTitle.setText(playlists.get(position).getPlaylistName());
         if (playlists.get(position).getCoverPath() != null && !playlists.get(position).getCoverPath().isEmpty()) {
-            byte[] imageData = MusicDataUtility.getImageData(playlists.get(position).getCoverPath());
-            if (imageData != null) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-                holder.gridItemImage.setImageBitmap(bmp);
+            if (LRUCache.getInstance().get(playlists.get(position).getCoverPath()) != null) {
+                holder.gridItemImage.setImageBitmap(LRUCache.getInstance()
+                        .get(playlists.get(position).getCoverPath()));
+            } else {
+                byte[] imageData = MusicDataUtility.getImageData(playlists.get(position).getCoverPath());
+                if (imageData != null) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+                    holder.gridItemImage.setImageBitmap(bmp);
+                    LRUCache.getInstance().put(playlists.get(position).getCoverPath(), bmp);
+                }
             }
+        } else {
+            holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
         }
 
         if(isSelected(position)){

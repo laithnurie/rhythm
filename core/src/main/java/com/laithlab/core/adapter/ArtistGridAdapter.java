@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.dto.ArtistDTO;
+import com.laithlab.core.utils.LRUCache;
 import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
@@ -36,19 +37,24 @@ public class ArtistGridAdapter extends SelectableAdapter<ArtistGridAdapter.ViewH
 	}
 
 	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
-		holder.gridItemTitle.setText(artists.get(position).getArtistName());
-		if (artists.get(position).getCoverPath() != null && !artists.get(position).getCoverPath().isEmpty()) {
-			byte[] imageData = MusicDataUtility.getImageData(artists.get(position).getCoverPath());
-			if (imageData != null) {
-				Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-				holder.gridItemImage.setImageBitmap(bmp);
-			}
-		} else {
-			holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
-		}
-
-	}
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.gridItemTitle.setText(artists.get(position).getArtistName());
+        if (artists.get(position).getCoverPath() != null && !artists.get(position).getCoverPath().isEmpty()) {
+            if (LRUCache.getInstance().get(artists.get(position).getCoverPath()) != null) {
+                holder.gridItemImage.setImageBitmap(LRUCache.getInstance()
+						.get(artists.get(position).getCoverPath()));
+            } else {
+                byte[] imageData = MusicDataUtility.getImageData(artists.get(position).getCoverPath());
+                if (imageData != null) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+                    holder.gridItemImage.setImageBitmap(bmp);
+					LRUCache.getInstance().put(artists.get(position).getCoverPath(), bmp);
+                }
+            }
+        } else {
+            holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
+        }
+    }
 
 	@Override
 	public long getItemId(int position) {

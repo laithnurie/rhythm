@@ -10,7 +10,6 @@ public class Album extends RealmObject {
     private String id;
     private String artistId;
     private String albumTitle;
-    private String albumImageUrl;
     private RealmList<Song> songs;
     private String coverPath;
 
@@ -36,14 +35,6 @@ public class Album extends RealmObject {
 
     public String getAlbumTitle() {
         return albumTitle;
-    }
-
-    public void setAlbumImageUrl(String albumImageUrl) {
-        this.albumImageUrl = albumImageUrl;
-    }
-
-    public String getAlbumImageUrl() {
-        return albumImageUrl;
     }
 
     public void setSongs(RealmList<Song> songs) {
