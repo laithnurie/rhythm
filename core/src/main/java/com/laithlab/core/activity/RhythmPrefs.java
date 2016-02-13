@@ -2,6 +2,7 @@ package com.laithlab.core.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -35,6 +36,16 @@ public class RhythmPrefs extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     DialogHelper.resetMusicDataAlert(getActivity());
+                    return true;
+                }
+            });
+
+            Preference disclaimerStats = findPreference("disclaimer");
+
+            disclaimerStats.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    startActivity(new Intent(getActivity(), DisclaimerActivity.class));
                     return true;
                 }
             });

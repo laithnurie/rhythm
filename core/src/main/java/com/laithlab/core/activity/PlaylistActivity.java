@@ -1,6 +1,5 @@
 package com.laithlab.core.activity;
 
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,7 +25,7 @@ import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.PlaylistCallback;
-import com.laithlab.core.fragment.PlaylistSelectDialog;
+import com.laithlab.core.utils.DialogHelper;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.ViewUtils;
 
@@ -113,7 +112,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -167,7 +166,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             for (int j = 0; j < selectedSongs.size(); j++) {
                 Song song = songs.get(selectedSongs.get(j));
                 byte[] imageData = MusicDataUtility.getImageData(song.getSongLocation());
-                if(imageData != null){
+                if (imageData != null) {
                     playlistSelected.setCoverPath(song.getSongLocation());
                 }
                 playlistSelected.getSongs().add(song);
@@ -198,7 +197,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             int i = item.getItemId();
             if (i == R.id.add_to_playlist_menu_item) {
-                showDialog();
+                DialogHelper.addSongToPlaylist(PlaylistActivity.this);
                 return true;
             } else {
                 return false;
@@ -211,20 +210,4 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             songListAdapter.clearSelection();
         }
     }
-
-    public void showDialog() {
-        List<Playlist> playlists = MusicDataUtility.getPlayists(this);
-
-        String[] playlistNames = new String[playlists.size()];
-        for (int i = 0; i < playlistNames.length; i++) {
-            playlistNames[i] = playlists.get(i).getPlaylistName();
-        }
-        FragmentManager manager = getSupportFragmentManager();
-        PlaylistSelectDialog dialog = new PlaylistSelectDialog();
-        Bundle args = new Bundle();
-        args.putStringArray("playlistNames", playlistNames);
-        dialog.setArguments(args);
-        dialog.show(manager, "dialog");
-    }
-
 }

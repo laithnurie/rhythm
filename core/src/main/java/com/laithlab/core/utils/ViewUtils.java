@@ -43,9 +43,7 @@ public class ViewUtils {
                     Intent playerIntent = new Intent(activity, SwipePlayerActivity.class);
                     playerIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     activity.startActivity(playerIntent);
-                } else if (i == R.id.about_drawer_item) {
-                    DialogHelper.aboutDialog(activity);
-                } else if (i == R.id.settings_drawer_item){
+                } else if (i == R.id.settings_drawer_item) {
                     Intent settings = new Intent(activity, RhythmPrefs.class);
                     activity.startActivity(settings);
                 }
@@ -57,8 +55,6 @@ public class ViewUtils {
         activity.findViewById(R.id.last_played_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.playlists_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.now_playing_drawer_item).setOnClickListener(clickListener);
-        activity.findViewById(R.id.settings_drawer_item).setOnClickListener(clickListener);
-        activity.findViewById(R.id.about_drawer_item).setOnClickListener(clickListener);
         activity.findViewById(R.id.settings_drawer_item).setOnClickListener(clickListener);
 
         activity.findViewById(R.id.now_playing_drawer_item).setVisibility(PlayBackUtil.getMediaPlayer() != null ? View.VISIBLE : View.GONE);

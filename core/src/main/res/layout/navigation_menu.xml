@@ -44,6 +44,7 @@
                 android:textColor="#ffffff" />
 
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/most_played_drawer_item"
             android:layout_width="fill_parent"
@@ -203,39 +204,6 @@
                 android:textColor="#ffffff" />
 
         </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/about_drawer_item"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/margin_menu_item"
-            android:paddingTop="@dimen/margin_menu_item">
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_menu_item">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_info_outline_white_24dp" />
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/margin_menu_item"
-                android:layout_marginRight="@dimen/margin_menu_item"
-                android:text="@string/about"
-                android:textColor="#ffffff" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>

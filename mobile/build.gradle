@@ -22,6 +22,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':core')
-    wearApp project(':wear')
+//    wear app commented out for now
+//    wearApp project(':wear')
     testCompile 'junit:junit:4.12'
 }

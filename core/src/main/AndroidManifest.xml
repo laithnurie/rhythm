@@ -15,6 +15,9 @@
         <activity
             android:name=".activity.SwipePlayerActivity"
             android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.DisclaimerActivity"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".activity.RhythmPrefs"

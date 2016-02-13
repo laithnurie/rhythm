@@ -6,12 +6,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
 import com.laithlab.core.R;
+import com.laithlab.core.db.Playlist;
+import com.laithlab.core.fragment.PlaylistSelectDialog;
+
+import java.util.List;
 
 public class DialogHelper {
     public static void showAddPlaylistDialog(final Context context){
@@ -90,5 +97,24 @@ public class DialogHelper {
 
         android.app.AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public static void addSongToPlaylist(AppCompatActivity activity){
+        List<Playlist> playlists = MusicDataUtility.getPlayists(activity);
+
+        if(playlists.size() == 0){
+            showAddPlaylistDialog(activity);
+        } else {
+            String[] playlistNames = new String[playlists.size()];
+            for (int i = 0; i < playlistNames.length; i++) {
+                playlistNames[i] = playlists.get(i).getPlaylistName();
+            }
+            FragmentManager manager = activity.getSupportFragmentManager();
+            PlaylistSelectDialog dialog = new PlaylistSelectDialog();
+            Bundle args = new Bundle();
+            args.putStringArray("playlistNames", playlistNames);
+            dialog.setArguments(args);
+            dialog.show(manager, "dialog");
+        }
     }
 }
