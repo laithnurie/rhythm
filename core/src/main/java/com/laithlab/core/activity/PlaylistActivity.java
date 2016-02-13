@@ -25,6 +25,7 @@ import com.laithlab.core.db.Song;
 import com.laithlab.core.dto.MusicContent;
 import com.laithlab.core.dto.SongDTO;
 import com.laithlab.core.fragment.PlaylistCallback;
+import com.laithlab.core.utils.ContentType;
 import com.laithlab.core.utils.DialogHelper;
 import com.laithlab.core.utils.MusicDataUtility;
 import com.laithlab.core.utils.ViewUtils;
@@ -39,12 +40,14 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
     public static String ALBUM_ID_PARAM = "albumId";
 
     private DrawerLayout drawerLayout;
+    private RecyclerView songList;
+
     private SongListAdapter songListAdapter;
 
     private MusicContent musicContent;
     private List<SongDTO> songs;
 
-    private ActionModeCallback actionModeCallback = new ActionModeCallback();
+    private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
 
     public static Intent getIntent(Context context, String id) {
@@ -69,7 +72,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         }
         Bundle extras = getIntent().getExtras();
         musicContent = extras.getParcelable("musicContent");
-        songs = DTOConverter.getSongList(MusicDataUtility.getSongsFromList(musicContent, this));
+        actionModeCallback = new ActionModeCallback(musicContent.getContentType());
 
         TextView albumTitle = (TextView) findViewById(R.id.txt_album);
         albumTitle.setText(musicContent.getPlaylistName());
@@ -81,12 +84,14 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         tiltedView.setPivotY(0f);
         tiltedView.setRotation(-5f);
 
-        RecyclerView songList = (RecyclerView) findViewById(R.id.rv_songs_list);
+        songList = (RecyclerView) findViewById(R.id.rv_songs_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         songList.setLayoutManager(layoutManager);
-        if(songs.size() > 0){
-            songListAdapter = new SongListAdapter(songs, this);
+
+        songs = DTOConverter.getSongList(MusicDataUtility.getSongsFromList(musicContent, this));
+        if (songs.size() > 0) {
+            songListAdapter = new SongListAdapter(songs, this, musicContent.getContentType());
             songList.setAdapter(songListAdapter);
             findViewById(R.id.no_songs_added).setVisibility(View.GONE);
         }
@@ -184,10 +189,19 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
     private class ActionModeCallback implements ActionMode.Callback {
         @SuppressWarnings("unused")
         private final String TAG = ActionModeCallback.class.getSimpleName();
+        private final ContentType contentType;
+
+        public ActionModeCallback(ContentType contentType) {
+            this.contentType = contentType;
+        }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.song_selection_menu, menu);
+            if (contentType != ContentType.PLAYLIST) {
+                mode.getMenuInflater().inflate(R.menu.song_selection_menu, menu);
+            } else {
+                mode.getMenuInflater().inflate(R.menu.song_remove_menu, menu);
+            }
             return true;
         }
 
@@ -202,6 +216,9 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             if (i == R.id.add_to_playlist_menu_item) {
                 DialogHelper.addSongToPlaylist(PlaylistActivity.this);
                 return true;
+            } else if (i == R.id.remove_playlist_menu_item) {
+                removeSongs();
+                return true;
             } else {
                 return false;
             }
@@ -211,6 +228,34 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         public void onDestroyActionMode(ActionMode mode) {
             actionMode = null;
             songListAdapter.clearSelection();
+        }
+    }
+
+    private void removeSongs() {
+        Realm realm = Realm.getInstance(PlaylistActivity.this);
+        realm.beginTransaction();
+        Playlist playlist = realm.where(Playlist.class)
+                .contains("id", musicContent.getId())
+                .findFirst();
+        List<Integer> selectedSongs = songListAdapter.getSelectedItems();
+        for (int j = selectedSongs.size() - 1; j >= 0; j--) {
+            playlist.getSongs().get(selectedSongs.get(j)).removeFromRealm();
+        }
+        realm.commitTransaction();
+        realm.close();
+        songListAdapter.clearSelection();
+        populateSongs();
+        actionMode.finish();
+
+    }
+
+    private void populateSongs() {
+        songs = DTOConverter.getSongList(MusicDataUtility.getSongsFromList(musicContent, this));
+        songListAdapter.updateSongs(songs);
+        if (songs.size() > 0) {
+            findViewById(R.id.no_songs_added).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.no_songs_added).setVisibility(View.VISIBLE);
         }
     }
 }

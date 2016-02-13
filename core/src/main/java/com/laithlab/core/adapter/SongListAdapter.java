@@ -11,18 +11,21 @@ import android.widget.TextView;
 
 import com.laithlab.core.R;
 import com.laithlab.core.dto.SongDTO;
+import com.laithlab.core.utils.ContentType;
 import com.laithlab.core.utils.MusicDataUtility;
 
 import java.util.List;
 
 public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolder> {
 
-    private final List<SongDTO> songs;
+    private List<SongDTO> songs;
+    private final ContentType contentType;
     private ClickListener clickListener;
 
-    public SongListAdapter(List<SongDTO> songs, ClickListener clickListener) {
+    public SongListAdapter(List<SongDTO> songs, ClickListener clickListener, ContentType contentType) {
         this.songs = songs;
         this.clickListener = clickListener;
+        this.contentType = contentType;
     }
 
     @Override
@@ -30,7 +33,13 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.song_list_item, parent, false);
+        View contactView;
+
+        if(contentType == ContentType.PLAYLIST){
+            contactView = inflater.inflate(R.layout.remove_song_list_item, parent, false);
+        } else {
+            contactView = inflater.inflate(R.layout.add_song_list_item, parent, false);
+        }
 
         return new ViewHolder(contactView, clickListener);
     }
@@ -41,7 +50,7 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
         holder.songDuration.setText(MusicDataUtility.secondsToTimer(songs.get(position).getSongDuration()));
 
         ObjectAnimator animX;
-        if(isSelected(position)){
+        if (isSelected(position)) {
             animX = ObjectAnimator.ofFloat(holder.rowView, "x", 150f);
         } else {
             animX = ObjectAnimator.ofFloat(holder.rowView, "x", 0f);
@@ -53,6 +62,11 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
     @Override
     public int getItemCount() {
         return songs.size();
+    }
+
+    public void updateSongs(List<SongDTO> songs){
+        this.songs = songs;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

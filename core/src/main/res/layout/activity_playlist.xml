@@ -8,8 +8,8 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="@color/white"
+        android:orientation="vertical"
         tools:context=".activity.PlaylistActivity">
 
         <include layout="@layout/toolbar" />
@@ -38,11 +38,11 @@
 
                     <com.laithlab.core.customview.RhythmTextView
                         android:id="@+id/no_songs_added"
-                        android:layout_gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:text="@string/no_songs_added"/>
+                        android:layout_gravity="center"
+                        android:text="@string/no_songs_added"
+                        android:textSize="20sp" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_songs_list"

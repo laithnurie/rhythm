@@ -60,7 +60,7 @@ public class SearchActivity extends AppCompatActivity {
         searchBox.setTextColor(getResources().getColor(R.color.white));
 
         ImageView searchClose = (ImageView) sv.findViewById(R.id.search_close_btn);
-        searchClose.setImageResource(R.drawable.ic_clear_24dp);
+        searchClose.setImageResource(R.drawable.ic_clear_white_24dp);
 
         sv.setIconifiedByDefault(false);
 
