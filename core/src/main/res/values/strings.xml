@@ -33,4 +33,5 @@
     <string name="android_support_libraries">Android Support Libraries</string>
     <string name="android_open_source">Copyright © 2006 The Android Open Source Project</string>
     <string name="android_support_libs">Appcompat-v7 \nPalette-v7 \nDesign \nRecyclerView-v7</string>
+    <string name="no_songs_added">No Songs Added</string>
 </resources>

@@ -30,21 +30,19 @@
                     android:layout_height="0dp"
                     android:layout_weight="2" />
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="8"
                     android:orientation="vertical">
 
-                    <GridView
-                        android:id="@+id/songs_grid"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:horizontalSpacing="0dp"
-                        android:numColumns="2"
-                        android:stretchMode="columnWidth"
-                        android:verticalSpacing="0dp"
-                        android:visibility="gone" />
+                    <com.laithlab.core.customview.RhythmTextView
+                        android:id="@+id/no_songs_added"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:text="@string/no_songs_added"/>
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_songs_list"
@@ -52,7 +50,7 @@
                         android:layout_height="match_parent"
                         android:scrollbars="vertical" />
 
-                </LinearLayout>
+                </FrameLayout>
             </LinearLayout>
 
             <LinearLayout

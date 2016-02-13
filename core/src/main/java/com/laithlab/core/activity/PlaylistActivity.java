@@ -85,8 +85,11 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         songList.setLayoutManager(layoutManager);
-        songListAdapter = new SongListAdapter(songs, this);
-        songList.setAdapter(songListAdapter);
+        if(songs.size() > 0){
+            songListAdapter = new SongListAdapter(songs, this);
+            songList.setAdapter(songListAdapter);
+            findViewById(R.id.no_songs_added).setVisibility(View.GONE);
+        }
 
         ViewUtils.drawerClickListener(this);
     }
