@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class PlaylistActivity extends AppCompatActivity implements SongListAdapter.ClickListener, PlaylistCallback {
 
@@ -238,8 +239,9 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
                 .contains("id", musicContent.getId())
                 .findFirst();
         List<Integer> selectedSongs = songListAdapter.getSelectedItems();
-        for (int j = selectedSongs.size() - 1; j >= 0; j--) {
-            playlist.getSongs().get(selectedSongs.get(j)).removeFromRealm();
+        RealmList<Song> remainingSongs = playlist.getSongs();
+        for (int i = selectedSongs.size() - 1; i >= 0; i--) {
+            remainingSongs.remove(remainingSongs.get(selectedSongs.get(i)));
         }
         realm.commitTransaction();
         realm.close();
