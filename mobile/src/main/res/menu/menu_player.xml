@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".PlayerActivity">
+
+    <item android:id="@+id/repeat_mode"
+        android:title="@string/repeat_mode"
+        android:visible="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_repeat_grey_24dp">
+    </item>
+
+    <item android:id="@+id/shuffle_mode"
+        android:title="@string/shuffle_mode"
+        android:visible="true"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_shuffle_grey_24dp">
+    </item>
+
+    <item android:id="@+id/search_menu_item"
+        android:title="@string/search"
+        android:visible="true"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_search_white_24dp">
+    </item>
+
+</menu>

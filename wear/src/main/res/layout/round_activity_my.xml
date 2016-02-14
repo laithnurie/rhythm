@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".MyActivity"
     tools:deviceIds="wear_square">
 
     <de.hdodenhof.circleimageview.CircleImageView

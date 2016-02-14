@@ -5,19 +5,13 @@ Rhythm is an android music player, it is a side project to follow up a design th
 3rd Party Libraries I used in the app so far :
 *   [Realm.io](https://realm.io/)
 *   [CircleImageView](https://github.com/hdodenhof/CircleImageView)
-*   [mp3agic](https://github.com/mpatric/mp3agic)
-
+*   [Stetho](http://facebook.github.io/stetho/)
 
 I also experimented android wear app, however I found the mediaSession notification does the trick for me.
 
 It is still in progress! there is alot of of work to do!
 
 <img src="https://github.com/laithnurie/rhythm/raw/master/demo.gif" width="300" height="533" />
-
-Things needs to be done :
-* shuffle/repeat playlist
-* show loading while the app looking through the device storage to find the mp3 files.
-* Search functionality
 
 
 License
