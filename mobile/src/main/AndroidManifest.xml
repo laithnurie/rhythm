@@ -3,14 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <application
+        android:name=".RhythmApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Rhythm">
         <activity
-            android:name="com.laithlab.core.activity.BrowseActivity"
+            android:name=".activity.BrowseActivity"
             android:launchMode="singleTop"
             android:label="@string/app_name">
             <intent-filter>
@@ -19,6 +22,30 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".activity.ArtistActivity" />
+        <activity android:name=".activity.PlaylistActivity" />
+        <activity android:name=".activity.PlaylistGridActivity" />
+        <activity
+            android:name=".activity.SwipePlayerActivity"
+            android:launchMode="singleTop" />
+        <activity android:name=".activity.SearchActivity" />
+        <activity
+            android:name=".activity.DisclaimerActivity"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".activity.RhythmPrefs"
+            android:launchMode="singleTop"/>
+
+        <service
+            android:name=".service.MediaPlayerService"
+            android:enabled="true"
+            android:stopWithTask="true" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="eb5bcfba5977e1a57852908886b54638e665947f" />
     </application>
 
 </manifest>

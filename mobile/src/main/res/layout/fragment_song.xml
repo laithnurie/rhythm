@@ -1,0 +1,99 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="bottom"
+    tools:context="com.laithlab.rhythm.fragment.SongFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <com.laithlab.rhythm.customview.RhythmTextView
+                android:id="@+id/txt_track"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:textColor="@color/color_primary"
+                android:textSize="30sp"
+                tools:text="One In A Million"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.laithlab.rhythm.customview.RhythmTextView
+                    android:id="@+id/txt_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_primary"
+                    android:textSize="40sp"
+                    tools:text="1:52 &#47; 2:12"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="250dp"
+                android:layout_height="250dp">
+
+                <com.laithlab.rhythm.customview.CircularSeekBar
+                    android:id="@+id/track_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:circle_x_radius="125dp"
+                    app:circle_y_radius="125dp"
+                    app:end_angle="405"
+                    app:max="100"
+                    app:pointer_alpha_ontouch="100"
+                    app:pointer_color="#0174DF"
+                    app:pointer_halo_color="#880174DF"
+                    app:progress="0"
+                    app:start_angle="135"
+                    app:use_custom_radii="true"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/album_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="30dp"
+                    app:civ_border_color="#FF000000"
+                    app:civ_border_width="2dp"
+                    tools:background="#FFFFFF"/>
+
+                <FrameLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/play_button_bg"
+                    android:layout_gravity="center"
+                    >
+
+                    <ImageView
+                        android:id="@+id/play_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_play_arrow_white"/>
+                </FrameLayout>
+
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

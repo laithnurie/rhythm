@@ -1,2 +1,1 @@
-//include ':mobile', ':wear', ':core'
-include ':core', ':mobile'
+include ':mobile'
