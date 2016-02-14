@@ -49,10 +49,6 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
-        View tiltedView = findViewById(R.id.tilted_view);
-        tiltedView.setPivotX(0f);
-        tiltedView.setPivotY(0f);
-        tiltedView.setRotation(-5f);
 
         playlistGridAdapter = new PlaylistGridAdapter(MusicDataUtility.getPlayists(this), this);
         RecyclerView playlistGridView = (RecyclerView) findViewById(R.id.playist_grid);

@@ -85,9 +85,6 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         }
 
         tiltedView = findViewById(R.id.tilted_view);
-        tiltedView.setPivotX(0f);
-        tiltedView.setPivotY(0f);
-        tiltedView.setRotation(-5f);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));

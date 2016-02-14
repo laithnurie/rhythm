@@ -41,7 +41,6 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
     public static String ALBUM_ID_PARAM = "albumId";
 
     private DrawerLayout drawerLayout;
-    private RecyclerView songList;
 
     private SongListAdapter songListAdapter;
 
@@ -80,12 +79,8 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
-        View tiltedView = findViewById(R.id.tilted_view);
-        tiltedView.setPivotX(0f);
-        tiltedView.setPivotY(0f);
-        tiltedView.setRotation(-5f);
 
-        songList = (RecyclerView) findViewById(R.id.rv_songs_list);
+        RecyclerView songList = (RecyclerView) findViewById(R.id.rv_songs_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         songList.setLayoutManager(layoutManager);

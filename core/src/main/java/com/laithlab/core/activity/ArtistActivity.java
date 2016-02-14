@@ -69,10 +69,6 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
-        View tiltedView = findViewById(R.id.tilted_view);
-        tiltedView.setPivotX(0f);
-        tiltedView.setPivotY(0f);
-        tiltedView.setRotation(-5f);
 
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         albumGrid = (RecyclerView) findViewById(R.id.album_grid);

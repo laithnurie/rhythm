@@ -61,11 +61,6 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         ProgressBar loadingProgess = (ProgressBar) findViewById(R.id.loadingProgess);
         loadingProgess.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-        View tiltedView = findViewById(R.id.tilted_view);
-        tiltedView.setPivotX(0f);
-        tiltedView.setPivotY(0f);
-        tiltedView.setRotation(-5f);
-
         List<Artist> artists = MusicDataUtility.allArtists(this);
         browseGrid = (RecyclerView) findViewById(R.id.browse_grid);
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
