@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.dto.AlbumDTO;
+import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.LRUCache;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 
@@ -46,7 +47,7 @@ public class AlbumGridAdapter extends SelectableAdapter<AlbumGridAdapter.ViewHol
             } else {
                 byte[] imageData = MusicDataUtility.getImageData(albums.get(position).getCoverPath());
                 if (imageData != null) {
-                    Bitmap bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+                    final Bitmap bmp = BitmapUtils.decodeSampledBitmapFromResource(imageData, 200, 200);
                     holder.gridItemImage.setImageBitmap(bmp);
                     LRUCache.getInstance().put(albums.get(position).getCoverPath(), bmp);
                 }

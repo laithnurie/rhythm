@@ -46,8 +46,11 @@ public class MusicDataUtility {
     }
 
     public static byte[] getImageData(String songLocation) {
-        MusicMetaData musicMetaData = new MusicMetaData(songLocation);
-        return musicMetaData.getAlbumArt();
+        File songFile = new File(songLocation);
+        if(songFile.exists()){
+            return new MusicMetaData(songLocation).getAlbumArt();
+        }
+        return null;
     }
 
     public static RhythmSong getSongMeta(String songLocation) {

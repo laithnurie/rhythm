@@ -24,6 +24,7 @@ import android.support.v7.app.NotificationCompat;
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.activity.SwipePlayerActivity;
 import com.laithlab.rhythm.dto.SongDTO;
+import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.PlayBackUtil;
 import com.laithlab.rhythm.utils.PlayMode;
@@ -235,7 +236,7 @@ public class MediaPlayerService extends Service {
         Resources res = getResources();
         int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
         int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
-        Bitmap largeIcon = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+        Bitmap largeIcon = BitmapUtils.decodeSampledBitmapFromResource(imageData, 200, 200);
         return Bitmap.createScaledBitmap(largeIcon, width, height, false);
     }
 }

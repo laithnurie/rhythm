@@ -22,6 +22,7 @@ import com.laithlab.rhythm.customview.CustomAnimUtil;
 import com.laithlab.rhythm.dto.SongDTO;
 import com.laithlab.rhythm.service.Constants;
 import com.laithlab.rhythm.service.MediaPlayerService;
+import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.PlayBackUtil;
 import com.laithlab.rhythm.utils.RhythmSong;
@@ -339,7 +340,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         updateDuration("0:00", milliSecondsToTimer(rhythmSong.getDuration()));
         track.setText(rhythmSong.getTrackTitle());
         if (rhythmSong.getImageData() != null) {
-            Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);
+            final Bitmap bmp = BitmapUtils.decodeSampledBitmapFromResource(rhythmSong.getImageData(), 200, 200);
             albumCover.setImageBitmap(bmp);
             Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
             if (vibrantSwatch != null) {
