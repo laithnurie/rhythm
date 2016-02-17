@@ -3,7 +3,6 @@ package com.laithlab.rhythm.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -26,6 +25,7 @@ import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.PlayBackUtil;
 import com.laithlab.rhythm.utils.RhythmSong;
+import com.laithlab.rhythm.utils.TimeFormatUtils;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -93,7 +93,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
                 if (mediaPlayer != null) {
                     float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
-                    updateDuration(milliSecondsToTimer((long) currentDuration), MusicDataUtility.secondsToTimer(mediaPlayer.getDuration() / 1000));
+                    updateDuration(milliSecondsToTimer((long) currentDuration), TimeFormatUtils.secondsToTimer(mediaPlayer.getDuration() / 1000));
                 }
             }
 

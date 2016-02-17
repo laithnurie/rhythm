@@ -1,8 +1,11 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -56,7 +59,7 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
             currentArtist = DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
         }
 
-        TextView currentArtistTitle = (TextView)findViewById(R.id.current_artist_title);
+        TextView currentArtistTitle = (TextView) findViewById(R.id.current_artist_title);
         currentArtistTitle.setText(currentArtist.getArtistName());
 
         final ActionBar actionBar = getSupportActionBar();
@@ -72,7 +75,11 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         albumGrid = (RecyclerView) findViewById(R.id.album_grid);
         albumGrid.setLayoutManager(gridLayoutManager);
-        albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+        }
+
         ViewUtils.drawerClickListener(this);
     }
 
@@ -97,7 +104,7 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();

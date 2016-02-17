@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.session.MediaSessionManager;
 import android.os.Build;
@@ -35,7 +34,7 @@ import java.util.List;
 
 public class MediaPlayerService extends Service {
 
-    private static int NOTIFICATION_ID = 17;
+    public static int NOTIFICATION_ID = 17;
 
     private MediaPlayer mMediaPlayer;
     private MediaSessionManager mManager;
@@ -116,8 +115,7 @@ public class MediaPlayerService extends Service {
         builder.addAction(generateAction(R.drawable.ic_next_arrow_white, "Next", Constants.ACTION_NEXT));
         style.setShowActionsInCompactView(0, 1, 2);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+        startForeground(NOTIFICATION_ID, builder.build());
     }
 
     @Override
@@ -227,9 +225,24 @@ public class MediaPlayerService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         mSession.release();
+        cancelNotification();
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        cancelNotification();
+    }
+
+    private void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
-        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        cancelNotification();
+        super.onTaskRemoved(rootIntent);
     }
 
     private Bitmap getAlbumArt(byte[] imageData) {

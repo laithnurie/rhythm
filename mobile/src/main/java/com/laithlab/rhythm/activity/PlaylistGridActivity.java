@@ -1,8 +1,11 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -54,7 +57,10 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         RecyclerView playlistGridView = (RecyclerView) findViewById(R.id.playist_grid);
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         playlistGridView.setLayoutManager(gridLayoutManager);
-        playlistGridView.setAdapter(playlistGridAdapter);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            playlistGridView.setAdapter(playlistGridAdapter);
+        }
 
         FloatingActionButton addPlaylist = (FloatingActionButton) findViewById(R.id.add_playlist);
         addPlaylist.setOnClickListener(new View.OnClickListener() {

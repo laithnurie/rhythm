@@ -1,10 +1,14 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -21,6 +25,7 @@ import com.laithlab.rhythm.adapter.ArtistGridAdapter;
 import com.laithlab.rhythm.converter.DTOConverter;
 import com.laithlab.rhythm.customview.GridAutoFitLayoutManager;
 import com.laithlab.rhythm.db.Artist;
+import com.laithlab.rhythm.utils.DialogHelper;
 import com.laithlab.rhythm.utils.MusicDBProgressCallBack;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.ViewUtils;
@@ -29,6 +34,7 @@ import java.util.List;
 
 public class BrowseActivity extends AppCompatActivity implements MusicDBProgressCallBack, ArtistGridAdapter.ClickListener {
 
+    private static final int REQUEST_READ_STORAGE = 1;
     private DrawerLayout drawerLayout;
     private RecyclerView browseGrid;
     private Context context;
@@ -65,9 +71,13 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         browseGrid = (RecyclerView) findViewById(R.id.browse_grid);
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         browseGrid.setLayoutManager(gridLayoutManager);
-        if (artists != null && 0 < artists.size()) {
-            artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(artists), this);
-            browseGrid.setAdapter(artistGridAdapter);
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED){
+            if (artists != null && 0 < artists.size()) {
+                artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(artists), this);
+                browseGrid.setAdapter(artistGridAdapter);
+            }
         }
         ViewUtils.drawerClickListener(this);
     }
@@ -116,13 +126,46 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         } else {
             loadingContainer.setVisibility(View.GONE);
         }
+        checkStoragePermission(callBack);
+    }
 
-        new Thread(new Runnable() {
-            public void run() {
-                MusicDataUtility.updateMusicDB(context);
-                callBack.finishedDBUpdate();
+    private void checkStoragePermission(final MusicDBProgressCallBack callBack) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_STORAGE);
+        } else {
+            // permission has been granted, continue as usual
+            new Thread(new Runnable() {
+                public void run() {
+                    MusicDataUtility.updateMusicDB(context);
+                    callBack.finishedDBUpdate();
+                }
+            }).start();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_READ_STORAGE) {
+            if(grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // We can now safely use the API we requested access to
+                loadingContainer.setVisibility(View.VISIBLE);
+                new Thread(new Runnable() {
+                    public void run() {
+                        MusicDataUtility.updateMusicDB(context);
+                        BrowseActivity.this.finishedDBUpdate();
+                    }
+                }).start();
+            } else {
+                // Permission was denied or request was cancelled
+                DialogHelper.showPermissionDialog(this);
+                loadingContainer.setVisibility(View.GONE);
             }
-        }).start();
+        }
     }
 
     @Override
