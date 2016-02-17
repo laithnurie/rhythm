@@ -12,29 +12,29 @@ import com.laithlab.rhythm.dto.SongDTO;
 public class PlayBackUtil {
     private static List<SongDTO> currentPlayList = null;
     private static int currentSongPosition = 0;
-    private static MediaPlayer mediaPlayerService = null;
+    private static MediaPlayer mediaPlayer = null;
     private static PlayMode currentPlayMode = PlayMode.NONE;
     private static RhythmSong currentSong;
 
     public static MediaPlayer getMediaPlayer() {
-        return mediaPlayerService;
+        return mediaPlayer;
     }
 
     public static MediaPlayer setMediaPlayerOne(Context context, String songLocation) {
         try {
-            if (mediaPlayerService != null) {
-                if (mediaPlayerService.isPlaying()) {
-                    mediaPlayerService.stop();
+            if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
                 }
-                mediaPlayerService.reset();
+                mediaPlayer.reset();
             }
-            mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
-            mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            return mediaPlayerService;
+            mediaPlayer = MediaPlayer.create(context, Uri.parse(songLocation));
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            return mediaPlayer;
         } catch (Exception e) {
-            mediaPlayerService = MediaPlayer.create(context, Uri.parse(songLocation));
-            mediaPlayerService.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            return mediaPlayerService;
+            mediaPlayer = MediaPlayer.create(context, Uri.parse(songLocation));
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            return mediaPlayer;
         }
     }
 
