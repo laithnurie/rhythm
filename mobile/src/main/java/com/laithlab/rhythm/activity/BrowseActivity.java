@@ -25,6 +25,7 @@ import com.laithlab.rhythm.adapter.ArtistGridAdapter;
 import com.laithlab.rhythm.converter.DTOConverter;
 import com.laithlab.rhythm.customview.GridAutoFitLayoutManager;
 import com.laithlab.rhythm.db.Artist;
+import com.laithlab.rhythm.dto.ArtistDTO;
 import com.laithlab.rhythm.utils.DialogHelper;
 import com.laithlab.rhythm.utils.MusicDBProgressCallBack;
 import com.laithlab.rhythm.utils.MusicDataUtility;
@@ -72,11 +73,14 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         browseGrid.setLayoutManager(gridLayoutManager);
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
             if (artists != null && 0 < artists.size()) {
                 artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(artists), this);
                 browseGrid.setAdapter(artistGridAdapter);
+                findViewById(R.id.no_music_added).setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.no_music_added).setVisibility(View.VISIBLE);
             }
         }
         ViewUtils.drawerClickListener(this);
@@ -109,7 +113,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -120,13 +124,17 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         boolean firstTimeLaunched = sharedPreferences.getBoolean(getString(R.string.first_time_pref_key), true);
         if (firstTimeLaunched) {
             loadingContainer.setVisibility(View.VISIBLE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.first_time_pref_key), false);
-            editor.apply();
+            resetFirstTimeFlag();
         } else {
             loadingContainer.setVisibility(View.GONE);
         }
         checkStoragePermission(callBack);
+    }
+
+    private void resetFirstTimeFlag() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(getString(R.string.first_time_pref_key), false);
+        editor.apply();
     }
 
     private void checkStoragePermission(final MusicDBProgressCallBack callBack) {
@@ -150,7 +158,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_STORAGE) {
-            if(grantResults.length == 1
+            if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // We can now safely use the API we requested access to
                 loadingContainer.setVisibility(View.VISIBLE);
@@ -163,6 +171,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
             } else {
                 // Permission was denied or request was cancelled
                 DialogHelper.showPermissionDialog(this);
+                resetFirstTimeFlag();
                 loadingContainer.setVisibility(View.GONE);
             }
         }
@@ -173,11 +182,17 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(browseGrid.getAdapter() == null){
-                    artistGridAdapter = new ArtistGridAdapter(DTOConverter.getArtistList(MusicDataUtility.allArtists(context)), BrowseActivity.this);
-                    browseGrid.setAdapter(artistGridAdapter);
+                List<ArtistDTO> artists = DTOConverter.getArtistList(MusicDataUtility.allArtists(context));
+                if (artists != null && artists.size() > 0) {
+                    if (browseGrid.getAdapter() == null) {
+                        artistGridAdapter = new ArtistGridAdapter(artists, BrowseActivity.this);
+                        browseGrid.setAdapter(artistGridAdapter);
+                    } else {
+                        artistGridAdapter.updateData(artists);
+                    }
+                    findViewById(R.id.no_music_added).setVisibility(View.GONE);
                 } else {
-                    artistGridAdapter.updateData(DTOConverter.getArtistList(MusicDataUtility.allArtists(context)));
+                    findViewById(R.id.no_music_added).setVisibility(View.VISIBLE);
                 }
                 loadingContainer.setVisibility(View.GONE);
             }

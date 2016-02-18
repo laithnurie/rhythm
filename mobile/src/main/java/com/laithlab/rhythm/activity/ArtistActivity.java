@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.laithlab.rhythm.adapter.AlbumGridAdapter;
@@ -77,7 +78,12 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
         albumGrid.setLayoutManager(gridLayoutManager);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+            if(currentArtist.getAlbums() != null && currentArtist.getAlbums().size() >0){
+                albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+                findViewById(R.id.no_albums_added).setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.no_albums_added).setVisibility(View.VISIBLE);
+            }
         }
 
         ViewUtils.drawerClickListener(this);

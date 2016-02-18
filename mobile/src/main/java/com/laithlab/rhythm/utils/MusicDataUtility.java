@@ -108,10 +108,14 @@ public class MusicDataUtility {
                 lastIndexOfAlbums = i;
             }
         }
-        results.add(0, createSearchResult(null, "Artists", null, SearchResult.ResultType.HEADER));
-        results.add(lastIndexOfArtists + 2, createSearchResult(null, "Albums", null, SearchResult.ResultType.HEADER));
-        results.add(lastIndexOfAlbums + 3, createSearchResult(null, "Songs", null, SearchResult.ResultType.HEADER));
-        return results;
+        if (results.size() > 0) {
+            results.add(0, createSearchResult(null, "Artists", null, SearchResult.ResultType.HEADER));
+            results.add(lastIndexOfArtists + 2, createSearchResult(null, "Albums", null, SearchResult.ResultType.HEADER));
+            results.add(lastIndexOfAlbums + 3, createSearchResult(null, "Songs", null, SearchResult.ResultType.HEADER));
+            return results;
+        } else {
+            return null;
+        }
     }
 
     private static SearchResult createSearchResult(String id, String mainTitle, String subTitle, SearchResult.ResultType resultType) {

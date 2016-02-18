@@ -41,4 +41,8 @@
     <string name="circleimageview">CircleImageView</string>
     <string name="leakcanary">LeakCanary</string>
     <string name="copyright_square">Copyright 2015 Square, Inc.</string>
+    <string name="no_music_found">No Music Found</string>
+    <string name="no_albums_added">No Albums Added</string>
+    <string name="no_playlists_added">No Playlists Added</string>
+    <string name="no_search_results">No Search Results</string>
 </resources>
