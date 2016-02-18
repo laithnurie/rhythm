@@ -178,8 +178,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
                     } else {
                         PlayBackUtil.setCurrentSong(rhythmSong);
-                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(),
-                                rhythmSong.getSongLocation());
+                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext()
+                                .getApplicationContext(), rhythmSong.getSongLocation());
                     }
                 }
                 removePlayerListeners();
@@ -237,7 +237,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     }
 
     private void playerNotification(String action) {
-        Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+        Intent intent = new Intent(getContext().getApplicationContext(), MediaPlayerService.class);
         intent.setAction(action);
         intent.putExtra(SONG_PARAM, rhythmSong);
         intent.putExtra(SONG_POSITION_PARAM, songPosition);
@@ -252,7 +252,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         removePlayerListeners();
-        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext().getApplicationContext(),
+                rhythmSong.getSongLocation());
         setPlayerListeners();
         return false;
     }
@@ -292,9 +293,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         if (mListener != null) {
             mListener.playNext();
         } else {
-            Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+            Intent intent = new Intent(getContext().getApplicationContext(), MediaPlayerService.class);
             intent.setAction(Constants.ACTION_NEXT);
-            track.getContext().startService(intent);
+            getContext().getApplicationContext().startService(intent);
         }
     }
 

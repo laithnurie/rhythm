@@ -216,7 +216,8 @@ public class MediaPlayerService extends Service {
 
     private void reInitialiseMediaSession(int currentPosition) {
         PlayBackUtil.setCurrentSongPosition(currentPosition);
-        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(this, songDTOs.get(currentPosition).getSongLocation());
+        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(getApplicationContext(),
+                songDTOs.get(currentPosition).getSongLocation());
         mMediaPlayer.start();
         initMediaSessions();
     }
