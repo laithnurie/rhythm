@@ -34,3 +34,4 @@ gradle/
 gradlew
 gradlew.bat
 build/
+debug.keystore
