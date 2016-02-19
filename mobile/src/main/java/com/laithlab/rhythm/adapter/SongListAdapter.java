@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.dto.SongDTO;
 import com.laithlab.rhythm.utils.ContentType;
-import com.laithlab.rhythm.utils.MusicDataUtility;
+import com.laithlab.rhythm.utils.TimeFormatUtils;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.songTitle.setText(songs.get(position).getSongTitle());
-        holder.songDuration.setText(MusicDataUtility.secondsToTimer(songs.get(position).getSongDuration()));
+        holder.songDuration.setText(TimeFormatUtils.secondsToTimer(songs.get(position).getSongDuration()));
 
         ObjectAnimator animX;
         if (isSelected(position)) {

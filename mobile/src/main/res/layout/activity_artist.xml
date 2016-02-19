@@ -25,18 +25,26 @@
                 android:orientation="vertical"
                 android:weightSum="10">
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="9"
-                    android:orientation="vertical">
+                    android:layout_weight="9">
+
+                    <com.laithlab.rhythm.customview.RhythmTextView
+                        android:id="@+id/no_albums_added"
+                        android:textColor="@color/color_primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/no_albums_added"
+                        android:textSize="20sp" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/album_grid"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
-                </LinearLayout>
+                </FrameLayout>
             </LinearLayout>
 
             <LinearLayout

@@ -1,9 +1,10 @@
 package com.laithlab.rhythm.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Build;
-import android.os.Environment;
-import android.text.TextUtils;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.laithlab.rhythm.db.Album;
 import com.laithlab.rhythm.db.Artist;
@@ -16,12 +17,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -29,25 +26,41 @@ import io.realm.Sort;
 
 public class MusicDataUtility {
 
-    private static ArrayList<HashMap<String, String>> songsList = new ArrayList<>();
-    private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
-    private static String mp3Pattern = ".mp3";
     private static boolean isUpdating = false;
 
     // Constructor
     public MusicDataUtility() {
     }
 
-    public static ArrayList<HashMap<String, String>> getMusicFromStorage() {
-        for (String storage : getStorageDirectories()) {
-            getSongList(storage);
+    private static void getMusicContent(Context context) {
+        getMusicContentByUri(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        getMusicContentByUri(context, MediaStore.Audio.Media.INTERNAL_CONTENT_URI);
+    }
+
+    private static void getMusicContentByUri(Context context, Uri contentUri) {
+        ContentResolver cr = context.getContentResolver();
+
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+        Cursor cur = cr.query(contentUri, null, selection, null, sortOrder);
+        int count;
+
+        if (cur != null) {
+            count = cur.getCount();
+
+            if (count > 0) {
+                while (cur.moveToNext()) {
+                    String data = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
+                    createSongEntry(context, data);
+                }
+            }
+            cur.close();
         }
-        return songsList;
     }
 
     public static byte[] getImageData(String songLocation) {
         File songFile = new File(songLocation);
-        if(songFile.exists()){
+        if (songFile.exists()) {
             return new MusicMetaData(songLocation).getAlbumArt();
         }
         return null;
@@ -62,24 +75,6 @@ public class MusicDataUtility {
         long duration = musicMetaData.getDuration() / 1000;
         return new RhythmSong.RhythmSongBuilder().songLocation(songLocation).artistTitle(artist).albumTitle(album)
                 .trackTitle(track).imageData(imageData).duration(duration).build();
-    }
-
-    private static void getSongList(String path) {
-
-        if (path != null) {
-            File home = new File(path);
-            File[] listFiles = home.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
-                for (File file : listFiles) {
-                    if (file.isDirectory()) {
-                        scanDirectory(file);
-                    } else {
-                        addSongToList(file);
-                    }
-                }
-            }
-        }
-        // return songs list array
     }
 
     public static List<SearchResult> getAllSearchResults(Context context) {
@@ -113,49 +108,24 @@ public class MusicDataUtility {
                 lastIndexOfAlbums = i;
             }
         }
-        results.add(0, createSearchResult(null, "Artists", null, SearchResult.ResultType.HEADER));
-        results.add(lastIndexOfArtists + 2, createSearchResult(null, "Albums", null, SearchResult.ResultType.HEADER));
-        results.add(lastIndexOfAlbums + 3, createSearchResult(null, "Songs", null, SearchResult.ResultType.HEADER));
-        return results;
+        if (results.size() > 0) {
+            results.add(0, createSearchResult(null, "Artists", null, SearchResult.ResultType.HEADER));
+            results.add(lastIndexOfArtists + 2, createSearchResult(null, "Albums", null, SearchResult.ResultType.HEADER));
+            results.add(lastIndexOfAlbums + 3, createSearchResult(null, "Songs", null, SearchResult.ResultType.HEADER));
+            return results;
+        } else {
+            return null;
+        }
     }
 
     private static SearchResult createSearchResult(String id, String mainTitle, String subTitle, SearchResult.ResultType resultType) {
         return new SearchResult.SearchResultBuilder().id(id).mainTitle(mainTitle).subTitle(subTitle).setResultType(resultType).build();
     }
 
-    private static void scanDirectory(File directory) {
-        if (directory != null) {
-            File[] listFiles = directory.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
-                for (File file : listFiles) {
-                    if (file.isDirectory()) {
-                        scanDirectory(file);
-                    } else {
-                        addSongToList(file);
-                    }
-
-                }
-            }
-        }
-    }
-
-    private static void addSongToList(File song) {
-        if (song.getName().endsWith(mp3Pattern)) {
-            HashMap<String, String> songMap = new HashMap<>();
-            songMap.put("songTitle",
-                    song.getName().substring(0, (song.getName().length() - 4)));
-            songMap.put("songPath", song.getPath());
-
-            songsList.add(songMap);
-        }
-    }
-
     public static void updateMusicDB(Context context) {
         if (!isUpdating) {
             isUpdating = true;
-            for (final HashMap<String, String> song : getMusicFromStorage()) {
-                createSongEntry(context, song.get("songPath"));
-            }
+            getMusicContent(context);
             isUpdating = false;
         }
     }
@@ -170,7 +140,6 @@ public class MusicDataUtility {
         getOrCreateSong(realm, albumRecord, songEntry.getTrackTitle(), songEntry.getDuration(), songPath);
         realm.commitTransaction();
         realm.close();
-
     }
 
     private static Artist getOrCreateArtist(Realm realm, RhythmSong rhythmSong) {
@@ -281,14 +250,14 @@ public class MusicDataUtility {
         return realm.allObjects(Song.class);
     }
 
-    public static List<Song> getLastPlayedSongs(Context context) {
+    private static List<Song> getLastPlayedSongs(Context context) {
         Realm realm = Realm.getInstance(context);
         RealmResults<Song> result = realm.where(Song.class).greaterThan("lastPlayed", 0).findAll();
         result.sort("lastPlayed", Sort.DESCENDING);
         return result;
     }
 
-    public static List<Song> getMostPlayedSongs(Context context) {
+    private static List<Song> getMostPlayedSongs(Context context) {
         Realm realm = Realm.getInstance(context);
         RealmResults<Song> result = realm.where(Song.class).greaterThan("noOfPlayed", 0).findAll();
         result.sort("noOfPlayed", Sort.DESCENDING);
@@ -311,7 +280,7 @@ public class MusicDataUtility {
         return song;
     }
 
-    public static Album getAlbumById(String id, Context context) {
+    private static Album getAlbumById(String id, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
         Album album = realm.where(Album.class)
@@ -333,7 +302,7 @@ public class MusicDataUtility {
         return artist;
     }
 
-    public static Playlist getPlaylistById(String id, Context context) {
+    private static Playlist getPlaylistById(String id, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
         Playlist playlist = realm.where(Playlist.class)
@@ -397,83 +366,6 @@ public class MusicDataUtility {
 
         realm.commitTransaction();
         realm.close();
-    }
-
-    public static String[] getStorageDirectories() {
-        // Final set of paths
-        final Set<String> rv = new HashSet<>();
-        // Primary physical SD-CARD (not emulated)
-        final String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
-        // All Secondary SD-CARDs (all exclude primary) separated by ":"
-        final String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
-        // Primary emulated SD-CARD
-        final String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
-        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
-            // Device has physical external storage; use plain paths.
-            if (TextUtils.isEmpty(rawExternalStorage)) {
-                // EXTERNAL_STORAGE undefined; falling back to default.
-                rv.add("/storage/sdcard0");
-            } else {
-                rv.add(rawExternalStorage);
-            }
-        } else {
-            // Device has emulated storage; external storage paths should have
-            // userId burned into them.
-            final String rawUserId;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                rawUserId = "";
-            } else {
-                final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                final String[] folders = DIR_SEPORATOR.split(path);
-                final String lastFolder = folders[folders.length - 1];
-                boolean isDigit = false;
-                try {
-                    Integer.valueOf(lastFolder);
-                    isDigit = true;
-                } catch (NumberFormatException ignored) {
-                }
-                rawUserId = isDigit ? lastFolder : "";
-            }
-            // /storage/emulated/0[1,2,...]
-            if (TextUtils.isEmpty(rawUserId)) {
-                rv.add(rawEmulatedStorageTarget);
-            } else {
-                rv.add(rawEmulatedStorageTarget + File.separator + rawUserId);
-            }
-        }
-        // Add all secondary storages
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
-            // All Secondary SD-CARDs splited into array
-            final String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
-            Collections.addAll(rv, rawSecondaryStorages);
-        }
-        return rv.toArray(new String[rv.size()]);
-    }
-
-    public static String secondsToTimer(long totalSeconds) {
-        String finalTimerString = "";
-        String secondsString;
-
-        // Convert total duration into time
-        int hours = (int) (totalSeconds / (60 * 60));
-        int minutes = (int) (totalSeconds % (60 * 60)) / (60);
-        int seconds = (int) ((totalSeconds % (60 * 60)) % (60));
-        // Add hours if there
-        if (hours > 0) {
-            finalTimerString = hours + ":";
-        }
-
-        // Prepending 0 to seconds if it is one digit
-        if (seconds < 10) {
-            secondsString = "0" + seconds;
-        } else {
-            secondsString = "" + seconds;
-        }
-
-        finalTimerString = finalTimerString + minutes + ":" + secondsString;
-
-        // return timer string
-        return finalTimerString;
     }
 
     public static void resetMusicStats(Context context) {

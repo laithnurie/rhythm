@@ -18,7 +18,7 @@ public class RhythmApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if(BuildConfig.DEV_MODE){
+        if (BuildConfig.DEV_MODE) {
             LeakCanary.install(this);
             Stetho.initializeWithDefaults(this);
         } else {

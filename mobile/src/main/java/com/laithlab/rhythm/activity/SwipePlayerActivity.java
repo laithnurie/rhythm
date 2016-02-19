@@ -1,10 +1,13 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -104,7 +107,9 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             songPosition = PlayBackUtil.getCurrentSongPosition();
         }
 
-        populateSongs(songsList, songPosition);
+        if (songsList != null && songsList.size() > 0) {
+            populateSongs(songsList, songPosition);
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -136,10 +141,13 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     }
 
     private void populateSongs(List<SongDTO> songsList, int songPosition) {
-        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
-                songsList));
-        if (songPosition > 0) {
-            viewPager.setCurrentItem(songPosition, true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(),
+                    songsList));
+            if (songPosition > 0) {
+                viewPager.setCurrentItem(songPosition, true);
+            }
         }
     }
 
@@ -226,8 +234,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         songPosition = 0;
         PlayBackUtil.setCurrentSongPosition(songPosition);
         PlayBackUtil.setCurrentPlayList(songsList);
-        viewPager.setAdapter(new SongFragmentPager(this.getSupportFragmentManager(), songsList));
-        viewPager.setCurrentItem(0, true);
+        populateSongs(songsList, songPosition);
     }
 
     @Override

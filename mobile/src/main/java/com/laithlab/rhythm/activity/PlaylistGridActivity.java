@@ -1,8 +1,11 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -17,6 +20,7 @@ import android.view.View;
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.adapter.PlaylistGridAdapter;
 import com.laithlab.rhythm.customview.GridAutoFitLayoutManager;
+import com.laithlab.rhythm.db.Playlist;
 import com.laithlab.rhythm.dto.MusicContent;
 import com.laithlab.rhythm.utils.ContentType;
 import com.laithlab.rhythm.utils.DialogHelper;
@@ -50,11 +54,20 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
 
-        playlistGridAdapter = new PlaylistGridAdapter(MusicDataUtility.getPlayists(this), this);
+        List<Playlist> playlists = MusicDataUtility.getPlayists(this);
+        playlistGridAdapter = new PlaylistGridAdapter(playlists, this);
         RecyclerView playlistGridView = (RecyclerView) findViewById(R.id.playist_grid);
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         playlistGridView.setLayoutManager(gridLayoutManager);
-        playlistGridView.setAdapter(playlistGridAdapter);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (playlists.size() > 0){
+                playlistGridView.setAdapter(playlistGridAdapter);
+                findViewById(R.id.no_playlists_added).setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.no_playlists_added).setVisibility(View.VISIBLE);
+            }
+        }
 
         FloatingActionButton addPlaylist = (FloatingActionButton) findViewById(R.id.add_playlist);
         addPlaylist.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +101,7 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -97,7 +110,7 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
 
     @Override
     public void onItemClicked(int position) {
-        if(actionMode != null){
+        if (actionMode != null) {
             toggleSelection(position);
         } else {
             MusicContent musicContent = new MusicContent();

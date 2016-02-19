@@ -2,11 +2,11 @@ package com.laithlab.rhythm.customview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.laithlab.rhythm.R;
+import com.laithlab.rhythm.utils.RalewayFont;
 
 
 public class RhythmTextView extends TextView {
@@ -32,9 +32,8 @@ public class RhythmTextView extends TextView {
     private void postConstruct(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.RhythmTextView);
-        String fontType = typedArray.getString(R.styleable.RhythmTextView_textType);
-        fontType = fontType != null ? fontType : "regular";
-        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "raleway-" + fontType + ".ttf"));
+        setTypeface(RalewayFont.getInstance(context.getApplicationContext())
+                .getTypeFace(typedArray.getString(R.styleable.RhythmTextView_textType)));
         typedArray.recycle();
     }
 }
