@@ -9,12 +9,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.adapter.SearchAdapter;
+import com.laithlab.rhythm.dto.SearchResult;
 import com.laithlab.rhythm.utils.MusicDataUtility;
+
+import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -47,7 +51,13 @@ public class SearchActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchList.setLayoutManager(layoutManager);
-        searchList.setAdapter(new SearchAdapter(MusicDataUtility.getAllSearchResults(this)));
+        List<SearchResult> results = MusicDataUtility.getAllSearchResults(this);
+        if(results != null && results.size() > 0){
+            searchList.setAdapter(new SearchAdapter(results));
+            findViewById(R.id.no_search_results).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.no_search_results).setVisibility(View.VISIBLE);
+        }
 
     }
 

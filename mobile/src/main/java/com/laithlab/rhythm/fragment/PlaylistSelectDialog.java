@@ -17,8 +17,8 @@ import com.laithlab.rhythm.R;
 public class PlaylistSelectDialog extends DialogFragment implements
         OnItemClickListener {
 
-    String[] listItems;
-    ListView mylist;
+    private String[] listItems;
+    private ListView mylist;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

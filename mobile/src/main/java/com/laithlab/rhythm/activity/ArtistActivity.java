@@ -1,8 +1,11 @@
 package com.laithlab.rhythm.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -11,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.laithlab.rhythm.adapter.AlbumGridAdapter;
@@ -56,7 +60,7 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
             currentArtist = DTOConverter.getArtistDTO(MusicDataUtility.getArtistById(extras.getString(ARTIST_ID_PARAM), this));
         }
 
-        TextView currentArtistTitle = (TextView)findViewById(R.id.current_artist_title);
+        TextView currentArtistTitle = (TextView) findViewById(R.id.current_artist_title);
         currentArtistTitle.setText(currentArtist.getArtistName());
 
         final ActionBar actionBar = getSupportActionBar();
@@ -72,7 +76,16 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         albumGrid = (RecyclerView) findViewById(R.id.album_grid);
         albumGrid.setLayoutManager(gridLayoutManager);
-        albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            if(currentArtist.getAlbums() != null && currentArtist.getAlbums().size() >0){
+                albumGrid.setAdapter(new AlbumGridAdapter(currentArtist.getAlbums(), this));
+                findViewById(R.id.no_albums_added).setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.no_albums_added).setVisibility(View.VISIBLE);
+            }
+        }
+
         ViewUtils.drawerClickListener(this);
     }
 
@@ -97,7 +110,7 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();

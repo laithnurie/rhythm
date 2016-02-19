@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="Licences:"
+            android:text="@string/licences"
             android:textColor="@color/white"
             android:textSize="30sp" />
 
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Realm"
+            android:text="@string/realm"
             android:textColor="@color/white"
             android:textSize="25sp" />
 
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="CircleImageView"
+            android:text="@string/circleimageview"
             android:textColor="@color/white"
             android:textSize="25sp" />
 
@@ -89,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="LeakCanary"
+            android:text="@string/leakcanary"
             android:textColor="@color/white"
             android:textSize="25sp" />
 
@@ -97,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Copyright 2015 Square, Inc."
+            android:text="@string/copyright_square"
             android:textColor="@color/white"
             android:textSize="18sp" />
 

@@ -10,9 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.media.session.MediaSessionManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -24,6 +22,7 @@ import android.support.v7.app.NotificationCompat;
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.activity.SwipePlayerActivity;
 import com.laithlab.rhythm.dto.SongDTO;
+import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.PlayBackUtil;
 import com.laithlab.rhythm.utils.PlayMode;
@@ -37,7 +36,6 @@ public class MediaPlayerService extends Service {
     private static int NOTIFICATION_ID = 17;
 
     private MediaPlayer mMediaPlayer;
-    private MediaSessionManager mManager;
     private MediaSessionCompat mSession;
     private MediaControllerCompat mController;
     private List<SongDTO> songDTOs;
@@ -75,11 +73,11 @@ public class MediaPlayerService extends Service {
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
-    private NotificationCompat.Action generateAction(int icon, String title, String intentAction) {
+    private NotificationCompat.Action generateAction(int icon, String intentAction) {
         Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
         intent.setAction(intentAction);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        return new NotificationCompat.Action.Builder(icon, title, pendingIntent).build();
+        return new NotificationCompat.Action.Builder(icon, intentAction, pendingIntent).build();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -94,7 +92,7 @@ public class MediaPlayerService extends Service {
 
         Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
         intent.setAction(Constants.ACTION_STOP);
-        PendingIntent deleteIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        PendingIntent deleteIntent = PendingIntent.getService(getApplicationContext(), 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         byte[] imageData = rhythmSong.getImageData();
@@ -106,24 +104,26 @@ public class MediaPlayerService extends Service {
                 .setSmallIcon(R.drawable.ic_play_arrow_white)
                 .setContentText(rhythmSong.getArtistTitle())
                 .setDeleteIntent(deleteIntent)
-                .setPriority(Notification.PRIORITY_HIGH)
                 .setContentIntent(contentIntent)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setOngoing(false)
                 .setStyle(style);
 
-        builder.addAction(generateAction(R.drawable.ic_previous_arrow_white, "Previous", Constants.ACTION_PREVIOUS));
+        builder.addAction(generateAction(R.drawable.ic_previous_arrow_white, Constants.ACTION_PREVIOUS));
         builder.addAction(action);
-        builder.addAction(generateAction(R.drawable.ic_next_arrow_white, "Next", Constants.ACTION_NEXT));
+        builder.addAction(generateAction(R.drawable.ic_next_arrow_white, Constants.ACTION_NEXT));
         style.setShowActionsInCompactView(0, 1, 2);
 
+        if(action.getTitle().equals(Constants.ACTION_PAUSE)){
+            builder.setOngoing(true).setPriority(Notification.PRIORITY_HIGH);
+        }
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (mManager == null) {
-            initMediaSessions();
-        }
+        initMediaSessions();
 
         handleIntent(intent);
         return super.onStartCommand(intent, flags, startId);
@@ -146,14 +146,14 @@ public class MediaPlayerService extends Service {
                     public void onPlay() {
                         super.onPlay();
                         mMediaPlayer.start();
-                        buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
                     }
 
                     @Override
                     public void onPause() {
                         super.onPause();
                         mMediaPlayer.pause();
-                        buildNotification(generateAction(R.drawable.ic_play_arrow_white, "Play", Constants.ACTION_PLAY));
+                        buildNotification(generateAction(R.drawable.ic_play_arrow_white, Constants.ACTION_PLAY));
                     }
 
                     @Override
@@ -165,7 +165,7 @@ public class MediaPlayerService extends Service {
                             if (PlayBackUtil.getCurrentPlayMode() != PlayMode.ALL_REPEAT
                                     || PlayBackUtil.getCurrentPlayMode() != PlayMode.SHUFFLE_REPEAT) {
                                 mMediaPlayer.stop();
-                                buildNotification(generateAction(R.drawable.ic_play_arrow_white, "Play", Constants.ACTION_PLAY));
+                                buildNotification(generateAction(R.drawable.ic_play_arrow_white, Constants.ACTION_PLAY));
                                 PlayBackUtil.setCurrentSongPosition(currentPosition);
                                 return;
                             }
@@ -176,7 +176,7 @@ public class MediaPlayerService extends Service {
 
                         rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                        buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
 
                         Intent nextIntent = new Intent(Constants.PLAYER);
                         nextIntent.putExtra("player_command", "next");
@@ -196,7 +196,7 @@ public class MediaPlayerService extends Service {
 
                         rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                        buildNotification(generateAction(R.drawable.ic_pause_white, "Pause", Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
 
                         Intent previousIntent = new Intent(Constants.PLAYER);
                         previousIntent.putExtra("player_command", "previous");
@@ -209,6 +209,7 @@ public class MediaPlayerService extends Service {
                         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                         notificationManager.cancel(NOTIFICATION_ID);
                         Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+                        mMediaPlayer.pause();
                         stopService(intent);
                     }
                 }
@@ -217,7 +218,8 @@ public class MediaPlayerService extends Service {
 
     private void reInitialiseMediaSession(int currentPosition) {
         PlayBackUtil.setCurrentSongPosition(currentPosition);
-        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(this, songDTOs.get(currentPosition).getSongLocation());
+        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(getApplicationContext(),
+                songDTOs.get(currentPosition).getSongLocation());
         mMediaPlayer.start();
         initMediaSessions();
     }
@@ -226,16 +228,32 @@ public class MediaPlayerService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         mSession.release();
+        cancelNotification();
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        cancelNotification();
+        mSession.release();
+    }
+
+    private void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
-        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        cancelNotification();
+        super.onTaskRemoved(rootIntent);
     }
 
     private Bitmap getAlbumArt(byte[] imageData) {
         Resources res = getResources();
         int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
         int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
-        Bitmap largeIcon = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+        Bitmap largeIcon = BitmapUtils.decodeSampledBitmapFromResource(imageData, 200, 200);
         return Bitmap.createScaledBitmap(largeIcon, width, height, false);
     }
 }

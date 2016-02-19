@@ -3,7 +3,6 @@ package com.laithlab.rhythm.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -22,9 +21,11 @@ import com.laithlab.rhythm.customview.CustomAnimUtil;
 import com.laithlab.rhythm.dto.SongDTO;
 import com.laithlab.rhythm.service.Constants;
 import com.laithlab.rhythm.service.MediaPlayerService;
+import com.laithlab.rhythm.utils.BitmapUtils;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.PlayBackUtil;
 import com.laithlab.rhythm.utils.RhythmSong;
+import com.laithlab.rhythm.utils.TimeFormatUtils;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -92,7 +93,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
                 if (mediaPlayer != null) {
                     float currentDuration = (((float) circularSeekBar.getProgress() / 100) * mediaPlayer.getDuration());
-                    updateDuration(milliSecondsToTimer((long) currentDuration), MusicDataUtility.secondsToTimer(mediaPlayer.getDuration() / 1000));
+                    updateDuration(milliSecondsToTimer((long) currentDuration), TimeFormatUtils.secondsToTimer(mediaPlayer.getDuration() / 1000));
                 }
             }
 
@@ -177,8 +178,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
                     } else {
                         PlayBackUtil.setCurrentSong(rhythmSong);
-                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(),
-                                rhythmSong.getSongLocation());
+                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext()
+                                .getApplicationContext(), rhythmSong.getSongLocation());
                     }
                 }
                 removePlayerListeners();
@@ -236,7 +237,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     }
 
     private void playerNotification(String action) {
-        Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+        Intent intent = new Intent(getContext().getApplicationContext(), MediaPlayerService.class);
         intent.setAction(action);
         intent.putExtra(SONG_PARAM, rhythmSong);
         intent.putExtra(SONG_POSITION_PARAM, songPosition);
@@ -251,7 +252,8 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         removePlayerListeners();
-        mediaPlayer = PlayBackUtil.setMediaPlayerOne(this.getContext(), rhythmSong.getSongLocation());
+        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext().getApplicationContext(),
+                rhythmSong.getSongLocation());
         setPlayerListeners();
         return false;
     }
@@ -291,9 +293,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         if (mListener != null) {
             mListener.playNext();
         } else {
-            Intent intent = new Intent(track.getContext(), MediaPlayerService.class);
+            Intent intent = new Intent(getContext().getApplicationContext(), MediaPlayerService.class);
             intent.setAction(Constants.ACTION_NEXT);
-            track.getContext().startService(intent);
+            getContext().getApplicationContext().startService(intent);
         }
     }
 
@@ -339,9 +341,9 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         updateDuration("0:00", milliSecondsToTimer(rhythmSong.getDuration()));
         track.setText(rhythmSong.getTrackTitle());
         if (rhythmSong.getImageData() != null) {
-            Bitmap bmp = BitmapFactory.decodeByteArray(rhythmSong.getImageData(), 0, rhythmSong.getImageData().length);
+            final Bitmap bmp = BitmapUtils.decodeSampledBitmapFromResource(rhythmSong.getImageData(), 200, 200);
             albumCover.setImageBitmap(bmp);
-            Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
+            Palette.Swatch vibrantSwatch = new Palette.Builder(bmp).generate().getLightVibrantSwatch();
             if (vibrantSwatch != null) {
                 vibrantColor = vibrantSwatch.getRgb();
                 changePlayerStyle(vibrantSwatch.getRgb());
