@@ -33,7 +33,7 @@ import java.util.List;
 
 public class MediaPlayerService extends Service {
 
-    public static int NOTIFICATION_ID = 17;
+    private static int NOTIFICATION_ID = 17;
 
     private MediaPlayer mMediaPlayer;
     private MediaSessionCompat mSession;

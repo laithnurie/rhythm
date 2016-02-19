@@ -343,7 +343,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
         if (rhythmSong.getImageData() != null) {
             final Bitmap bmp = BitmapUtils.decodeSampledBitmapFromResource(rhythmSong.getImageData(), 200, 200);
             albumCover.setImageBitmap(bmp);
-            Palette.Swatch vibrantSwatch = Palette.generate(bmp).getLightVibrantSwatch();
+            Palette.Swatch vibrantSwatch = new Palette.Builder(bmp).generate().getLightVibrantSwatch();
             if (vibrantSwatch != null) {
                 vibrantColor = vibrantSwatch.getRgb();
                 changePlayerStyle(vibrantSwatch.getRgb());

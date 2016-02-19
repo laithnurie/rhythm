@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Rhythm</string>
     <string name="duration_format">%1$s &#47; %2$s</string>
-    <string name="home">Home</string>
     <string name="artists">Artists</string>
     <string name="loading_message">Updating Music Archive</string>
 
@@ -16,7 +15,6 @@
     <string name="settings">Settings</string>
     <string name="about">About</string>
     <string name="albums">Albums</string>
-    <string name="select">Select</string>
     <string name="add_to_playlist">Add to Playlist</string>
     <string name="github_project">Github Project</string>
     <string name="about_message">Rhythm is an open source music player, based on the design of the very talented Alexandr Demidov. Developed by Laith Nurie</string>

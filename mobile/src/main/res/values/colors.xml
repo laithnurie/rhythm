@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bright_blue">#ff2b91e0</color>
-    <color name="navy">#2C4770</color>
     <color name="light_gray">#C7C7CA</color>
-    <color name="dark_gray">#aaaaaa</color>
     <color name="white">#FFFFFF</color>
-    <color name="dark_blue">#ff2b3f7a</color>
     <color name="color_primary_dark">#203139</color>
     <color name="color_primary">#2196F3</color>
-    <color name="accent">#03A9F4</color>
-    <color name="grid_background">#F9F9F9</color>
-    <color name="player_background">#0D0D0D</color>
-    <color name="player_topbar_background">#64000000</color>
-    <color name="noti_background">#414141</color>
-    <color name="orange">#bf3700</color>
     <color name="transparent_black">#55000000</color>
     <color name="red">#D3F11818</color>
 </resources>

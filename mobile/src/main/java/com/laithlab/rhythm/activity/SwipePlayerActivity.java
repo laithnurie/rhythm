@@ -107,7 +107,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
             songPosition = PlayBackUtil.getCurrentSongPosition();
         }
 
-        if (songsList.size() > 0) {
+        if (songsList != null && songsList.size() > 0) {
             populateSongs(songsList, songPosition);
         }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

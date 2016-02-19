@@ -2,7 +2,6 @@ package com.laithlab.rhythm.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +52,7 @@ public class AlbumGridAdapter extends SelectableAdapter<AlbumGridAdapter.ViewHol
                 }
             }
         } else {
-            holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
+            holder.gridItemImage.setImageResource(R.drawable.ic_vinyl_white_50dp);
         }
     }
 

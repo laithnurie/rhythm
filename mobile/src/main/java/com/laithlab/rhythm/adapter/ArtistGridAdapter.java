@@ -52,7 +52,7 @@ public class ArtistGridAdapter extends SelectableAdapter<ArtistGridAdapter.ViewH
                 }
             }
         } else {
-            holder.gridItemImage.setImageResource(R.drawable.ic_play_arrow_white);
+            holder.gridItemImage.setImageResource(R.drawable.ic_vinyl_white_50dp);
         }
     }
 

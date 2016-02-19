@@ -32,7 +32,7 @@ public class MusicDataUtility {
     public MusicDataUtility() {
     }
 
-    public static void getMusicContent(Context context) {
+    private static void getMusicContent(Context context) {
         getMusicContentByUri(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
         getMusicContentByUri(context, MediaStore.Audio.Media.INTERNAL_CONTENT_URI);
     }
@@ -250,14 +250,14 @@ public class MusicDataUtility {
         return realm.allObjects(Song.class);
     }
 
-    public static List<Song> getLastPlayedSongs(Context context) {
+    private static List<Song> getLastPlayedSongs(Context context) {
         Realm realm = Realm.getInstance(context);
         RealmResults<Song> result = realm.where(Song.class).greaterThan("lastPlayed", 0).findAll();
         result.sort("lastPlayed", Sort.DESCENDING);
         return result;
     }
 
-    public static List<Song> getMostPlayedSongs(Context context) {
+    private static List<Song> getMostPlayedSongs(Context context) {
         Realm realm = Realm.getInstance(context);
         RealmResults<Song> result = realm.where(Song.class).greaterThan("noOfPlayed", 0).findAll();
         result.sort("noOfPlayed", Sort.DESCENDING);
@@ -280,7 +280,7 @@ public class MusicDataUtility {
         return song;
     }
 
-    public static Album getAlbumById(String id, Context context) {
+    private static Album getAlbumById(String id, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
         Album album = realm.where(Album.class)
@@ -302,7 +302,7 @@ public class MusicDataUtility {
         return artist;
     }
 
-    public static Playlist getPlaylistById(String id, Context context) {
+    private static Playlist getPlaylistById(String id, Context context) {
         Realm realm = Realm.getInstance(context);
         realm.beginTransaction();
         Playlist playlist = realm.where(Playlist.class)
