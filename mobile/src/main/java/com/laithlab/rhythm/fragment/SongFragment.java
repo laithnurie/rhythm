@@ -178,7 +178,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
 
                     } else {
                         PlayBackUtil.setCurrentSong(rhythmSong);
-                        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext()
+                        mediaPlayer = PlayBackUtil.setMediaPlayer(getContext()
                                 .getApplicationContext(), rhythmSong.getSongLocation());
                     }
                 }
@@ -252,7 +252,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         removePlayerListeners();
-        mediaPlayer = PlayBackUtil.setMediaPlayerOne(getContext().getApplicationContext(),
+        mediaPlayer = PlayBackUtil.setMediaPlayer(getContext().getApplicationContext(),
                 rhythmSong.getSongLocation());
         setPlayerListeners();
         return false;

@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.laithlab.rhythm.dto.SongDTO;
 
+import timber.log.Timber;
+
 public class PlayBackUtil {
     private static List<SongDTO> currentPlayList = null;
     private static int currentSongPosition = 0;
@@ -20,7 +22,7 @@ public class PlayBackUtil {
         return mediaPlayer;
     }
 
-    public static MediaPlayer setMediaPlayerOne(Context context, String songLocation) {
+    public static MediaPlayer setMediaPlayer(Context context, String songLocation) {
         try {
             if (mediaPlayer != null) {
                 if (mediaPlayer.isPlaying()) {
@@ -32,6 +34,7 @@ public class PlayBackUtil {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             return mediaPlayer;
         } catch (Exception e) {
+            Timber.e(e, "setMediaPlayer");
             mediaPlayer = MediaPlayer.create(context, Uri.parse(songLocation));
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             return mediaPlayer;

@@ -1,7 +1,7 @@
 package com.laithlab.rhythm.utils;
 
-
 import android.media.MediaMetadataRetriever;
+import timber.log.Timber;
 
 public class MusicMetaData {
 
@@ -24,10 +24,12 @@ public class MusicMetaData {
             try {
                 this.duration = Long.valueOf(metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
             } catch (Exception e) {
+                Timber.e(e, "setDataSource - duration");
                 this.duration = 0L;
             }
             metaRetriver.release();
         } catch (Exception e) {
+            Timber.e(e, "setDataSource - " + filePath);
             this.artist = "Unknown Artist";
             this.album = "Unknown Album";
             this.title = filePath;

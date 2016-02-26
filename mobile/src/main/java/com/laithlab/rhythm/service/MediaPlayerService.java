@@ -29,7 +29,7 @@ import com.laithlab.rhythm.utils.PlayMode;
 import com.laithlab.rhythm.utils.RhythmSong;
 
 import java.util.List;
-
+import timber.log.Timber;
 
 public class MediaPlayerService extends Service {
 
@@ -137,6 +137,7 @@ public class MediaPlayerService extends Service {
         try {
             mController = new MediaControllerCompat(getApplicationContext(), mSession.getSessionToken());
         } catch (RemoteException e) {
+            Timber.e(e, "initMediaSessions");
             e.printStackTrace();
         }
 
@@ -218,7 +219,7 @@ public class MediaPlayerService extends Service {
 
     private void reInitialiseMediaSession(int currentPosition) {
         PlayBackUtil.setCurrentSongPosition(currentPosition);
-        mMediaPlayer = PlayBackUtil.setMediaPlayerOne(getApplicationContext(),
+        mMediaPlayer = PlayBackUtil.setMediaPlayer(getApplicationContext(),
                 songDTOs.get(currentPosition).getSongLocation());
         mMediaPlayer.start();
         initMediaSessions();
