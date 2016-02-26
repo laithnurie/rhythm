@@ -29,9 +29,10 @@ import com.laithlab.rhythm.utils.ViewUtils;
 
 import java.util.List;
 
-public class PlaylistGridActivity extends AppCompatActivity implements PlaylistGridAdapter.ClickListener {
+public class PlaylistGridActivity extends AppCompatActivity implements PlaylistGridAdapter.ClickListener, PlaylistAddCallback {
 
     private DrawerLayout drawerLayout;
+    private View noPlaylists;
     private PlaylistGridAdapter playlistGridAdapter;
     private ActionModeCallback actionModeCallback = new ActionModeCallback();
     private ActionMode actionMode;
@@ -53,6 +54,7 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
+        noPlaylists = findViewById(R.id.no_playlists_added);
 
         List<Playlist> playlists = MusicDataUtility.getPlayists(this);
         playlistGridAdapter = new PlaylistGridAdapter(playlists, this);
@@ -61,11 +63,11 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         playlistGridView.setLayoutManager(gridLayoutManager);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
+            playlistGridView.setAdapter(playlistGridAdapter);
             if (playlists.size() > 0){
-                playlistGridView.setAdapter(playlistGridAdapter);
-                findViewById(R.id.no_playlists_added).setVisibility(View.GONE);
+                noPlaylists.setVisibility(View.GONE);
             } else {
-                findViewById(R.id.no_playlists_added).setVisibility(View.VISIBLE);
+                noPlaylists.setVisibility(View.VISIBLE);
             }
         }
 
@@ -145,6 +147,12 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         }
     }
 
+    @Override
+    public void playlistAdded() {
+        noPlaylists.setVisibility(View.GONE);
+        playlistGridAdapter.notifyDataSetChanged();
+    }
+
     private class ActionModeCallback implements ActionMode.Callback {
         @SuppressWarnings("unused")
         private final String TAG = ActionModeCallback.class.getSimpleName();
@@ -186,6 +194,9 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
                     .getItem(selectedPlaylists.get(j)).getId(), PlaylistGridActivity.this);
         }
         playlistGridAdapter.notifyDataSetChanged();
+        if(playlistGridAdapter.getItemCount() == 0){
+            noPlaylists.setVisibility(View.VISIBLE);
+        }
     }
 }
 

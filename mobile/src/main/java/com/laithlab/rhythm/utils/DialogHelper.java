@@ -1,6 +1,5 @@
 package com.laithlab.rhythm.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,38 +11,19 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
 import com.laithlab.rhythm.R;
 import com.laithlab.rhythm.db.Playlist;
+import com.laithlab.rhythm.fragment.PlaylistAddDialog;
 import com.laithlab.rhythm.fragment.PlaylistSelectDialog;
 
 import java.util.List;
 
 public class DialogHelper {
-    public static void showAddPlaylistDialog(final Context context){
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context, R.style.RhythmAlertDialog);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View dialogView = inflater.inflate(R.layout.dialog_add_playlist, null);
-        dialogBuilder.setView(dialogView);
-
-        final EditText edt = (EditText) dialogView.findViewById(R.id.playlist_input);
-
-        dialogBuilder.setTitle("Add a Playlist");
-        dialogBuilder.setMessage("Playlist Name:");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                MusicDataUtility.createPlaylist(edt.getText().toString(), context);
-            }
-        });
-        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //pass
-                dialog.cancel();
-            }
-        });
-        AlertDialog b = dialogBuilder.create();
-        b.show();
+    public static void showAddPlaylistDialog(AppCompatActivity activity){
+        FragmentManager manager = activity.getSupportFragmentManager();
+        PlaylistAddDialog dialog = new PlaylistAddDialog();
+        dialog.show(manager, "dialog");
     }
 
     public static void aboutDialog(final Context context){
@@ -84,19 +64,19 @@ public class DialogHelper {
         b.show();
     }
 
-    public static void resetMusicDataAlert(final Activity activity) {
-        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(activity);
+    public static void resetMusicDataAlert(final Context context) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.RhythmAlertDialog);
 
         alertDialogBuilder.setTitle("Reset Music Data");
         alertDialogBuilder
                 .setMessage("Including Most Played, Last Played and your Personal Playlists ?");
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                MusicDataUtility.resetMusicStats(activity);
-                SharedPreferences sharedPreferences = activity
+                MusicDataUtility.resetMusicStats(context);
+                SharedPreferences sharedPreferences = context
                         .getSharedPreferences("com.laithlab.rhythm", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(activity.getString(R.string.first_time_pref_key), true);
+                editor.putBoolean(context.getString(R.string.first_time_pref_key), true);
                 editor.apply();
             }
         });
@@ -106,7 +86,7 @@ public class DialogHelper {
             }
         });
 
-        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
 

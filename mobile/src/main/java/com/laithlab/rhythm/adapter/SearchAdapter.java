@@ -16,8 +16,10 @@ import com.laithlab.rhythm.activity.PlaylistActivity;
 import com.laithlab.rhythm.activity.ArtistActivity;
 import com.laithlab.rhythm.activity.SwipePlayerActivity;
 import com.laithlab.rhythm.converter.DTOConverter;
+import com.laithlab.rhythm.dto.MusicContent;
 import com.laithlab.rhythm.dto.SearchResult;
 import com.laithlab.rhythm.dto.SongDTO;
+import com.laithlab.rhythm.utils.ContentType;
 import com.laithlab.rhythm.utils.MusicDataUtility;
 
 import java.util.ArrayList;
@@ -192,7 +194,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            v.getContext().startActivity(PlaylistActivity.getIntent(v.getContext(), currentSearchResults.get(getLayoutPosition()).getId()));
+            MusicContent musicContent = new MusicContent();
+            musicContent.setContentType(ContentType.ALBUM);
+            musicContent.setPlaylistName(currentSearchResults.get(getLayoutPosition()).getMainTitle());
+            musicContent.setId(currentSearchResults.get(getLayoutPosition()).getId());
+
+            v.getContext().startActivity(PlaylistActivity.getIntent(v.getContext(), musicContent));
         }
     }
 

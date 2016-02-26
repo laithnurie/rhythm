@@ -36,9 +36,10 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class PlaylistActivity extends AppCompatActivity implements SongListAdapter.ClickListener, PlaylistCallback {
+public class PlaylistActivity extends AppCompatActivity implements SongListAdapter.ClickListener
+        , PlaylistCallback, PlaylistAddCallback {
 
-    public static String ALBUM_ID_PARAM = "albumId";
+    public static String MUSIC_CONTENT = "musicContent";
 
     private DrawerLayout drawerLayout;
 
@@ -50,9 +51,9 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
     private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
 
-    public static Intent getIntent(Context context, String id) {
+    public static Intent getIntent(Context context, MusicContent musicContent) {
         Intent artistActivity = new Intent(context, PlaylistActivity.class);
-        artistActivity.putExtra(ALBUM_ID_PARAM, id);
+        artistActivity.putExtra(MUSIC_CONTENT, musicContent);
         return artistActivity;
     }
 
@@ -71,8 +72,10 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         Bundle extras = getIntent().getExtras();
-        musicContent = extras.getParcelable("musicContent");
-        actionModeCallback = new ActionModeCallback(musicContent.getContentType());
+        musicContent = extras.getParcelable(MUSIC_CONTENT);
+        if (musicContent != null) {
+            actionModeCallback = new ActionModeCallback(musicContent.getContentType());
+        }
 
         TextView albumTitle = (TextView) findViewById(R.id.txt_album);
         albumTitle.setText(musicContent.getPlaylistName());
@@ -180,6 +183,11 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         }
         songListAdapter.clearSelection();
         actionMode.finish();
+    }
+
+    @Override
+    public void playlistAdded() {
+        DialogHelper.addSongToPlaylist(this);
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
