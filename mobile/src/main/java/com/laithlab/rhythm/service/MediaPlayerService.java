@@ -138,7 +138,6 @@ public class MediaPlayerService extends Service {
             mController = new MediaControllerCompat(getApplicationContext(), mSession.getSessionToken());
         } catch (RemoteException e) {
             Timber.e(e, "initMediaSessions");
-            e.printStackTrace();
         }
 
         mSession.setCallback(
