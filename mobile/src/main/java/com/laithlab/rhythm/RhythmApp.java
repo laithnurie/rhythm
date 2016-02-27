@@ -7,6 +7,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.facebook.stetho.Stetho;
+import com.onesignal.OneSignal;
 import com.squareup.leakcanary.LeakCanary;
 
 import io.fabric.sdk.android.Fabric;
@@ -32,6 +33,7 @@ public class RhythmApp extends Application {
             Timber.plant(new Timber.DebugTree());
         }else {
             Timber.plant(new CrashlyticsTree());
+            OneSignal.startInit(this).init();
         }
     }
 
