@@ -27,13 +27,14 @@ public class RhythmApp extends Application {
                 .build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
+        OneSignal.startInit(this).init();
         if (BuildConfig.DEV_MODE) {
             LeakCanary.install(this);
             Stetho.initializeWithDefaults(this);
             Timber.plant(new Timber.DebugTree());
+            OneSignal.sendTag("is_test", "true");
         } else {
             Timber.plant(new CrashlyticsTree());
-            OneSignal.startInit(this).init();
             OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
                 @Override
                 public void idsAvailable(String usernameID, String registrationId) {
