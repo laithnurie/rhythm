@@ -18,6 +18,7 @@
             android:id="@+id/browse_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">
@@ -49,6 +50,7 @@
             android:id="@+id/most_played_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">
@@ -80,6 +82,7 @@
             android:id="@+id/last_played_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">
@@ -111,6 +114,7 @@
             android:id="@+id/playlists_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">
@@ -142,6 +146,7 @@
             android:id="@+id/now_playing_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">
@@ -178,6 +183,7 @@
             android:id="@+id/settings_drawer_item"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/margin_menu_item"
             android:paddingTop="@dimen/margin_menu_item">

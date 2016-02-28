@@ -31,9 +31,16 @@ public class RhythmApp extends Application {
             LeakCanary.install(this);
             Stetho.initializeWithDefaults(this);
             Timber.plant(new Timber.DebugTree());
-        }else {
+        } else {
             Timber.plant(new CrashlyticsTree());
             OneSignal.startInit(this).init();
+            OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                @Override
+                public void idsAvailable(String usernameID, String registrationId) {
+                    Crashlytics.setString("usernameID", usernameID);
+                    Crashlytics.setString("registrationId", registrationId);
+                }
+            });
         }
     }
 
