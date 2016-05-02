@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rhythm</string>
+    <!--<string name="app_name">Rhythm</string>-->
     <string name="duration_format">%1$s &#47; %2$s</string>
     <string name="artists">Artists</string>
     <string name="loading_message">Updating Music Archive</string>

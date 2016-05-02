@@ -35,6 +35,19 @@ android {
         }
     }
 
+    productFlavors {
+        develop {
+            applicationId 'com.laithlab.rhythm.develop'
+            resValue "string", "app_name", "Rhythm Develop"
+        }
+
+        production {
+            applicationId "com.laithlab.rhythm"
+            resValue "string", "app_name", "Rhythm"
+
+        }
+    }
+
     buildTypes {
 
         release {
