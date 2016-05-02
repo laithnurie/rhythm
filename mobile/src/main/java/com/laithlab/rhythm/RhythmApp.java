@@ -1,7 +1,10 @@
 package com.laithlab.rhythm;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -14,6 +17,12 @@ import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class RhythmApp extends Application {
+    static {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
+    private SharedPreferences mSharedPreferences;
+    private int currentNightMode;
 
     public RhythmApp() {
         super();
@@ -21,6 +30,7 @@ public class RhythmApp extends Application {
 
     public void onCreate() {
         super.onCreate();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         CrashlyticsCore core = new CrashlyticsCore.Builder()
                 .disabled(BuildConfig.DEBUG)
@@ -43,6 +53,18 @@ public class RhythmApp extends Application {
                 }
             });
         }
+    }
+
+    public String getSelectedTheme() {
+        return mSharedPreferences.getString("theme_list", "light");
+    }
+
+    public int getCurrentNighMode() {
+        return currentNightMode;
+    }
+
+    public void setCurrentNightMode(int currentNightMode) {
+        this.currentNightMode = currentNightMode;
     }
 
     public class CrashlyticsTree extends Timber.Tree {

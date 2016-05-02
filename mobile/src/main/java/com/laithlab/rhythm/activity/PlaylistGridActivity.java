@@ -29,7 +29,7 @@ import com.laithlab.rhythm.utils.ViewUtils;
 
 import java.util.List;
 
-public class PlaylistGridActivity extends AppCompatActivity implements PlaylistGridAdapter.ClickListener, PlaylistAddCallback {
+public class PlaylistGridActivity extends RhythmActivity implements PlaylistGridAdapter.ClickListener, PlaylistAddCallback {
 
     private DrawerLayout drawerLayout;
     private View noPlaylists;
@@ -48,7 +48,7 @@ public class PlaylistGridActivity extends AppCompatActivity implements PlaylistG
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 

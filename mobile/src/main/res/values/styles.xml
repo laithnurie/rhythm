@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Rhythm" parent="Theme.AppCompat.Light">
+    <style name="Rhythm" parent="Theme.AppCompat.DayNight">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:windowActionBar">false</item>

@@ -6,6 +6,13 @@
         android:key="first_category"
         android:title="Settings">
 
+        <ListPreference
+            android:key="theme_list"
+            android:title="Theme"
+            android:entries="@array/theme"
+            android:entryValues="@array/theme_alias"
+            android:dialogTitle="Choose a theme" />
+
         <Preference
             android:key="reset_stats"
             android:title="Reset Playing stats" />

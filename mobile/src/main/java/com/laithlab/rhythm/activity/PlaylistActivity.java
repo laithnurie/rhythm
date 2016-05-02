@@ -36,7 +36,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class PlaylistActivity extends AppCompatActivity implements SongListAdapter.ClickListener
+public class PlaylistActivity extends RhythmActivity implements SongListAdapter.ClickListener
         , PlaylistCallback, PlaylistAddCallback {
 
     public static String MUSIC_CONTENT = "musicContent";
@@ -68,7 +68,7 @@ public class PlaylistActivity extends AppCompatActivity implements SongListAdapt
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         Bundle extras = getIntent().getExtras();

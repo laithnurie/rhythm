@@ -17,5 +17,6 @@
         <item name="actionModeCloseDrawable">@drawable/ic_arrow_back_white_24dp</item>
         <item name="android:actionMenuTextColor">@color/white</item>
         <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:colorEdgeEffect">@color/white</item>
     </style>
 </resources>

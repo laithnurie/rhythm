@@ -2,7 +2,7 @@ package com.laithlab.rhythm.fragment;
 
 
 public interface SongFragmentCallback {
-    void changePlayerStyle(int vibrantColor, int songPosition);
+    void changePlayerStyle(int vibrantColor, int backgroundColor, int songPosition);
 
     void setToolBarText(String artistTitle, String albumTitle);
 

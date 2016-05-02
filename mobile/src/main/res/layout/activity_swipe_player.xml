@@ -6,8 +6,10 @@
     android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/player_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/player_background"
         android:orientation="vertical"
         tools:context=".SwipePlayerActivity">
 
@@ -17,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/player_background"
             android:orientation="vertical"
             android:weightSum="10">
 

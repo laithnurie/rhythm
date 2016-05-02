@@ -46,6 +46,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
     private TextView txtDuration;
     private ImageView playButton;
     private int vibrantColor;
+    private int backgroundColor;
     private Handler handler;
 
     private boolean beenDrawn = false;
@@ -106,7 +107,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 startTimer();
                 int currentMill = (int) (((float) seekBar.getProgress() / 100) * mediaPlayer.getDuration());
                 mediaPlayer.seekTo(currentMill);
-                playButton.setImageResource(R.drawable.ic_pause_white);
+                playButton.setImageResource(R.drawable.ic_pause_white_24dp);
             }
 
             @Override
@@ -121,12 +122,12 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             @Override
             public void onClick(View v) {
                 if (mediaPlayer.isPlaying()) {
-                    playButton.setImageResource(R.drawable.ic_play_arrow_white);
+                    playButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
                     mediaPlayer.pause();
                     stopTimer();
                     playerNotification(Constants.ACTION_PAUSE);
                 } else {
-                    playButton.setImageResource(R.drawable.ic_pause_white);
+                    playButton.setImageResource(R.drawable.ic_pause_white_24dp);
                     CustomAnimUtil.overShootAnimation(albumCover);
                     mediaPlayer.start();
                     startTimer();
@@ -191,7 +192,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
             }
             mListener.setToolBarText(rhythmSong.getArtistTitle(), rhythmSong.getAlbumTitle());
-            mListener.changePlayerStyle(vibrantColor, songPosition);
+            mListener.changePlayerStyle(vibrantColor, backgroundColor, songPosition);
             PlayBackUtil.setCurrentSong(rhythmSong);
         } else {
             if (mediaPlayer != null) {
@@ -266,7 +267,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                 stopTimer();
                 trackProgress.setProgress(0);
                 updateDuration("0:00", milliSecondsToTimer(mediaPlayer.getDuration()));
-                playButton.setImageResource(R.drawable.ic_play_arrow_white);
+                playButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
                 mediaPlayer.pause();
 
                 switch (PlayBackUtil.getCurrentPlayMode()) {
@@ -318,7 +319,7 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
                                 trackProgress.setProgress(currentProgress);
                                 if (mediaPlayer != null) {
                                     playButton.setImageResource(mediaPlayer.isPlaying()
-                                            ? R.drawable.ic_pause_white : R.drawable.ic_play_arrow_white);
+                                            ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp);
                                     updateDuration(milliSecondsToTimer(mediaPlayer.getCurrentPosition()),
                                             milliSecondsToTimer(mediaPlayer.getDuration()));
                                 }
@@ -346,11 +347,13 @@ public class SongFragment extends Fragment implements MediaPlayer.OnErrorListene
             Palette.Swatch vibrantSwatch = new Palette.Builder(bmp).generate().getLightVibrantSwatch();
             if (vibrantSwatch != null) {
                 vibrantColor = vibrantSwatch.getRgb();
+                backgroundColor = vibrantSwatch.getBodyTextColor();
                 changePlayerStyle(vibrantSwatch.getRgb());
-                mListener.changePlayerStyle(vibrantColor, songPosition);
+                mListener.changePlayerStyle(vibrantColor, backgroundColor, songPosition);
             } else {
                 vibrantColor = getResources().getColor(R.color.color_primary);
-                mListener.changePlayerStyle(vibrantColor, songPosition);
+                backgroundColor = getResources().getColor(R.color.color_primary_dark);
+                mListener.changePlayerStyle(vibrantColor, backgroundColor, songPosition);
             }
         }
     }

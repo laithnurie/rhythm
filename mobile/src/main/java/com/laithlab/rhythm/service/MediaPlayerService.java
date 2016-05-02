@@ -101,7 +101,7 @@ public class MediaPlayerService extends Service {
         }
 
         builder.setContentTitle(rhythmSong.getTrackTitle())
-                .setSmallIcon(R.drawable.ic_play_arrow_white)
+                .setSmallIcon(R.drawable.ic_play_arrow_white_24dp)
                 .setContentText(rhythmSong.getArtistTitle())
                 .setDeleteIntent(deleteIntent)
                 .setContentIntent(contentIntent)
@@ -109,9 +109,9 @@ public class MediaPlayerService extends Service {
                 .setOngoing(false)
                 .setStyle(style);
 
-        builder.addAction(generateAction(R.drawable.ic_previous_arrow_white, Constants.ACTION_PREVIOUS));
+        builder.addAction(generateAction(R.drawable.ic_previous_arrow_white_24dp, Constants.ACTION_PREVIOUS));
         builder.addAction(action);
-        builder.addAction(generateAction(R.drawable.ic_next_arrow_white, Constants.ACTION_NEXT));
+        builder.addAction(generateAction(R.drawable.ic_next_arrow_white_24dp, Constants.ACTION_NEXT));
         style.setShowActionsInCompactView(0, 1, 2);
 
         if(action.getTitle().equals(Constants.ACTION_PAUSE)){
@@ -146,14 +146,14 @@ public class MediaPlayerService extends Service {
                     public void onPlay() {
                         super.onPlay();
                         mMediaPlayer.start();
-                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white_24dp, Constants.ACTION_PAUSE));
                     }
 
                     @Override
                     public void onPause() {
                         super.onPause();
                         mMediaPlayer.pause();
-                        buildNotification(generateAction(R.drawable.ic_play_arrow_white, Constants.ACTION_PLAY));
+                        buildNotification(generateAction(R.drawable.ic_play_arrow_white_24dp, Constants.ACTION_PLAY));
                     }
 
                     @Override
@@ -165,7 +165,7 @@ public class MediaPlayerService extends Service {
                             if (PlayBackUtil.getCurrentPlayMode() != PlayMode.ALL_REPEAT
                                     || PlayBackUtil.getCurrentPlayMode() != PlayMode.SHUFFLE_REPEAT) {
                                 mMediaPlayer.stop();
-                                buildNotification(generateAction(R.drawable.ic_play_arrow_white, Constants.ACTION_PLAY));
+                                buildNotification(generateAction(R.drawable.ic_play_arrow_white_24dp, Constants.ACTION_PLAY));
                                 PlayBackUtil.setCurrentSongPosition(currentPosition);
                                 return;
                             }
@@ -176,7 +176,7 @@ public class MediaPlayerService extends Service {
 
                         rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white_24dp, Constants.ACTION_PAUSE));
 
                         Intent nextIntent = new Intent(Constants.PLAYER);
                         nextIntent.putExtra("player_command", "next");
@@ -196,7 +196,7 @@ public class MediaPlayerService extends Service {
 
                         rhythmSong = MusicDataUtility.getSongMeta(songDTOs.get(currentPosition).getSongLocation());
 
-                        buildNotification(generateAction(R.drawable.ic_pause_white, Constants.ACTION_PAUSE));
+                        buildNotification(generateAction(R.drawable.ic_pause_white_24dp, Constants.ACTION_PAUSE));
 
                         Intent previousIntent = new Intent(Constants.PLAYER);
                         previousIntent.putExtra("player_command", "previous");

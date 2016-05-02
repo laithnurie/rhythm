@@ -94,7 +94,7 @@ public class SongListAdapter extends SelectableAdapter<SongListAdapter.ViewHolde
 
         @Override
         public boolean onLongClick(View v) {
-            return clickListener != null && clickListener.onItemLongClicked(getLayoutPosition());
+            return clickListener != null && clickListener.onItemLongClicked(getAdapterPosition());
         }
     }
 

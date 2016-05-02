@@ -27,7 +27,7 @@ import com.laithlab.rhythm.utils.MusicDataUtility;
 import com.laithlab.rhythm.utils.ViewUtils;
 import com.laithlab.rhythm.R;
 
-public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapter.ClickListener {
+public class ArtistActivity extends RhythmActivity implements AlbumGridAdapter.ClickListener {
 
     private static final java.lang.String ARTIST_ID_PARAM = "artistId";
     private static final java.lang.String ARTIST_PARAM = "artist";
@@ -66,7 +66,7 @@ public class ArtistActivity extends AppCompatActivity implements AlbumGridAdapte
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 

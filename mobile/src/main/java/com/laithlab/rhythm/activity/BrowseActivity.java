@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -33,12 +32,11 @@ import com.laithlab.rhythm.utils.ViewUtils;
 
 import java.util.List;
 
-public class BrowseActivity extends AppCompatActivity implements MusicDBProgressCallBack, ArtistGridAdapter.ClickListener {
+public class BrowseActivity extends RhythmActivity implements MusicDBProgressCallBack, ArtistGridAdapter.ClickListener {
 
     private static final int REQUEST_READ_STORAGE = 1;
     private DrawerLayout drawerLayout;
     private RecyclerView browseGrid;
-    private Context context;
     private View loadingContainer;
 
     private SharedPreferences sharedPreferences;
@@ -49,8 +47,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
-        context = this;
-        sharedPreferences = context.getSharedPreferences("com.laithlab.rhythm", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("com.laithlab.rhythm", Context.MODE_PRIVATE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,7 +55,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -68,7 +65,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         ProgressBar loadingProgess = (ProgressBar) findViewById(R.id.loadingProgess);
         loadingProgess.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-        List<Artist> artists = MusicDataUtility.allArtists(this);
+        List<Artist> artists = MusicDataUtility.allArtists(getApplicationContext());
         browseGrid = (RecyclerView) findViewById(R.id.browse_grid);
         GridAutoFitLayoutManager gridLayoutManager = new GridAutoFitLayoutManager(this, 300);
         browseGrid.setLayoutManager(gridLayoutManager);
@@ -148,7 +145,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
             // permission has been granted, continue as usual
             new Thread(new Runnable() {
                 public void run() {
-                    MusicDataUtility.updateMusicDB(context);
+                    MusicDataUtility.updateMusicDB(getApplicationContext());
                     callBack.finishedDBUpdate();
                 }
             }).start();
@@ -164,7 +161,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
                 loadingContainer.setVisibility(View.VISIBLE);
                 new Thread(new Runnable() {
                     public void run() {
-                        MusicDataUtility.updateMusicDB(context);
+                        MusicDataUtility.updateMusicDB(getApplicationContext());
                         BrowseActivity.this.finishedDBUpdate();
                     }
                 }).start();
@@ -182,7 +179,7 @@ public class BrowseActivity extends AppCompatActivity implements MusicDBProgress
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                List<ArtistDTO> artists = DTOConverter.getArtistList(MusicDataUtility.allArtists(context));
+                List<ArtistDTO> artists = DTOConverter.getArtistList(MusicDataUtility.allArtists(getApplicationContext()));
                 if (artists != null && artists.size() > 0) {
                     if (browseGrid.getAdapter() == null) {
                         artistGridAdapter = new ArtistGridAdapter(artists, BrowseActivity.this);

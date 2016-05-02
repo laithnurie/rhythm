@@ -45,7 +45,7 @@ import java.util.List;
 
 import static com.laithlab.rhythm.utils.PlayMode.*;
 
-public class SwipePlayerActivity extends AppCompatActivity implements SongFragmentCallback, GoogleApiClient.ConnectionCallbacks,
+public class SwipePlayerActivity extends RhythmActivity implements SongFragmentCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private DrawerLayout drawerLayout;
@@ -55,6 +55,7 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     private TextView album;
     private ViewPager viewPager;
     private Menu menu;
+    private View playerBackground;
 
     private boolean isWearConnected = false;
     private boolean changedSongFromNotification = false;
@@ -83,11 +84,12 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         tiltedView = findViewById(R.id.tilted_view);
+        playerBackground = findViewById(R.id.player_background);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary));
@@ -238,13 +240,17 @@ public class SwipePlayerActivity extends AppCompatActivity implements SongFragme
     }
 
     @Override
-    public void changePlayerStyle(int vibrantColor, int songPosition) {
+    public void changePlayerStyle(int vibrantColor, int backgroundColor, int songPosition) {
         if (songPosition == viewPager.getCurrentItem()) {
             if (vibrantColor == 0) {
                 vibrantColor = getResources().getColor(R.color.color_primary);
             }
+            if (backgroundColor == 0) {
+                backgroundColor = getResources().getColor(R.color.color_primary_dark);
+            }
             toolbar.setBackgroundColor(vibrantColor);
             tiltedView.setBackgroundColor(vibrantColor);
+            playerBackground.setBackgroundColor(backgroundColor);
         }
         this.songPosition = songPosition;
     }
