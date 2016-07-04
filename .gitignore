@@ -31,7 +31,7 @@ Thumbs.db
 #.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
 .gradle
 gradle/
-gradlew
-gradlew.bat
+#gradlew
+#gradlew.bat
 build/
 debug.keystore
